@@ -1,0 +1,13 @@
+{
+  "name": "master-sql-guide",
+  "version": "1.0.0",
+  "description": "The Master SQL & MySQL Learning Guide - Production-grade curriculum, enterprise schema, exercises, and interview prep.",
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.5.0"
+  }
+}
