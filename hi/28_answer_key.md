@@ -1,97 +1,97 @@
-# अध्याय 28 — मास्टर आंसर की: सम्पूर्ण समाधान और विस्तृत व्याख्या (The Master Answer Key)
+# Chapter 28 — The Master Answer Key: Complete Solutions & Explanations
 
-यह अध्याय [अध्याय 27 — कॉम्प्रीहेंसिव प्रैक्टिस सिस्टम](file:///c:/antigravity/master_sql_guide/hi/27_exercises.md) में प्रस्तुत सभी 300 अभ्यास समस्याओं के लिए व्यापक और सत्यापित समाधान प्रदान करता है।
+Ye chapter [Chapter 27 — Comprehensive Practice System](file:///c:/antigravity/master_sql_guide/hi/27_exercises.md) mein present kiye gaye sabhi 300 practice problems ke comprehensive solutions provide karta hai.
 
-सभी समाधानों को **`sql_mastery`** डेटाबेस स्कीमा के विरुद्ध सत्यापित किया गया है।
+Saare solutions **`sql_mastery`** database schema ke against thoroughly verify kiye gaye hain.
 
 ---
 
-## Section 1: डेटाबेस और टेबल मैनेजमेंट (DDL, Types & Constraints)
+## Section 1: Database & Table Management (DDL, Types & Constraints)
 
 #### Question 1
-**सवाल**: सक्रिय `sql_mastery` डेटाबेस के अंदर सभी टेबल्स को प्रदर्शित करने के लिए एक SQL स्टेटमेंट लिखें।
+**Question**: Active `sql_mastery` database ke andar saari tables display karne ke liye ek SQL statement likhein.
 ```sql
 SHOW TABLES;
 ```
-* **व्याख्या**: वर्तमान डेटाबेस स्कीमा के भीतर सभी बेस टेबल्स और व्यूज के नाम प्राप्त करता है।
-* **अपेक्षित परिणाम**: 9 कोर टेबल्स (`categories`, `customers`, `departments`, `employees`, `order_items`, `orders`, `payments`, `products`, `suppliers`) प्रदर्शित करता है।
+* **Explanation**: Current database schema ke andar sabhi base tables aur views ke names retrieve karta hai.
+* **Expected Result**: 9 core tables display karta hai (`categories`, `customers`, `departments`, `employees`, `order_items`, `orders`, `payments`, `products`, `suppliers`).
 
 #### Question 2
-**सवाल**: `departments` टेबल की स्कीमा परिभाषा, डेटा प्रकार और नलेबिलिटी का निरीक्षण करने के लिए एक स्टेटमेंट लिखें।
+**Question**: `departments` table ki schema definition, datatypes, aur nullability inspect karne ke liye ek statement likhein.
 ```sql
 DESCRIBE departments;
 -- Equivalent: DESC departments;
 ```
-* **व्याख्या**: फ़ील्ड परिभाषाएँ, भौतिक भंडारण प्रकार (storage types), की स्थितियाँ, डिफ़ॉल्ट मान और अतिरिक्त विशेषताएँ लौटाता है।
-* **अपेक्षित परिणाम**: `department_id`, `department_name`, `location`, `created_at` दिखाने वाली तालिका।
+* **Explanation**: Field definitions, physical storage types, key statuses, default values, aur extra attributes return karta hai.
+* **Expected Result**: Ek table jo `department_id`, `department_name`, `location`, `created_at` show karti hai.
 
 #### Question 3
-**सवाल**: एक एकल पूर्णांक कॉलम `id` के साथ `test_logs` नामक एक सैंडबॉक्स टेबल बनाने के लिए एक कमांड लिखें।
+**Question**: Ek single integer column `id` ke saath `test_logs` naam ki sandbox table create karne ke liye command likhein.
 ```sql
 CREATE TABLE test_logs (
     id INT
 );
 ```
-* **व्याख्या**: डिफ़ॉल्ट इंजन (InnoDB) का उपयोग करके एक न्यूनतम बेस टेबल बनाता है।
-* **अपेक्षित परिणाम**: `Query OK, 0 rows affected`।
+* **Explanation**: Default engine (InnoDB) ka use karke ek minimal base table create karta hai.
+* **Expected Result**: `Query OK, 0 rows affected`.
 
 #### Question 4
-**सवाल**: `test_logs` टेबल को केवल तभी ड्रॉप करने के लिए एक स्टेटमेंट लिखें यदि वह मौजूद है।
+**Question**: `test_logs` table ko sirf tabhi drop karne ke liye statement likhein agar wo already exist karti ho.
 ```sql
 DROP TABLE IF EXISTS test_logs;
 ```
-* **व्याख्या**: टेबल को साफ-सुथरे तरीके से हटाता है, यदि टेबल मौजूद नहीं है तो त्रुटियों को दबा देता है।
-* **अपेक्षित परिणाम**: `Query OK, 0 rows affected`।
+* **Explanation**: Table ko cleanly drop karta hai, aur agar table exist nahi karti toh error suppress karta hai.
+* **Expected Result**: `Query OK, 0 rows affected`.
 
 #### Question 5
-**सवाल**: `code VARCHAR(20)` और `discount_pct DECIMAL(4,2)` (डिफ़ॉल्ट `0.05`) के साथ `coupons` टेबल बनाने के लिए एक क्वेरी लिखें।
+**Question**: `code VARCHAR(20)` aur `discount_pct DECIMAL(4,2)` (jiska default `0.05` ho) ke saath `coupons` table create karne ke liye query likhein.
 ```sql
 CREATE TABLE coupons (
     code VARCHAR(20) NOT NULL,
     discount_pct DECIMAL(4, 2) NOT NULL DEFAULT 0.05
 );
 ```
-* **व्याख्या**: एक गैर-नल स्ट्रिंग और डिफ़ॉल्ट कंस्ट्रेंट के साथ एक फिक्स्ड-पॉइंट न्यूमेरिक प्रकार को लागू करता है।
+* **Explanation**: Ek non-null string aur default constraint ke saath fixed-point numeric type implement karta hai.
 
 #### Question 6
-**सवाल**: `coupons` टेबल में `expiry_date DATE NOT NULL` कॉलम जोड़ें।
+**Question**: `coupons` table mein `expiry_date DATE NOT NULL` column add karein.
 ```sql
 ALTER TABLE coupons
 ADD COLUMN expiry_date DATE NOT NULL;
 ```
-* **व्याख्या**: एक तिथि विशेषता जोड़ने के लिए `ALTER TABLE ADD COLUMN` का उपयोग करता है।
+* **Explanation**: Date attribute append karne ke liye `ALTER TABLE ADD COLUMN` syntax ka use hota hai.
 
 #### Question 7
-**सवाल**: `coupons` में `code` को `VARCHAR(30) NOT NULL` में संशोधित करें।
+**Question**: `coupons` table mein `code` column ko `VARCHAR(30) NOT NULL` mein modify karein.
 ```sql
 ALTER TABLE coupons
 MODIFY COLUMN code VARCHAR(30) NOT NULL;
 ```
-* **व्याख्या**: कॉलम का नाम बनाए रखते हुए चौड़ाई बदलने के लिए `MODIFY COLUMN` का उपयोग करता है।
+* **Explanation**: Column name preserve karte hue width change karne ke liye `MODIFY COLUMN` ka use karta hai.
 
 #### Question 8
-**सवाल**: `coupons` से `expiry_date` कॉलम को हटाएँ।
+**Question**: `coupons` table se `expiry_date` column ko drop karein.
 ```sql
 ALTER TABLE coupons
 DROP COLUMN expiry_date;
 ```
-* **व्याख्या**: कॉलम मेटाडेटा को हटाता है और स्टोरेज स्पेस को पुन: प्रयोज्य के रूप में चिह्नित करता है।
+* **Explanation**: Column metadata ko remove karta hai aur storage space ko reusable mark karta hai.
 
 #### Question 9
-**सवाल**: टेबल `coupons` का नाम बदलकर `promotional_codes` करें।
+**Question**: `coupons` table ka naam rename karke `promotional_codes` karein.
 ```sql
 RENAME TABLE coupons TO promotional_codes;
 ```
-* **व्याख्या**: कैटलॉग में टेबल का नाम एटॉमिक रूप से अपडेट करता है।
+* **Explanation**: Catalog mein table name ko atomically update karta hai.
 
 #### Question 10
-**सवाल**: `promotional_codes` टेबल को साफ-सुथरे तरीके से ड्रॉप करें।
+**Question**: `promotional_codes` table ko cleanly drop karein.
 ```sql
 DROP TABLE IF EXISTS promotional_codes;
 ```
 
 #### Question 11
-**सवाल**: ऑटो-इन्क्रीमेंट प्राइमरी की `team_id`, यूनिक `team_name`, और चेक कंस्ट्रेंट `budget >= 1000.00` के साथ `project_teams` बनाएं।
+**Question**: Auto-increment primary key `team_id`, unique `team_name`, aur check constraint `budget >= 1000.00` ke saath `project_teams` create karein.
 ```sql
 CREATE TABLE project_teams (
     team_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -100,10 +100,10 @@ CREATE TABLE project_teams (
     CONSTRAINT chk_team_budget CHECK (budget >= 1000.00)
 );
 ```
-* **व्याख्या**: एक इनलाइन प्राइमरी की, यूनिक कंस्ट्रेंट और नामित डोमेन चेक घोषित करता है।
+* **Explanation**: Inline primary key, unique constraint, aur named domain check declare karta hai.
 
 #### Question 12
-**सवाल**: `project_teams` में `fk_team_lead` नामक एक फॉरेन की जोड़ें जो `team_lead_id` को `employees(employee_id)` से जोड़े (`ON DELETE SET NULL` के साथ)।
+**Question**: `project_teams` mein `fk_team_lead` foreign key add karein jo `team_lead_id` ko `employees(employee_id)` se link kare (`ON DELETE SET NULL` ke saath).
 ```sql
 ALTER TABLE project_teams
 ADD COLUMN team_lead_id INT,
@@ -114,53 +114,53 @@ ADD CONSTRAINT fk_team_lead FOREIGN KEY (team_lead_id)
 ```
 
 #### Question 13
-**सवाल**: डेटा कॉपी किए बिना `products` का सटीक संरचनात्मक क्लोन `products_backup` बनाएं।
+**Question**: Bina data copy kiye `products` ka exact structural clone `products_backup` create karein.
 ```sql
 CREATE TABLE products_backup LIKE products;
 ```
-* **व्याख्या**: पंक्तियों को कॉपी किए बिना संपूर्ण स्कीमा, इंडेक्स और कंस्ट्रेंट्स की प्रतिलिपि बनाता है।
+* **Explanation**: Bina rows copy kiye complete schema, indexes, aur constraints ko copy karta hai.
 
 #### Question 14
-**सवाल**: CTAS का उपयोग करके `employees` से सभी कॉलम्स/पंक्तियों के साथ `high_earners` टेबल बनाएं जहाँ `salary > 120000.00` हो।
+**Question**: CTAS ka use karke `employees` se un sabhi columns/rows ke saath `high_earners` table create karein jahan `salary > 120000.00` ho.
 ```sql
 CREATE TABLE high_earners AS
 SELECT * FROM employees WHERE salary > 120000.00;
 ```
-* **व्याख्या**: टेबल बनाता है और पंक्तियों को भरता है। नोट: CTAS प्राइमरी की या फॉरेन की को कॉपी नहीं करता है।
+* **Explanation**: Table create karke rows populate karta hai. Note: CTAS primary keys ya foreign keys copy nahi karta.
 
 #### Question 15
-**सवाल**: `departments` में `department_name` के बाद `priority_level ENUM('Low', 'Medium', 'High') DEFAULT 'Medium'` जोड़ें।
+**Question**: `departments` mein `department_name` ke baad `priority_level ENUM('Low', 'Medium', 'High') DEFAULT 'Medium'` add karein.
 ```sql
 ALTER TABLE departments
 ADD COLUMN priority_level ENUM('Low', 'Medium', 'High') DEFAULT 'Medium' AFTER department_name;
 ```
 
 #### Question 16
-**सवाल**: `departments` से `priority_level` को हटाएँ।
+**Question**: `departments` se `priority_level` remove karein.
 ```sql
 ALTER TABLE departments DROP COLUMN priority_level;
 ```
 
 #### Question 17
-**सवाल**: `high_earners` टेबल को ट्रंकेट करें।
+**Question**: `high_earners` table ko truncate karein.
 ```sql
 TRUNCATE TABLE high_earners;
 ```
 
 #### Question 18
-**सवाल**: `high_earners`, `products_backup`, और `project_teams` को ड्रॉप करें।
+**Question**: `high_earners`, `products_backup`, aur `project_teams` ko drop karein.
 ```sql
 DROP TABLE IF EXISTS high_earners, products_backup, project_teams;
 ```
 
 #### Question 19
-**सवाल**: `order_items` के लिए MySQL द्वारा जनरेट की गई पूरी DDL `CREATE TABLE` स्क्रिप्ट देखें।
+**Question**: MySQL dwara `order_items` ke liye generate kiya gaya complete DDL `CREATE TABLE` script view karein.
 ```sql
 SHOW CREATE TABLE order_items\G
 ```
 
 #### Question 20
-**सवाल**: `departments(department_name, location)` पर कम्पोजिट यूनिक कंस्ट्रेंट `uq_dept_loc` जोड़ें।
+**Question**: `departments(department_name, location)` par composite unique constraint `uq_dept_loc` add karein.
 ```sql
 ALTER TABLE departments
 ADD CONSTRAINT uq_dept_loc UNIQUE (department_name, location);
@@ -168,17 +168,17 @@ ADD CONSTRAINT uq_dept_loc UNIQUE (department_name, location);
 ALTER TABLE departments DROP INDEX uq_dept_loc;
 ```
 
-#### Question 21–30 मुख्य हाइलाइट्स
-* **21 (अस्थायी टेबल)**: `CREATE TEMPORARY TABLE temp_sales_summary AS SELECT product_id, SUM(quantity) FROM order_items GROUP BY product_id;` (वर्तमान क्लाइंट सत्र समाप्त होने पर स्वचालित रूप से हटा दिया जाता है)।
-* **22 (फॉरेन की जांच)**: `SET FOREIGN_KEY_CHECKS = 0; ... SET FOREIGN_KEY_CHECKS = 1;`
-* **23 (चेक कंस्ट्रेंट अस्वीकृति)**: विफल रहता है क्योंकि मौजूदा कर्मचारी पंक्तियाँ स्थिति का उल्लंघन करती हैं; MySQL कंस्ट्रेंट जोड़ने से पहले मौजूदा डेटा को मान्य करता है।
-* **28 (फॉरेन की ऑडिट क्वेरी)**:
+#### Question 21–30 Highlights
+* **21 (Temporary Table)**: `CREATE TEMPORARY TABLE temp_sales_summary AS SELECT product_id, SUM(quantity) FROM order_items GROUP BY product_id;` (Jab current client session terminate hota hai, ye automatically purge ho jaati hai).
+* **22 (Foreign Key Checks)**: `SET FOREIGN_KEY_CHECKS = 0; ... SET FOREIGN_KEY_CHECKS = 1;`
+* **23 (Check Constraint Rejection)**: Fail hota hai kyunki existing employee rows is condition ko violate karti hain; MySQL constraint attach karne se pehle existing data validate karta hai.
+* **28 (Foreign Key Audit Query)**:
   ```sql
   SELECT TABLE_NAME, CONSTRAINT_NAME, DELETE_RULE 
   FROM information_schema.REFERENTIAL_CONSTRAINTS 
   WHERE CONSTRAINT_SCHEMA = 'sql_mastery';
   ```
-* **29 (MB में टेबल का आकार)**:
+* **29 (Table Size in MB)**:
   ```sql
   SELECT table_name, 
          ROUND(((data_length + index_length) / 1024 / 1024), 2) AS size_mb
@@ -188,7 +188,7 @@ ALTER TABLE departments DROP INDEX uq_dept_loc;
 
 ---
 
-## Section 2: डेटा क्वेरीइंग, फिल्टरिंग और सॉर्टिंग (SELECT, WHERE, ORDER BY, LIMIT)
+## Section 2: Data Querying, Filtering & Sorting (SELECT, WHERE, ORDER BY, LIMIT)
 
 #### Question 31
 ```sql
@@ -204,13 +204,13 @@ SELECT first_name, last_name, email FROM customers;
 ```sql
 SELECT product_name, unit_price FROM products WHERE unit_price > 500.00;
 ```
-* **अपेक्षित परिणाम**: Quantum Pro 15 Laptop ($1,299.99), AeroBook Air 13 ($999.00), SmartBrew Espresso Machine ($549.00)।
+* **Expected Result**: Quantum Pro 15 Laptop ($1,299.99), AeroBook Air 13 ($999.00), SmartBrew Espresso Machine ($549.00).
 
 #### Question 34
 ```sql
 SELECT * FROM customers WHERE country = 'USA';
 ```
-* **अपेक्षित परिणाम**: 4 पंक्तियाँ (Emily Watson, Michael Brown, Sophia Garcia, James Wilson, Hannah Scott)।
+* **Expected Result**: 4 rows (Emily Watson, Michael Brown, Sophia Garcia, James Wilson, Hannah Scott).
 
 #### Question 35
 ```sql
@@ -226,7 +226,7 @@ SELECT product_name, unit_price FROM products WHERE unit_price BETWEEN 100.00 AN
 ```sql
 SELECT * FROM customers WHERE state IS NULL;
 ```
-* **अपेक्षित परिणाम**: Lucas Muller (Germany), Chloe Dubois (France), Ethan Hunt (UK)।
+* **Expected Result**: Lucas Muller (Germany), Chloe Dubois (France), Ethan Hunt (UK).
 
 #### Question 38
 ```sql
@@ -237,42 +237,42 @@ SELECT employee_id, first_name, last_name, hire_date FROM employees ORDER BY hir
 ```sql
 SELECT first_name, last_name, salary FROM employees ORDER BY salary DESC LIMIT 3;
 ```
-* **अपेक्षित परिणाम**: Alex Morgan ($145k), Priya Patel ($135k), Elena Rostova ($130k)।
+* **Expected Result**: Alex Morgan ($145k), Priya Patel ($135k), Elena Rostova ($130k).
 
 #### Question 40
 ```sql
 SELECT DISTINCT country FROM customers;
 ```
-* **अपेक्षित परिणाम**: USA, India, Germany, Brazil, France, UK।
+* **Expected Result**: USA, India, Germany, Brazil, France, UK.
 
-#### Question 41–50 मुख्य हाइलाइट्स
-* **41 (ईमेल वाइल्डकार्ड)**: `SELECT * FROM customers WHERE email LIKE '%@gmail.com';`
+#### Question 41–50 Highlights
+* **41 (Email Wildcard)**: `SELECT * FROM customers WHERE email LIKE '%@gmail.com';`
 * **42 (In + Range)**: `SELECT * FROM products WHERE category_id IN (1, 2) AND stock_quantity > 20;`
-* **43 (कम्पाउंड फिल्टर)**: `SELECT * FROM orders WHERE order_date BETWEEN '2023-08-01' AND '2023-08-15' AND total_amount > 300.00;`
-* **48 (ऑफसेट पेजिनेशन)**: `SELECT * FROM products ORDER BY unit_price DESC LIMIT 3 OFFSET 3;`
-* **50 (कस्टम सॉर्ट ऑर्डरिंग)**:
+* **43 (Compound Filter)**: `SELECT * FROM orders WHERE order_date BETWEEN '2023-08-01' AND '2023-08-15' AND total_amount > 300.00;`
+* **48 (Offset Pagination)**: `SELECT * FROM products ORDER BY unit_price DESC LIMIT 3 OFFSET 3;`
+* **50 (Custom Sort Ordering)**:
   ```sql
   SELECT * FROM customers 
   ORDER BY (country = 'USA') DESC, country ASC, last_name ASC;
   ```
 
-#### Question 51–60 मुख्य हाइलाइट्स
-* **51 (ASC/DESC में Nulls Last)**:
+#### Question 51–60 Highlights
+* **51 (Nulls Last in ASC/DESC)**:
   ```sql
   SELECT * FROM customers ORDER BY loyalty_points IS NULL ASC, loyalty_points DESC;
   ```
-* **54 (कीसेट / कर्सर पेजिनेशन)**:
+* **54 (Keyset / Cursor Pagination)**:
   ```sql
   SELECT * FROM orders WHERE order_id > 1005 ORDER BY order_id ASC LIMIT 3;
   ```
-* **60 (SARGable डेट फिल्टर)**:
+* **60 (SARGable Date Filter)**:
   ```sql
   SELECT * FROM orders WHERE order_date >= '2023-01-01' AND order_date < '2024-01-01';
   ```
 
 ---
 
-## Section 3: बिल्ट-इन SQL फंक्शन्स
+## Section 3: Built-in SQL Functions
 
 #### Question 61
 ```sql
@@ -324,13 +324,13 @@ SELECT first_name, IFNULL(phone, 'No Phone Provided') AS phone_status FROM custo
 SELECT ABS(-45.50) AS absolute_value; -- Returns 45.50
 ```
 
-#### Question 71–85 मुख्य हाइलाइट्स
-* **71 (बीते हुए दिन)**: `SELECT customer_id, DATEDIFF(CURDATE(), registered_at) AS days_registered FROM customers;`
-* **72 (डेट फॉर्मेटिंग)**: `SELECT order_id, DATE_FORMAT(order_date, '%M %d, %Y') FROM orders;`
-* **74 (यूजरनेम निकालना)**: `SELECT SUBSTRING_INDEX(email, '@', 1) AS user_handle FROM customers;`
-* **76 (महीनों में कार्यकाल)**: `SELECT employee_id, TIMESTAMPDIFF(MONTH, hire_date, CURDATE()) AS tenure_months FROM employees;`
-* **77 (सुरक्षित डेलिमिटेड पता)**: `SELECT customer_id, CONCAT_WS(', ', city, state, country) FROM customers;`
-* **81 (सर्च किया गया CASE)**:
+#### Question 71–85 Highlights
+* **71 (Days Elapsed)**: `SELECT customer_id, DATEDIFF(CURDATE(), registered_at) AS days_registered FROM customers;`
+* **72 (Date Formatting)**: `SELECT order_id, DATE_FORMAT(order_date, '%M %d, %Y') FROM orders;`
+* **74 (Extract Username)**: `SELECT SUBSTRING_INDEX(email, '@', 1) AS user_handle FROM customers;`
+* **76 (Tenure in Months)**: `SELECT employee_id, TIMESTAMPDIFF(MONTH, hire_date, CURDATE()) AS tenure_months FROM employees;`
+* **77 (Safe Delimited Address)**: `SELECT customer_id, CONCAT_WS(', ', city, state, country) FROM customers;`
+* **81 (Searched CASE)**:
   ```sql
   SELECT customer_id, loyalty_points,
       CASE 
@@ -341,7 +341,7 @@ SELECT ABS(-45.50) AS absolute_value; -- Returns 45.50
       END AS customer_tier
   FROM customers;
   ```
-* **87 (ईमेल मास्किंग चैलेंज)**:
+* **87 (Email Masking Challenge)**:
   ```sql
   SELECT email, 
          CONCAT(SUBSTRING(email, 1, 2), '*****@', SUBSTRING_INDEX(email, '@', -1)) AS masked_email
@@ -350,7 +350,7 @@ SELECT ABS(-45.50) AS absolute_value; -- Returns 45.50
 
 ---
 
-## Section 4: ग्रुपिंग और एग्रीगेशन (GROUP BY & HAVING)
+## Section 4: Grouping & Aggregation (GROUP BY & HAVING)
 
 #### Question 91
 ```sql
@@ -425,7 +425,7 @@ FROM employees
 GROUP BY department_id WITH ROLLUP;
 ```
 
-#### Question 117 (कंडीशनल एग्रीगेशन के साथ पिवट)
+#### Question 117 (Pivot with Conditional Aggregation)
 ```sql
 SELECT 
     ROUND(SUM(CASE WHEN status = 'Pending' THEN total_amount ELSE 0 END), 2) AS pending_revenue,
@@ -438,7 +438,7 @@ FROM orders;
 
 ---
 
-## Section 5: रिलेशनल JOINs और सेट ऑपरेशन्स
+## Section 5: Relational JOINs & Set Operations
 
 #### Question 121 (INNER JOIN)
 ```sql
@@ -454,7 +454,7 @@ FROM departments d
 LEFT JOIN employees e ON d.department_id = e.department_id;
 ```
 
-#### Question 131 (निष्क्रिय ग्राहकों के लिए एंटी-जॉइन)
+#### Question 131 (Anti-Join for Inactive Customers)
 ```sql
 SELECT c.customer_id, c.first_name, c.last_name, c.email
 FROM customers c
@@ -472,7 +472,7 @@ FROM employees e
 LEFT JOIN employees m ON e.manager_id = m.employee_id;
 ```
 
-#### Question 140 (FULL OUTER JOIN एम्यूलेशन)
+#### Question 140 (FULL OUTER JOIN Emulation)
 ```sql
 SELECT d.department_name, e.first_name, e.last_name
 FROM departments d
@@ -483,9 +483,9 @@ FROM departments d
 RIGHT JOIN employees e ON d.department_id = e.department_id;
 ```
 
-#### Question 148 (रिलेशनल डिवीजन चैलेंज)
+#### Question 148 (Relational Division Challenge)
 ```sql
--- Find customers who purchased EVERY product in Category 1
+-- Category 1 ke HAR EK product ko purchase karne wale customers find karein
 SELECT c.customer_id, c.first_name, c.last_name
 FROM customers c
 JOIN orders o ON c.customer_id = o.customer_id
@@ -498,7 +498,7 @@ HAVING COUNT(DISTINCT p.product_id) = (SELECT COUNT(*) FROM products WHERE categ
 
 ---
 
-## Section 6: नेस्टेड क्वेरीज और कॉमन टेबल एक्सप्रेशन्स (CTEs)
+## Section 6: Nested Queries & Common Table Expressions (CTEs)
 
 #### Question 151
 ```sql
@@ -507,7 +507,7 @@ FROM employees
 WHERE salary > (SELECT AVG(salary) FROM employees);
 ```
 
-#### Question 161 (कोरिलेटेड सबक्वेरी)
+#### Question 161 (Correlated Subquery)
 ```sql
 SELECT e1.employee_id, e1.first_name, e1.department_id, e1.salary
 FROM employees e1
@@ -528,7 +528,7 @@ WHERE EXISTS (
 );
 ```
 
-#### Question 172 (रिकर्सिव CTE: मैनेजमेंट ट्री)
+#### Question 172 (Recursive CTE: Management Tree)
 ```sql
 WITH RECURSIVE OrgHierarchy AS (
     -- Anchor: Top Executives
@@ -546,7 +546,7 @@ WITH RECURSIVE OrgHierarchy AS (
 SELECT * FROM OrgHierarchy ORDER BY depth, employee_id;
 ```
 
-#### Question 176 (रिकर्सिव डेट सीरीज जेनरेटर)
+#### Question 176 (Recursive Date Series Generator)
 ```sql
 WITH RECURSIVE DateSeries AS (
     SELECT CAST('2023-08-01' AS DATE) AS cal_date
@@ -564,7 +564,7 @@ ORDER BY d.cal_date;
 
 ---
 
-## Section 7: डेटाबेस डिज़ाइन, नॉर्मलाइजेशन और व्यूज
+## Section 7: Database Design, Normalization & Views
 
 #### Question 184 & 185
 ```sql
@@ -576,7 +576,7 @@ JOIN categories c ON p.category_id = c.category_id;
 SELECT * FROM v_all_products WHERE unit_price < 300.00;
 ```
 
-#### Question 191 & 192 (CHECK OPTION के साथ अपडेट करने योग्य व्यू)
+#### Question 191 & 192 (Updatable View with CHECK OPTION)
 ```sql
 CREATE OR REPLACE VIEW v_german_customers AS
 SELECT customer_id, first_name, last_name, email, country
@@ -592,7 +592,7 @@ VALUES ('Marco', 'Rossi', 'm.rossi@domain.it', 'Italy');
 
 ---
 
-## Section 8: इंडेक्स, ट्रांजेक्शन्स और कॉनकरेंसी कंट्रोल
+## Section 8: Indexes, Transactions & Concurrency Control
 
 #### Question 211 & 212
 ```sql
@@ -600,7 +600,7 @@ CREATE INDEX idx_cust_email ON customers(email);
 DROP INDEX idx_cust_email ON customers;
 ```
 
-#### Question 224 (प्रबंधित ट्रांजैक्शन)
+#### Question 224 (Managed Transaction)
 ```sql
 START TRANSACTION;
 SELECT stock_quantity FROM products WHERE product_id = 1 FOR UPDATE;
@@ -611,7 +611,7 @@ INSERT INTO orders (customer_id, order_date, status, total_amount) VALUES (1, CU
 COMMIT;
 ```
 
-#### Question 231 (कवरिंग इंडेक्स सत्यापन)
+#### Question 231 (Covering Index Verification)
 ```sql
 CREATE INDEX idx_cov_emp ON employees(department_id, salary, employee_id);
 
@@ -624,9 +624,9 @@ ORDER BY salary DESC;
 
 ---
 
-## Section 9: प्रोग्रामेबिलिटी और एडवांस्ड एनालिटिक्स
+## Section 9: Programmability & Advanced Analytics
 
-#### Question 244 (डिटर्मिनिस्टिक फंक्शन)
+#### Question 244 (Deterministic Function)
 ```sql
 DELIMITER //
 CREATE FUNCTION fn_add_numbers(a INT, b INT)
@@ -639,7 +639,7 @@ END //
 DELIMITER ;
 ```
 
-#### Question 254 (रैंकिंग फंक्शन्स)
+#### Question 254 (Ranking Functions)
 ```sql
 SELECT 
     product_name, category_id, unit_price,
@@ -648,7 +648,7 @@ SELECT
 FROM products;
 ```
 
-#### Question 260 (रनिंग टोटल विंडो कैलकुलेशन)
+#### Question 260 (Running Total Window Calculation)
 ```sql
 SELECT 
     order_id, order_date, total_amount,
@@ -661,9 +661,9 @@ FROM orders;
 
 ---
 
-## Section 10: परफॉरमेंस ऑप्टिमाइज़ेशन और एंटरप्राइज सिक्योरिटी
+## Section 10: Performance Optimization & Enterprise Security
 
-#### Question 274–278 (RBAC और यूजर एडमिनिस्ट्रेशन)
+#### Question 274–278 (RBAC & User Administration)
 ```sql
 -- 274: Create user
 CREATE USER 'intern'@'localhost' IDENTIFIED BY 'InternPass2026!';
@@ -681,7 +681,7 @@ REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'intern'@'localhost';
 DROP USER 'intern'@'localhost';
 ```
 
-#### Question 281 & 282 (SARGable रीराइट्स)
+#### Question 281 & 282 (SARGable Rewrites)
 * **281**:
   ```sql
   -- Before (Non-SARGable): WHERE YEAR(hire_date) = 2021
@@ -694,7 +694,7 @@ DROP USER 'intern'@'localhost';
   SELECT * FROM customers WHERE phone LIKE '555%';
   ```
 
-#### Question 286 (प्रिपेयर्ड स्टेटमेंट)
+#### Question 286 (Prepared Statement)
 ```sql
 PREPARE stmt_order_lookup FROM 'SELECT * FROM orders WHERE customer_id = ? AND total_amount > ?';
 SET @cust = 1;
@@ -703,7 +703,7 @@ EXECUTE stmt_order_lookup USING @cust, @min_amt;
 DEALLOCATE PREPARE stmt_order_lookup;
 ```
 
-#### Question 288 (ऑनलाइन लॉजिकल बैकअप)
+#### Question 288 (Online Logical Backup)
 ```bash
 mysqldump -u root -p --single-transaction --quick --routines --triggers sql_mastery > sql_mastery_backup.sql
 ```

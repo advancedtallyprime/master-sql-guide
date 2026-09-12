@@ -1,47 +1,47 @@
-# Chapter 01 — SQL और Relational Database के फंडामेंटल्स (SQL & Relational Database Fundamentals)
+# Chapter 01 — SQL & Relational Database Fundamentals (SQL aur Relational Database ke Fundamentals)
 
 ---
 
-## 1. What is it? (यह क्या है?)
+## 1. What is it? (Ye Kya Hai?)
 
-एक **Database** असल में structured information (डेटा) का एक organized और persistent repository (संग्रह) होता है, जिसे इस तरह डिज़ाइन किया जाता है ताकि डेटा को तेज़ी से search, retrieve और एक साथ कई users द्वारा modify (concurrent modification) किया जा सके।
+Ek **Database** asal me structured information (data) ka ek organized, persistent repository hota hai, jise data ke rapid search, quick retrieval aur multiple users dwara ek sath concurrent modification ke liye design kiya jata hai.
 
-मॉडर्न डेटाबेस्स को गहराई से समझने के लिए, आइए informal data storage और professional database management system के फर्क को एक आसान analogy से समझते हैं:
+Modern databases ko depth me samajhne ke liye, aaiye ek normal file storage aur ek professional database management system ke difference ko ek simple real-world analogy se samajhte hain:
 
-* **The Spreadsheet / File Analogy (एक्सेल शीट का उदाहरण)**: मान लीजिए आप अपनी दुकान या कॉलेज का डेटा एक Excel spreadsheet या text file में रखते हैं। जब तक सिर्फ आप उस फाइल को खोलकर काम कर रहे हैं, सब कुछ ठीक चलता है। लेकिन सोचिए जब एक साथ 500 लोग उसी फाइल में अलग-अलग rows एडिट करने की कोशिश करेंगे, तो क्या होगा? फाइल corrupt हो जाएगी, duplicate entries भर जाएँगी, और डेटा validation पूरी तरह फेल हो जाएगा। इसे हम concurrency issue कहते हैं।
-* **A Database Management System (DBMS)**: यह एक ऐसा समझदार software intermediary (मध्यस्थ) है जो end users, client applications और आपकी physical hard drive/SSD के बीच बैठता है। यह consistency rules लागू करता है, multi-user concurrency को संभालता है, security permissions तय करता है, और यह गारंटी देता है कि अगर सर्वर अचानक क्रैश भी हो जाए, तो आपका commit किया हुआ डेटा कभी गायब न हो।
-* **A Relational Database Management System (RDBMS)**: यह E.F. Codd (1970) के relational model पर आधारित एक specialized DBMS है। RDBMS में डेटा को mathematically structured 2D **tables** (relations) के रूप में रखा जाता है, जिनमें **rows** (tuples या records) और **columns** (attributes या fields) होते हैं। अलग-अलग टेबल्स आपस में shared values यानी **keys** (जैसे Primary Key और Foreign Key) के ज़रिए जुड़ी होती हैं। दुनिया के सबसे लोकप्रिय RDBMS engines हैं: **MySQL**, **PostgreSQL**, **Oracle Database**, और **Microsoft SQL Server**।
+* **The Spreadsheet / File Analogy (Excel ya File ka Example)**: Maan lijiye aap apne college ya store ka data ek Excel spreadsheet ya plain text file me save karte hain. Jab tak sirf ek single user us file ko open karke kaam kar raha hai, tab tak sab theek chalta hai. Lekin sochiye agar 100 ya 500 users ek sath usi file ko simultaneously edit karne ki koshish karein, to kya hoga? File corrupt ho jayegi, race conditions generate hongi, duplicate records bhar jayenge aur data validation poori tarah fail ho jayega.
+* **A Database Management System (DBMS)**: DBMS ek intelligent software intermediary hota hai jo end users, client applications aur physical hard disk/SSD storage ke beech bridge ka kaam karta hai. Ye consistency rules enforce karta hai, multi-user concurrency ko handle karta hai, access permissions guarantee karta hai aur crash recovery ensure karta hai taki system fail hone par bhi committed data kabhi loose na ho.
+* **A Relational Database Management System (RDBMS)**: RDBMS ek specialized DBMS hai jo 1970 me Edgar F. Codd (E.F. Codd) ke diye gaye relational model par based hota hai. RDBMS ke andar data ko mathematically structured 2D **tables** (relations) ke form me store kiya jata hai, jinme **rows** (tuples ya records) aur **columns** (attributes ya fields) hote hain. Alag-alag tables aapas me shared values yani **keys** (jaise Primary Key aur Foreign Key) ke zariye securely link hoti hain. Industry me sabse popular RDBMS engines hain: **MySQL**, **PostgreSQL**, **Oracle Database**, aur **Microsoft SQL Server**.
 
-**Structured Query Language (SQL)** ANSI और ISO द्वारा standardized एक universal, declarative programming language है, जिसका उपयोग RDBMS engines से बातचीत करने के लिए किया जाता है।
+**Structured Query Language (SQL)** ek universal, declarative programming language hai jise ANSI aur ISO ne standardize kiya hai. Iska use RDBMS engines ke sath communicate karne ke liye kiya jata hai.
 
-Python, Java, या C++ जैसी imperative भाषाओं में आपको कंप्यूटर को step-by-step बताना पड़ता है कि काम *कैसे* (HOW) करना है (लूप चलाओ, कंडीशन चेक करो, एरे में डालो)। लेकिन SQL पूरी तरह **declarative** है — यहाँ आप सिर्फ यह बताते हैं कि आपको *क्या* (WHAT) डेटा चाहिए, और RDBMS का internal **Query Optimizer** खुद तय करता है कि disk से उस डेटा को सबसे तेज़ एल्गोरिदम से कैसे निकाला जाए।
+Python, Java ya C++ jaisi imperative languages me aapko computer ko step-by-step instructions dene padte hain ki kaam *kaise* karna hai (loop chalao, condition check karo, memory allocate karo). Lekin SQL poori tarah **declarative** hai: yahan aapko sirf ye define karna hota hai ki aapko *kya* (WHAT) data chahiye. RDBMS ka internal **Query Optimizer** khud figure out karta hai ki disk se data ko fetch karne ke liye sabse fast aur optimized algorithmic path kaun sa hoga.
 
-SQL की commands को मुख्य रूप से 5 sub-languages में बाँटा गया है:
-1. **DDL (Data Definition Language)**: डेटाबेस का ढाँचा (schema structure) बनाने और बदलने के लिए (`CREATE`, `ALTER`, `DROP`, `TRUNCATE`, `RENAME`)।
-2. **DQL (Data Query Language)**: स्टोर किए गए डेटा को पढ़ने और फ़िल्टर करने के लिए (`SELECT`)।
-3. **DML (Data Manipulation Language)**: टेबल्स के अंदर डेटा रिकॉर्ड्स को जोड़ने, बदलने या हटाने के लिए (`INSERT`, `UPDATE`, `DELETE`)।
-4. **DCL (Data Control Language)**: यूज़र्स के permissions और सुरक्षा अधिकार (privileges) मैनेज करने के लिए (`GRANT`, `REVOKE`)।
-5. **TCL (Transaction Control Language)**: डेटाबेस ट्रांजेक्शन्स की सीमाओं और डेटा सेव करने की स्थिति को कंट्रोल करने के लिए (`COMMIT`, `ROLLBACK`, `SAVEPOINT`)।
-
----
-
-## 2. Why do we use it? (हम इसका उपयोग क्यों करते हैं?)
-
-Relational databases और SQL आज की पूरी दुनिया के enterprise software की रीढ़ की हड्डी (backbone) हैं। हम इनका उपयोग इन 5 ठोस कारणों से करते हैं:
-
-1. **ACID Guarantees (डेटा की 100% सुरक्षा)**: Relational engines ट्रांजेक्शनल इंटीग्रिटी की गारंटी देते हैं:
-   * **Atomicity**: सब कुछ होगा या कुछ भी नहीं होगा (All or nothing)। जैसे बैंक ट्रांसफर में अगर पैसे कट गए लेकिन दूसरे खाते में नहीं पहुंचे, तो पूरा प्रोसेस rollback हो जाएगा।
-   * **Consistency**: डेटाबेस के बनाए गए नियम और constraints कभी नहीं टूटेंगे।
-   * **Isolation**: एक साथ चलने वाले कई ट्रांजेक्शन्स एक-दूसरे के काम में दखल नहीं देंगे।
-   * **Durability**: एक बार ट्रांजेक्शन commit हो गया, तो बिजली जाने या सर्वर क्रैश होने पर भी डेटा हमेशा सुरक्षित रहेगा।
-2. **Elimination of Data Redundancy (डेटा दोहराव से मुक्ति)**: Relational links (Foreign Keys) और Normalization की मदद से ग्राहक का पता या डिपार्टमेंट का नाम केवल एक जगह स्टोर होता है, लाखों ऑर्डर्स में बार-बार duplicate नहीं होता। इससे डिस्क स्पेस बचती है और डेटा इनकंसिस्टेंसी नहीं आती।
-3. **High-Performance Querying (सुपरफास्ट परफॉरमेंस)**: RDBMS engines में B+ Tree और Hash Indexes जैसे एडवांस्ड डेटा स्ट्रक्चर्स और Cost-Based Optimizers होते हैं, जो करोड़ों रिकॉर्ड्स में से भी आपकी ज़रूरत का डेटा मिलीसेकंड्स (milliseconds) में ढूंढकर निकाल लाते हैं।
-4. **Declarative Simplicity & Standardization (यूनिवर्सल स्टैंडर्ड)**: एक बार जब आप SQL के कोर कॉन्सेप्ट्स सीख लेते हैं, तो आप दुनिया के किसी भी रिलेशनल डेटाबेस (चाहे MySQL हो, PostgreSQL हो या Snowflake) पर बिना किसी बड़ी परेशानी के काम कर सकते हैं।
-5. **Robust Concurrency & Security (मल्टी-यूज़र स्केलेबिलिटी)**: Row-level locking की मदद से हज़ारों यूज़र्स एक साथ अलग-अलग rows पर लिख सकते हैं, बिना दूसरों के read ऑपरेशन्स को रोके। साथ ही रोल-बेस्ड एक्सेस कंट्रोल (RBAC) से डेटा पूरी तरह सुरक्षित रहता है।
+SQL ke commands ko primarily 5 core sub-languages me classify kiya gaya hai:
+1. **DDL (Data Definition Language)**: Database ke schema structure ko create, alter aur destroy karne ke liye (`CREATE`, `ALTER`, `DROP`, `TRUNCATE`, `RENAME`).
+2. **DQL (Data Query Language)**: Stored data ko search, filter aur read karne ke liye (`SELECT`).
+3. **DML (Data Manipulation Language)**: Tables ke andar actual records ko add, modify ya remove karne ke liye (`INSERT`, `UPDATE`, `DELETE`).
+4. **DCL (Data Control Language)**: Users ke privileges aur access permissions ko manage karne ke liye (`GRANT`, `REVOKE`).
+5. **TCL (Transaction Control Language)**: Transactions ki integrity aur state persistence ko control karne ke liye (`COMMIT`, `ROLLBACK`, `SAVEPOINT`).
 
 ---
 
-## 3. Syntax (सिंटैक्स)
+## 2. Why do we use it? (Hum Iska Use Kyun Karte Hain?)
+
+Relational databases aur SQL aaj poore world ke enterprise software systems ki backbone hain. Hum inka use in 5 main reasons ki wajah se karte hain:
+
+1. **ACID Guarantees (Transactional Integrity)**: Relational engines transactional integrity ki complete guarantee dete hain:
+   * **Atomicity**: All-or-nothing principle. Ya to poora transaction successful hoga ya phir kuch bhi commit nahi hoga (jaise bank account transfer me debit hua to credit hona compulsory hai, warna rollback ho jayega).
+   * **Consistency**: Database schema ke define kiye gaye sabhi constraints aur rules hamesha strictly follow hote hain.
+   * **Isolation**: Ek sath execute hone wale concurrent transactions ek doosre ke operations me interfere nahi karte.
+   * **Durability**: Ek baar transaction commit ho gaya, to system crash ya power loss hone ke bawajood bhi data disk par permanently safe rehta hai.
+2. **Elimination of Data Redundancy (Data Repetition se Bachav)**: Relational links (Foreign Keys) aur Normalization ke through customer details ya department names sirf ek bar ek central table me store hote hain, millions of order records me duplicate nahi hote. Isse disk space bachti hai aur data anomalies nahi aateen.
+3. **High-Performance Querying (Superfast Speed)**: RDBMS engines ke paas advanced data structures hote hain jaise B+ Tree aur Hash indexes, aur sath me sophisticated Cost-Based Optimizers hote hain jo millions of records ko fraction of a second (milliseconds) me scan karke results provide karte hain.
+4. **Declarative Simplicity & Standardization (Universal Standard)**: Ek baar aapne core SQL syntax aur relational concepts seekh liye, to aap kisi bhi major RDBMS (MySQL, PostgreSQL, Snowflake, SQL Server) par easily switch karke kaam kar sakte hain.
+5. **Robust Concurrency & Security (Multi-User Scalability)**: Row-level locking mechanism ke sath hazaron transactions ek sath alag-alag rows par write kar sakti hain, bina read queries ko block kiye. Sath me strict Role-Based Access Control (RBAC) security provide ki jaati hai.
+
+---
+
+## 3. Syntax
 
 ### Client Connection & Database Context Syntax
 ```sql
@@ -72,9 +72,9 @@ WHERE condition_is_true;
 
 ---
 
-## 4. Basic Example (बेसिक उदाहरण)
+## 4. Basic Example
 
-आइए देखें कि अपने MySQL एनवायरनमेंट को कैसे चेक करते हैं और टेबल्स की परिभाषा कैसे देखी जाती है:
+Aaiye dekhte hain ki active MySQL environment me databases aur table structure ko kaise verify kiya jata hai:
 
 ```sql
 -- Switch to the practice database
@@ -89,9 +89,9 @@ DESCRIBE departments;
 
 ---
 
-## 5. Real-World Example (रियल-वर्ल्ड उदाहरण)
+## 5. Real-World Example
 
-हमारे `sql_mastery` प्रोडक्शन डेटाबेस में, आइए सिस्टम आर्किटेक्चर को सत्यापित करें और `employees` टेबल का स्ट्रक्चरल मेटाडेटा जाँचें:
+Hamare production `sql_mastery` database me, aaiye system architecture ko verify karte hain aur `employees` table ka structural metadata check karke high-earning staff members ko query karte hain:
 
 ```sql
 -- Establish session context
@@ -108,22 +108,24 @@ WHERE salary > 100000.00;
 
 ---
 
-## 6. Step-by-Step Explanation (स्टेप-बाय-स्टेप व्याख्या)
+## 6. Step-by-Step Explanation
 
-1. `USE sql_mastery;`
-   * यह कमांड MySQL सर्वर डेमन को निर्देश देती है कि आने वाली सभी अनक्वालिफाइड टेबल क्वेरीज (जैसे `employees`) को `sql_mastery` स्कीमा के अंदर ही ढूंढा और प्रोसेस किया जाए। यह आपके एक्टिव सेशन का कॉन्टेक्स्ट सेट करती है।
-2. `DESC employees;`
-   * सर्वर MySQL की अंदरूनी डेटा डिक्शनरी (`information_schema.columns`) को क्वेरी करता है और टेबल के सभी कॉलम्स का कच्चा-चिट्ठा पेश करता है: कॉलम का नाम, फिजिकल स्टोरेज टाइप (`INT`, `VARCHAR`, `DECIMAL`), क्या कॉलम में `NULL` आ सकता है, कौन सी Key लगी है (`PRI` = Primary Key, `UNI` = Unique, `MUL` = Multiple/Indexed), डिफ़ॉल्ट वैल्यू क्या है, और `AUTO_INCREMENT` जैसे एक्स्ट्रा फीचर्स।
-3. `SELECT employee_id, first_name, last_name, salary, hire_date FROM employees WHERE salary > 100000.00;`
-   * **Parsing (पार्सिंग)**: MySQL का SQL Parser सिंटैक्स को वैलिडेट करता है और चेक करता है कि क्या आपके पास `employees` टेबल पर `SELECT` करने की परमिशन है।
-   * **Optimization (ऑप्टिमाइज़ेशन)**: Query Optimizer तय करता है कि पूरी टेबल स्कैन (Full Table Scan) करनी है या `salary` कॉलम पर बने इंडेक्स का इस्तेमाल करके डेटा तेज़ी से उठाना है।
-   * **Execution (एग्जीक्यूशन)**: स्टोरेज इंजन (`InnoDB`) ज़रूरी डेटा पेजों को डिस्क से मेमोरी (Buffer Pool) में लोड करता है, उन रिकॉर्ड्स को फ़िल्टर करता है जहाँ `salary > 100000.00` है, माँगे गए पाँच कॉलम्स को प्रोजेक्ट करता है, और रिजल्ट सेट आपके क्लाइंट को वापस भेज देता है।
+Aaiye upar diye gaye commands ke internal execution flow ko samajhte hain:
+
+1. `USE sql_mastery;`:
+   * Ye statement MySQL server daemon ko batata hai ki current session me aage aane wale sabhi unqualified table references (jaise `employees`) ko automatically `sql_mastery` schema ke under resolve kiya jaye.
+2. `DESC employees;`:
+   * MySQL server internal data dictionary (`information_schema.columns`) ko query karta hai aur table ke columns ka metadata return karta hai: column names, physical storage data types (`INT`, `VARCHAR`, `DECIMAL`), nullability flags (NULL allowed hai ya nahi), primary/foreign key designations (`PRI`, `UNI`, `MUL`), default values, aur extra flags jaise `AUTO_INCREMENT`.
+3. `SELECT employee_id, first_name, last_name, salary, hire_date FROM employees WHERE salary > 100000.00;`:
+   * **Parsing**: SQL parser query ke syntax ko validate karta hai aur check karta hai ki user ke paas `employees` table par `SELECT` privilege hai ya nahi.
+   * **Optimization**: Query Optimizer plan prepare karta hai aur decide karta hai ki kya `salary` column par koi index maujood hai jise use kiya jaye ya full table scan execute karna better hoga.
+   * **Execution Engine**: Storage engine (`InnoDB`) data pages ko disk se RAM ke Buffer Pool me read karta hai, `salary > 100000.00` condition wali rows ko filter karta hai, sirf specified 5 columns ko project karta hai, aur result set client ko stream kar deta hai.
 
 ---
 
-## 7. Expected Result (अपेक्षित परिणाम / Expected Output)
+## 7. Expected Result
 
-`DESC employees;` रन करने पर आउटपुट:
+`DESC employees;` command ka output:
 
 ```
 +---------------+---------------+------+-----+-------------------+-------------------+
@@ -143,7 +145,7 @@ WHERE salary > 100000.00;
 +---------------+---------------+------+-----+-------------------+-------------------+
 ```
 
-फ़िल्टर की गई `SELECT` क्वेरी का आउटपुट:
+Filtered `SELECT` query ka output:
 
 ```
 +-------------+------------+-----------+-----------+------------+
@@ -160,76 +162,78 @@ WHERE salary > 100000.00;
 
 ---
 
-## 8. Common Mistakes (सामान्य गलतियाँ और Pitfalls)
+## 8. Common Mistakes
 
-1. **Forgetting the Semicolon (`;` भूल जाना)**:
-   * *गलती*: टर्मिनल में `SELECT * FROM employees` टाइप करके Enter दबा देना। MySQL का प्रॉम्प्ट बदलकर `->` हो जाता है और ऐसा लगता है जैसे सिस्टम हैंग हो गया।
-   * *कारण*: MySQL CLI को जब तक स्टेटमेंट टर्मिनेटर यानी delimiter (डिफ़ॉल्ट रूप से `;` या `\g`) नहीं मिलता, तब तक वह समझता है कि आपकी क्वेरी अभी अधूरी है। बस `;` टाइप करके Enter दबा दीजिए, क्वेरी चल जाएगी।
-2. **Omitting the `USE` Command (`USE` कमांड छोड़ देना)**:
-   * *गलती*: एक नया टर्मिनल कनेक्शन खोला और सीधे `SELECT * FROM employees;` चला दिया।
-   * *एरर*: `ERROR 1046 (3D000): No database selected`.
-   * *समाधान*: क्वेरी चलाने से पहले हमेशा डेटाबेस कॉन्टेक्स्ट सेट करें: `USE sql_mastery;` या फिर टेबल का पूरा नाम लिखें: `SELECT * FROM sql_mastery.employees;`।
-3. **Confusing Database with Table (डेटाबेस और टेबल में अंतर न समझना)**:
-   * *गलती*: सीधे डेटाबेस के अंदर डेटा इंसर्ट करने की कोशिश करना। याद रखिए: डेटाबेस केवल एक कंटेनर (फ़ोल्डर) की तरह है; डेटा हमेशा उसके अंदर बनी टेबल्स में ही स्टोर होता है।
-4. **Treating SQL as Case-Sensitive for Keywords**:
-   * हालाँकि SQL के कीवर्ड्स (`SELECT`, `FROM`) case-insensitive होते हैं (यानी चाहे आप छोटे अक्षरों में लिखें या बड़े में, फर्क नहीं पड़ता), लेकिन Linux ऑपरेटिंग सिस्टम पर टेबल के नाम case-sensitive हो सकते हैं, जो आपके फ़ाइल सिस्टम और MySQL की `lower_case_table_names` सेटिंग पर निर्भर करता है।
-
----
-
-## 9. Best Practices (बेस्ट प्रैक्टिसेस)
-
-1. **Adopt a Consistent Uppercase Convention for SQL Keywords**:
-   * हमेशा एक साफ़-सुथरी कोडिंग स्टाइल अपनाएँ: SQL कीवर्ड्स (`SELECT`, `FROM`, `WHERE`, `JOIN`, `ORDER BY`) को हमेशा UPPERCASE में लिखें, और स्कीमा आइडेंटिफायर्स (टेबल्स और कॉलम्स के नाम) को हमेशा लोअरकेस में अंडरस्कोर के साथ (`snake_case`) लिखें। इससे कोड पढ़ना और समझना बहुत आसान हो जाता है।
-2. **Never Query Unfiltered Datasets in Production (`SELECT *` से बचें)**:
-   * प्रोडक्शन एनवायरनमेंट में कभी भी आँख बंद करके `SELECT *` न चलाएँ। हमेशा उन चुनिंदा कॉलम्स के नाम स्पष्ट रूप से लिखें जिनकी आपको सच में ज़रूरत है। `SELECT *` चलाने से डेटाबेस सर्वर पर गैर-ज़रूरी मेमोरी लोड पड़ता है, नेटवर्क बैंडविड्थ बर्बाद होती है, और भविष्य में स्कीमा बदलने पर आपके ऍप्लिकेशन्स टूट सकते हैं।
-3. **Keep SQL Scripts Idempotent (सुरक्षित और दोबारा चलाने योग्य स्क्रिप्ट्स)**:
-   * जब भी डेटाबेस सेटअप स्क्रिप्ट्स लिखें, हमेशा गार्ड स्टेटमेंट्स का उपयोग करें जैसे `CREATE DATABASE IF NOT EXISTS dbname;` या `DROP TABLE IF EXISTS tablename;` ताकि स्क्रिप्ट को दोबारा चलाने पर एरर न आए।
-4. **Maintain Commented Code (कोड में कमेंट्स ज़रूर लिखें)**:
-   * सिंगल-लाइन कमेंट के लिए डबल-डैश के साथ स्पेस `-- ` का उपयोग करें और मल्टी-लाइन कमेंट के लिए `/* ... */` सिंटैक्स का इस्तेमाल करें ताकि आपकी टीम को क्वेरी का लॉजिक तुरंत समझ आ सके।
+1. **Semicolon (`;`) Lagana Bhool Jana**:
+   * *Mistake*: Terminal me `SELECT * FROM employees` likhkar seedhe Enter press kar dena. MySQL prompt `->` par chala jata hai aur aisa lagta hai ki command freeze ho gaya hai.
+   * *Explanation*: MySQL CLI statement termination ke liye delimiter expect karta hai (by default `;` ya `\g`). Simply agle line par `;` type karke Enter press kar dijiye.
+2. **`USE` Command Ko Skip Kar Dena**:
+   * *Mistake*: Naya database connection open karke directly `SELECT * FROM employees;` execute karna.
+   * *Error*: `ERROR 1046 (3D000): No database selected`.
+   * *Correction*: Sabse pehle active database context set karein `USE sql_mastery;` ya fir fully qualified table name use karein: `SELECT * FROM sql_mastery.employees;`.
+3. **Database Aur Table Ke Concept Me Confuse Hona**:
+   * *Mistake*: Table ke bajaye directly database me data insert karne ki koshish karna. Database ek container hota hai, actual data hamesha tables ke andar rows aur columns me rehta hai.
+4. **SQL Keywords Ki Case Sensitivity Ko Galat Samajhna**:
+   * Halanki SQL keywords (`SELECT`, `FROM`) case-insensitive hote hain, lekin Linux operating systems par table names underlying filesystem aur MySQL setting `lower_case_table_names` ke according case-sensitive ho sakte hain.
 
 ---
 
-## 10. Practice Questions (अभ्यास प्रश्न)
+## 9. Best Practices
 
-### Easy (सरल)
-1. अपने MySQL सर्वर पर मौजूद सभी उपलब्ध डेटाबेस्स की लिस्ट देखने के लिए कमांड लिखें।
-2. एक्टिव डेटाबेस कॉन्टेक्स्ट को `sql_mastery` पर स्विच करने के लिए स्टेटमेंट लिखें।
-3. एक्टिव डेटाबेस के अंदर मौजूद सभी टेबल्स की लिस्ट देखने के लिए क्वेरी लिखें।
-
-### Medium (मध्यम)
-4. `customers` टेबल का सटीक कॉलम स्ट्रक्चर, डेटा टाइप्स और nullability रूल्स देखने के लिए कमांड लिखें।
-5. `orders` टेबल के स्ट्रक्चर का मुआयना करने के लिए क्वेरी लिखें और पहचानें कि कौन सा कॉलम Primary Key का काम कर रहा है।
-6. `customers` टेबल से सभी ग्राहकों के फर्स्ट नेम, लास्ट नेम और ईमेल देखने के लिए बिना किसी फ़िल्टर की क्वेरी लिखें।
-
-### Difficult (कठिन)
-7. एक ऐसी सिंगल SQL स्टेटमेंट लिखें जो `sql_mastery` स्कीमा के लिए MySQL की अंदरूनी `information_schema.tables` से टेबल के नाम और टेबल इंजन के प्रकार (engine types) निकालती हो।
-8. `DESCRIBE employees;` और `SHOW CREATE TABLE employees;` चलाने पर बैकएंड में क्या अंतर होता है, इसे तकनीकी रूप से समझाइए। अपने टर्मिनल में दोनों कमांड्स को चलाकर आउटपुट का विश्लेषण करें।
+1. **SQL Keywords Ke Liye Consistent Uppercase Convention Rakhein**:
+   * Sabhi standard SQL keywords (`SELECT`, `FROM`, `WHERE`, `JOIN`, `ORDER BY`) ko uppercase me likhein, aur table names wa column names ko lowercase with underscores (`snake_case`) me likhein. Isse query readability kafi improve ho jaati hai.
+2. **Production Me Kabhi Unfiltered Queries (`SELECT *`) Mat Chalayein**:
+   * Production application code me `SELECT *` avoid karein. Hamesha wahi explicit column names likhein jinki actual requirement hai. Isse unnecessary memory consumption, network transfer overhead aur schema change breaks se bacha ja sakta hai.
+3. **Idempotent SQL Scripts Likhein**:
+   * Deployment scripts ya migration files banate waqt guarded statements ka use karein, jaise `CREATE DATABASE IF NOT EXISTS dbname;` aur `DROP TABLE IF EXISTS tablename;`.
+4. **Code Comments Maintain Karein**:
+   * Single-line comments ke liye standard SQL double-dash `-- ` (space ke sath) aur multi-line explanations ke liye `/* ... */` syntax ka use karein.
 
 ---
 
-## 11. Interview Questions (इंटरव्यू प्रश्न और उत्तर)
+## 10. Practice Questions
 
-### Q1: DBMS और RDBMS में क्या अंतर होता है?
-**Answer**: DBMS (डेटाबेस मैनेजमेंट सिस्टम) कोई भी ऐसा सॉफ्टवेयर सिस्टम है जो फाइलों में डेटा स्टोर और रिट्रीव करता है (जिसमें hierarchical और NoSQL key-value स्टोर्स भी शामिल हैं)। वहीं RDBMS (रिलेशनल DBMS) रिलेशनल अल्जेब्रा पर आधारित एक एडवांस्ड सिस्टम है, जहाँ डेटा को rows और columns वाली टेबल्स में रखा जाता है, टेबल्स के बीच रिश्तों को Foreign Keys के ज़रिए लागू किया जाता है, और सभी ट्रांजेक्शन्स ACID प्रॉपर्टीज का पूरी तरह पालन करते हैं।
+### Easy
+1. Apne MySQL server par currently available sabhi databases ko display karne ke liye command likhiye.
+2. Active database session context ko switch karke `sql_mastery` par set karne ke liye statement likhiye.
+3. Active database ke andar maujood sabhi tables ko list karne ke liye query likhiye.
 
-### Q2: SQL की पाँच सब-लैंग्वेज कौन सी हैं, और `TRUNCATE` किस कैटेगरी में आता है?
+### Medium
+4. `customers` table ke complete column structure, data types aur nullability rules ko display karne ke liye command likhiye.
+5. `orders` table ke structure ko inspect karne aur uski Primary Key column ko identify karne ke liye query likhiye.
+6. `customers` table se sabhi customers ke first name, last name aur email ko bina kisi filter ke display karne ke liye query likhiye.
+
+### Difficult
+7. Ek single SQL statement likhiye jo MySQL ke internal `information_schema.tables` se `sql_mastery` schema ke sabhi table names aur unke storage engine types ko retrieve kare.
+8. `DESCRIBE employees;` aur `SHOW CREATE TABLE employees;` ke beech mechanical difference explain kijiye. Dono commands ko apne terminal me run karke inspect kijiye.
+
+---
+
+## 11. Interview Questions
+
+### Q1: DBMS aur RDBMS me core difference kya hota hai?
+**Answer**: DBMS (Database Management System) koi bhi software system ho sakta hai jo files ke form me data store aur retrieve karta hai (including flat files, hierarchical models, ya basic key-value stores). RDBMS (Relational DBMS) ek specialized system hota hai jo E.F. Codd ke relational algebra par based hota hai. Yahan data mathematically structured tables (rows aur columns) me organized rehta hai, tables ke beech foreign keys ke through relationship maintain hoti hai, aur transactions ACID properties ko follow karte hain.
+
+### Q2: SQL ke paanch sub-languages kaun se hain, aur `TRUNCATE` kis category me aata hai?
 **Answer**:
+SQL ke 5 core sub-languages hain:
 1. DDL (Data Definition Language)
 2. DML (Data Manipulation Language)
 3. DQL (Data Query Language)
 4. DCL (Data Control Language)
 5. TCL (Transaction Control Language)
-`TRUNCATE` असल में **DDL** कैटेगरी में आता है, क्योंकि यह टेबल के रिकॉर्ड्स को एक-एक करके डिलीट करने (DML) के बजाय सीधे स्टोरेज लेवल पर डेटा पेजों को deallocate (खाली) कर देता है और टेबल को रीसेट कर देता है।
 
-### Q3: Imperative प्रोग्रामिंग के मुकाबले SQL की Declarative प्रकृति (nature) को समझाइए।
-**Answer**: Python या C++ जैसी Imperative भाषाओं में डेवलपर को कंप्यूटर को हर एक कदम, लूप, मेमोरी एलोकेशन और डेटा ट्रैवर्सल खुद कोड करके बताना पड़ता है। इसके विपरीत, Declarative SQL में डेवलपर सिर्फ यह बताता है कि आउटपुट में क्या चाहिए (कौन से कॉलम्स, कौन सी कंडीशन्स, क्या ग्रुपिंग)। डेटाबेस इंजन का Parser, Catalog और Cost-Based Optimizer खुद तय करते हैं कि सबसे बेहतरीन Execution Plan क्या होगा (जैसे Index Seek चुनना, Hash Join लगाना, या Merge Sort करना)।
+`TRUNCATE` command **DDL** category me aata hai, kyunki ye table level par data pages ko directly deallocate karta hai bina individual row deletions ko log kiye. Ye DML ki tarah row-by-row deletion perform nahi karta.
+
+### Q3: Imperative programming ke comparison me SQL ka declarative nature explain kijiye.
+**Answer**: Python ya C++ jaisi imperative languages me developer ko step-by-step batana padta hai ki calculation kaise hogi, kaun sa loop chalega aur memory kaise manage hogi (HOW to execute). Jabki declarative SQL me developer sirf ye specify karta hai ki final output me kaun sa data chahiye (WHAT data is needed: columns, filters, groupings). Engine ka Parser, Catalog aur Cost-Based Optimizer internal execution plan khud create karte hain (index seek karna hai, hash join lagana hai ya merge sort karna hai).
 
 ---
 
-## 12. Quick Revision (त्वरित सारांश / क्विक रिविजन)
+## 12. Quick Revision
 
-* **डेटाबेस** टेबल्स का एक व्यवस्थित कंटेनर होता है; एक **टेबल** में रोज़ (records) और कॉलम्स (attributes) होते हैं।
-* **SQL** रिलेशनल डेटाबेस्स को मैनेज और क्वेरी करने के लिए ANSI-मानकीकृत Declarative लैंग्वेज है।
-* अनक्वालिफाइड टेबल्स को क्वेरी करने से पहले हमेशा `USE <database_name>;` चलाकर डेटाबेस कॉन्टेक्स्ट सेट करें।
-* एनवायरनमेंट और स्कीमा की जाँच के लिए `SHOW DATABASES;`, `SHOW TABLES;`, और `DESCRIBE <table_name>;` का उपयोग करें।
-* स्टैंडर्ड SQL कमांड्स 5 मुख्य श्रेणियों में विभाजित हैं: **DDL**, **DML**, **DQL**, **DCL**, और **TCL**।
+* Ek **database** tables ka container hota hai; ek **table** rows (records) aur columns (attributes) se banti hai.
+* **SQL** ek standardized declarative language hai jiska use relational databases ko manage aur query karne ke liye hota hai.
+* Unqualified table queries run karne se pehle hamesha `USE <database_name>;` ke through active database context set karein.
+* Database aur table inspection ke liye `SHOW DATABASES;`, `SHOW TABLES;`, aur `DESCRIBE <table_name>;` ka use karein.
+* Standard SQL commands 5 sub-languages me divided hain: **DDL**, **DML**, **DQL**, **DCL**, aur **TCL**.

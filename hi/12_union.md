@@ -1,25 +1,31 @@
-# Chapter 12 — Set Operations: UNION & UNION ALL (सेट ऑपरेशन्स: UNION और UNION ALL)
+# Chapter 12 — Set Operations: UNION & UNION ALL (Set Operations: UNION aur UNION ALL)
 
 ---
 
-## 1. What is it? (यह क्या है?)
+## 1. What is it? (Ye Kya Hai?)
 
-Relational algebra mein set operators do ya do se zyada independent `SELECT` queries ke results ko combine karke ek single unified result set banate hain. Jahan ek taraf `JOIN` tables ko **horizontally** jodta hai (ek table ke columns ke aage dusri table ke columns jodna), wahi dusri taraf **Set Operation** queries ko **vertically** jodta hai (ek query ki rows ke niche dusri query ki rows ko stack karna).
+Relational algebra mein, set operators do ya do se zyada independent `SELECT` queries ke results ko ek single unified result set mein combine karte hain. Jahan ek taraf `JOIN` tables ko **horizontally** combine karta hai (ek table ke columns ke aage doosri table ke columns jodkar), wahin **Set Operation** queries ko **vertically** combine karta hai (ek query ki rows ke upar doosri query ki rows ko stack karke).
 
-SQL mein do sabse mukhya set combination operators hote hain:
-1. **`UNION`**: Do ya zyada queries ke output ko aapas mein combine karta hai aur automatically unme se **duplicates hata deta hai (deduplication)**. Agar dono queries mein identical rows aati hain, toh result mein woh sirf ek hi baar aayegi.
-2. **`UNION ALL`**: Do ya zyada queries ke output ko bina deduplication ke seedhe combine karta hai. Sabhi rows preserve rehti hain, chahe duplicate hi kyun na hon.
+SQL do main set combination operators provide karta hai:
+1. **`UNION`**: Do ya do se zyada queries ke output ko combine karta hai, aur automatically ek implicit deduplication phase perform karta hai. Multiple queries mein aane wali identical rows ko condense karke ek single unique row bana deta hai.
+2. **`UNION ALL`**: Do ya do se zyada queries ke output ko **bina** kisi deduplication ke combine karta hai. Sabhi queries ki matching rows as it is preserve rehti hain, duplicate rows samet.
 
-Kyunki `UNION` ko duplicate rows dhoondhne aur hatane ke liye memory ke andar poore dataset ko sort karna padta hai ya temporary hash table banani padti hai, isme kaafi computational overhead aur time lagta hai. Iske viprit, `UNION ALL` bina kisi checking ke rows ko stream kar deta hai, isliye yeh exponentially faster hota hai!
+Kyunki `UNION` ko duplicate rows identify aur eliminate karne ke liye combined dataset ko memory mein sort karna padta hai ya temporary hash table banani padti hai, isliye isme significant computational overhead lagta hai. Iske opposite, `UNION ALL` simply har query ki rows ko sequentially stream kar deta hai, jisse ye kaafi zyada fast hota hai.
 
 ---
 
-## 2. Strict Schema Compatibility Rules (स्कीमा कम्पैटिबिलिटी के सख्त नियम)
+## 2. Why do we use it? (Hum Iska Use Kyun Karte Hain?)
 
-Queries ko `UNION` ya `UNION ALL` se jodne ke liye unhe teen relational compatibility rules follow karne padte hain:
-1. **Identical Column Count (कॉलम की संख्या बराबर हो)**: Compound query ke har ek `SELECT` statement mein projected columns ki sankhya bilkul barabar honi chahiye.
-2. **Compatible Data Types (डेटा टाइप्स कम्पैटिबल हों)**: Corresponding columns (Query 1 ka pehla column aur Query 2 ka pehla column, doosra aur doosra) ke data types compatible ya implicitly convertible hone chahiye. Jaise `VARCHAR` column ko seedhe `DATE` column ke sath match nahi kiya ja sakta jab tak explicit `CAST` na kiya jaye.
-3. **Column Naming Precedence (कॉलम नामों का निर्धारण)**: Final output ke column names, data types aur aliases chain ki **pehli** `SELECT` query se tay hote hain.
+1. **Aggregating Disparate Tables**: Alag-alag tables se similar business entities ko ek unified feed ya report mein merge karna—jaise internal employees aur external contractors ko ek single contact directory mein combine karna.
+2. **Combining Partitioned Datasets**: Historic/archival tables aur active transactional tables ko single report ke liye bina schema change ke quickly combine karna.
+3. **High-Speed Non-Overlapping Merges**: Jab hume pata hota hai ki dono datasets disjoint hain (unme koi duplicate row nahi ho sakti), toh `UNION ALL` use karke bina sorting overhead ke superfast vertical combination achieve karna.
+
+### Strict Schema Compatibility Rules (Schema Compatibility Ke Niyam)
+
+`UNION` ya `UNION ALL` use karne ke liye participating queries ko 3 strict relational rules satisfy karne padte hain:
+1. **Identical Column Count**: Compound query ke har `SELECT` statement mein exact same number of columns project hone chahiye.
+2. **Compatible Data Types**: Har query ke corresponding position wale columns (Column 1 to Column 1, Column 2 to Column 2) compatible ya implicitly convertible data types ke hone chahiye. For example, `VARCHAR` column ko bina explicit cast ke `DATE` column ke sath match nahi kiya ja sakta.
+3. **Column Naming Precedence**: Final output ke column names, data types, aur aliases chain ki **pehli** `SELECT` query se decide hote hain.
 
 ```mermaid
 flowchart TD
@@ -39,7 +45,7 @@ flowchart TD
 
 ---
 
-## 3. Syntax (सिंटैक्स)
+## 3. Syntax
 
 ```sql
 -- Standard UNION (Implicit Deduplication)
@@ -72,9 +78,9 @@ LIMIT 20;
 
 ---
 
-## 4. Basic Example (बुनियादी उदाहरण)
+## 4. Basic Example
 
-Geographic locations par `UNION` aur `UNION ALL` ka farq:
+Geographic locations ke across `UNION` vs `UNION ALL` ka example:
 
 ```sql
 USE sql_mastery;
@@ -104,13 +110,13 @@ SELECT city, country FROM suppliers WHERE country = 'USA';
 
 ---
 
-## 5. Real-World Example (वास्तविक दुनिया का उदाहरण)
+## 5. Real-World Example
 
-Enterprise security aur audit office ko ek aggregated **Corporate Directory & Activity Feed** chahiye jo teen alag-alag sources ko merge kare:
-1. Internal employees (`employees` table) jinka contact details, department, aur `'Internal Staff'` role ho.
-2. External supplier contacts (`suppliers` table) jinka contact details, company name, aur `'External Vendor'` role ho.
-3. Customer contacts (`customers` table) jinka city, country, aur `'Registered Customer'` role ho.
-4. Final unified directory ko contact name ke alphabetical order mein sort karna hai.
+Enterprise security aur audit office ko ek aggregated **Corporate Directory & Activity Feed** chahiye jo merge kare:
+1. Internal employees (`employees` table) unke contact details, department, aur `'Staff'` role ke sath.
+2. External supplier contacts (`suppliers` table) contact details, company name, aur `'Vendor'` role ke sath.
+3. Customer contacts (`customers` table) city, country, aur `'Customer'` role ke sath.
+4. Final unified directory ko contact name ke according alphabetically sort karna hai.
 
 ```sql
 USE sql_mastery;
@@ -150,25 +156,25 @@ ORDER BY full_name ASC;
 
 ---
 
-## 6. Step-by-Step Explanation (कदम-दर-कदम व्याख्या)
+## 6. Step-by-Step Explanation
 
 1. **First Query (`employees`)**:
-   * Employee ka full name, email, phone nikalta hai aur `departments` ko join karke unka department assign karta hai.
-   * Final result set ke schema ka blueprint tay karta hai: `full_name`, `contact_email`, `contact_phone`, `entity_type`, `affiliation`.
+   * Full name, email, phone extract karta hai, aur `departments` ko join karke internal personnel label karta hai.
+   * Final output column schema define karta hai: `full_name`, `contact_email`, `contact_phone`, `entity_type`, `affiliation`.
 2. **Second Query (`suppliers`)**:
-   * Supplier contacts ke data ko theek usi 5-column structure ke hisab se map karta hai. `supplier_name` ko `affiliation` column ki position par rakha gaya hai.
+   * Supplier contact metadata ko exact usi 5-column positional structure par map karta hai. `supplier_name` ko `affiliation` column populate karne ke liye position kiya gaya hai.
 3. **Third Query (`customers`)**:
-   * Customers ke contact details ko bhi usi 5-column layout mein match karwaya gaya hai.
+   * Customer personal details ko exact same 5-column layout par map karta hai.
 4. **`UNION ALL` Processing**:
-   * Database engine bina kisi deduplication sort ke seedhe teeno queries ki rows ko memory buffer mein ek ke niche ek append karta hai.
+   * Database engine in-memory deduplication sorting skip kar deta hai aur sabhi source tables ke tuples ko directly ek intermediate result set mein stream kar deta hai.
 5. **Global `ORDER BY full_name ASC`**:
-   * Teeno alag-alag tables se aayi hui merged rows ko ek sath alphabetically `full_name` ke hisab se sort kar diya jata hai.
+   * Teeno source tables ke combined result set ko `full_name` ke basis par alphabetically sort kiya jata hai.
 
 ---
 
-## 7. Expected Result (अपेक्षित परिणाम)
+## 7. Expected Result
 
-Unified Corporate Directory ka partial output:
+Unified Corporate Directory query ka partial output:
 
 ```
 +-------------------+----------------------------+---------------+---------------------+------------------------+
@@ -188,9 +194,9 @@ Unified Corporate Directory ka partial output:
 
 ---
 
-## 8. Common Mistakes (आम गलतियाँ)
+## 8. Common Mistakes
 
-1. **Column Count Mismatch (कॉलम की संख्या में अंतर)**:
+1. **Column Count Mismatch**:
    * *Mistake*:
      ```sql
      SELECT employee_id, first_name, email FROM employees
@@ -199,82 +205,82 @@ Unified Corporate Directory ka partial output:
      ```
    * *Error*:
      `ERROR 1222 (21000): The used SELECT statements have a different number of columns.`
-   * *Rule*: Subhi participating queries mein select kiye gaye columns ki sankhya exact same honi chahiye.
-2. **Defaulting to `UNION` Instead of `UNION ALL` (बिना ज़रूरत `UNION` का इस्तेमाल)**:
-   * *Mistake*: Jab aapko pehle se pata hai ki dono datasets mein duplicate ho hi nahi sakte (jaise `customers` aur `suppliers`), tab bhi aadat ke mutabik `UNION` likhna.
-   * *Consequence*: Engine bewajah temporary table banata hai aur in-memory sort karta hai aise duplicates dhoondhne ke liye jo kabhi exist hi nahi karte! Isse query slow ho jati hai.
-3. **Placing `ORDER BY` Inside Individual Queries Without Parentheses (`ORDER BY` में ब्रैकेट न लगाना)**:
-   * Aise likhna:
+   * *Rule*: Participating sabhi queries mein exact same number of columns project hone chahiye.
+2. **Defaulting to `UNION` Instead of `UNION ALL`**:
+   * *Mistake*: Aise case mein `UNION` likhna jahan aap pehle se jaante hain ki dono datasets overlap ho hi nahi sakte (jaise `customers` aur `suppliers` ko combine karna).
+   * *Consequence*: Engine unnecessary duplicate rows check karne ke liye ek expensive temporary table banata hai aur in-memory sort karta hai, jisse query execution kaafi slow ho jata hai.
+3. **Placing `ORDER BY` Inside Individual Queries Without Parentheses**:
+   * Is tarah likhna:
      ```sql
      SELECT name FROM tableA ORDER BY name
      UNION
      SELECT name FROM tableB;
      ```
-     Syntax error create karta hai. Agar aapko combine karne se pehle individual branch ko sort ya limit karna hai, toh har ek query ko alag parentheses mein wrap karna mandatory hai:
+     Syntax error throw karta hai. Agar merge se pehle local ordering ya limits apply karni hain, toh har individual query ko parentheses mein enclose karna zaroori hai:
      ```sql
      (SELECT name FROM tableA ORDER BY name LIMIT 5)
      UNION ALL
      (SELECT name FROM tableB ORDER BY name LIMIT 5);
      ```
-4. **Expecting Column Names from Later Queries to Matter (दूसरे क्वेरी के एलियास की उम्मीद रखना)**:
-   * Agar Query 1 mein column ka naam `account_id` hai aur Query 2 mein wahi column `customer_number` ke naam se aliased hai, toh final output mein column ka naam `account_id` hi hoga. Hamesha pehli `SELECT` query ke column aliases par dhyan dein.
+4. **Expecting Column Names from Later Queries to Matter**:
+   * Agar Query 1 column ka alias `account_id` rakhti hai aur Query 2 usi position ke column ka alias `customer_number` rakhti hai, toh output column ka naam `account_id` hi rahega. Hamesha pehle `SELECT` statement ke column aliases verify karo.
 
 ---
 
-## 9. Best Practices (सर्वोत्तम प्रथाएं / Best Practices)
+## 9. Best Practices
 
-1. **Default to `UNION ALL` Unless Deduplication Is Explicitly Required (डिफ़ॉल्ट रूप से `UNION ALL` इस्तेमाल करें)**:
-   * Production queries mein hamesha pehle `UNION ALL` choose karein. `UNION` ka use sirf tabhi karein jab business logic duplicate rows ko hatane ki explicit requirement maange.
-2. **Always Align Column Data Types Positively (डेटा टाइप्स को स्पष्ट रूप से मैच करें)**:
-   * Implicit conversion par bharosa karne se bachein (jaise integer ko string ke sath match karna). Hamesha explicit `CAST()` ka use karein taaki conversion safe aur clear ho:
+1. **Default to `UNION ALL` Unless Deduplication Is Explicitly Required**:
+   * By default hamesha `UNION ALL` use karo. `UNION` tabhi use karo jab duplicate rows aane ki possibility ho aur business requirement unhe remove karna mandate karti ho.
+2. **Always Align Column Data Types Positively**:
+   * Implicit type coercion par rely mat karo (jaise integer column ko string column ke sath merge karna). Types ko harmonize karne ke liye explicit `CAST()` functions use karo:
      ```sql
      SELECT CAST(employee_id AS CHAR(20)) FROM employees
      UNION ALL
      SELECT reference_code FROM external_partners;
      ```
-3. **Use Static Literal Tags to Identify Row Provenance (डेटा का स्रोत पहचानने के लिए टैग लगाएं)**:
-   * Jab alag-alag tables ka data merge karein, toh query mein constant string literal (jaise `'Order'`, `'Refund'`, `'Adjustment'`) zaroor add karein taaki application code ko pata chal sake ki kaun si row kahan se aayi hai.
+3. **Use Static Literal Tags to Identify Row Provenance**:
+   * Jab alag-alag tables ko combine karein, toh ek constant string literal (jaise `'Order'`, `'Refund'`, `'Adjustment'`) zaroor include karein taaki client code har row ka origin asaani se identify kar sake.
 
 ---
 
-## 10. Practice Questions (अभ्यास प्रश्न)
+## 10. Practice Questions
 
-### Easy (सरल)
-1. `customers` table ke `city` column aur `departments` table ke `location` column ko `UNION` se jodein aur single list display karein.
-2. `employees` aur `customers` dono tables ke sabhi email addresses ko `UNION ALL` ka use karke ek sath list karein.
-3. Question 1 aur Question 2 ke answers ke row counts ke farq ko samjhayein.
+### Easy
+1. `customers` table ke `city` column aur `departments` table ke `location` column ko `UNION` use karke single list mein combine karne ke liye query likho.
+2. `employees` aur `customers` dono tables ke sabhi email addresses ko list karne ke liye `UNION ALL` query likho.
+3. Question 1 aur Question 2 ke answers mein row count ka jo farak aayega use explain karo.
 
-### Medium (मध्यम)
-4. Aise sabhi products jinka `unit_price > 500` hai aur aise products jinka `stock_quantity < 20` hai, unhe `UNION` se combine karein taaki dono conditions meet karne wale products sirf ek hi baar list hon.
-5. Ek unified financial movements ledger banane ki query likhein:
-   * `orders` jinka status `'Delivered'` ho unka positive order value (tag: `'REVENUE'`).
-   * `orders` jinka `shipping_fee > 0` ho unka shipping cost (tag: `'EXPENSE'`).
-   * Final result ko date descending order mein sort karein.
-6. Active customers aur inactive customers ke names ko combine karein aur har row par unka respective status label project karein.
+### Medium
+4. Ek aisi query likho jo `unit_price > 500` wale sabhi products aur `stock_quantity < 20` wale sabhi products ko combine kare, jisme `UNION` ka use ho taaki dono criteria satisfy karne wale products sirf ek hi baar list hon.
+5. Financial movements ka unified ledger generate karne ke liye query likho:
+   * `orders` table se positive order values jahan `status = 'Delivered'` ho (tagged as `'REVENUE'`)
+   * `orders` table se shipping costs jahan `shipping_fee > 0` ho (tagged as `'EXPENSE'`)
+   * Unified ledger ko date descending ke according order karo.
+6. Active customers aur inactive customers ke names ko do alag partitions mein combine karne ki query likho, jahan har row unke respective status ke sath labeled ho.
 
-### Difficult (कठिन)
-7. `departments` aur `employees` ke beech `LEFT JOIN`, `RIGHT JOIN`, aur `UNION` ka upyog karke `FULL OUTER JOIN` emulate karein. Verify karein ki bina employee wale departments aur bina department wale employees dono result mein maujood hon.
-8. `UNION ALL` ka use karke top 2 highest-paid employees aur top 2 lowest-paid employees ko merge karein, aur final output ko overall salary descending order mein sort karein. (Hint: Branch queries ke liye individual parentheses aur `LIMIT` ka use karein).
+### Difficult
+7. `departments` aur `employees` ke beech `LEFT JOIN`, `RIGHT JOIN`, aur `UNION` use karke `FULL OUTER JOIN` emulate karne wali query likho. Verify karo ki bina employees wale departments aur bina department wale employees dono result mein shamil hon.
+8. Aisi query construct karo jo top 2 highest-paid employees aur top 2 lowest-paid employees ko `UNION ALL` ke zariye merge kare, aur overall result salary descending ke hisab se sorted ho. (Hint: Parenthesized subqueries ke sath individual `LIMIT` clauses use karo).
 
 ---
 
-## 11. Interview Questions (साक्षात्कार प्रश्न)
+## 11. Interview Questions
 
 ### Q1: What is the mechanical difference between `UNION` and `UNION ALL` in terms of execution mechanics and performance?
 **Answer**:
-* `UNION` do queries ke results ko concatenate karta hai aur phir unpar ek **implicit deduplication** step chalata hai. Iske liye database engine ko poori combined rows ko ek temporary table (memory ya disk) mein dalna padta hai, sabhi columns par sort operation chalana padta hai ya hash set construct karna padta hai, aur duplicate rows ko discard karna padta hai. Yeh kaafi CPU, memory aur disk I/O consume karta hai.
-* `UNION ALL` ek pure vertical stacking perform karta hai. Engine Query 1 se aane wali rows ko seedhe client ya agle operator ko stream kar deta hai, aur uske turant baad Query 2 ki rows bhej deta hai—bina kisi sorting, hashing ya comparison ke. Isliye `UNION ALL` orders of magnitude faster hota hai aur jab rows already distinct hon ya duplicates allow karne hon, toh hamesha `UNION ALL` hi use karna chahiye.
+* `UNION` do queries ke result sets ko concatenate karta hai aur phir ek **implicit deduplication** step perform karta hai. Aisa karne ke liye, database engine ko combined rows ko memory ya on-disk temporary table mein dump karna padta hai, sabhi projected columns par records ko sort karna padta hai (ya hash set build karna padta hai), aur duplicate rows ko eliminate karna padta hai. Isme heavy CPU, memory, aur disk I/O lagti hai.
+* `UNION ALL` pure vertical concatenation perform karta hai. Engine Query 1 se aane wali rows ko directly client ya parent pipeline ko stream karta hai, jiske turant baad Query 2 ki rows stream hoti hain. Isme zero sorting, hashing, ya row comparisons hote hain. Is wajah se `UNION ALL` bohot zyada fast hota hai aur jab records distinct hote hain ya duplicates acceptable hote hain toh hamesha isi ko prefer karna chahiye.
 
 ### Q2: What are the three relational rules that two queries must satisfy to be combined using a Set Operator?
 **Answer**:
-1. **Identical Column Count (डिग्री)**: Dono `SELECT` statements mein exact barabar sankhya mein columns project hone chahiye.
-2. **Type Compatibility (कम्पैटिबल डेटा टाइप्स)**: Dono queries ke corresponding position wale columns ke data types same ya engine dwara easily convertible hone chahiye (jaise INT aur FLOAT aapas mein convert ho sakte hain, lekin DATE aur binary BLOB nahi).
-3. **Naming Authority (कॉलम नामों का अधिकार)**: Final output result set ke column names, aliases aur collations hamesha chain ki *pehli* `SELECT` query se decide hote hain.
+1. **Identical Degree (Column Count)**: Dono `SELECT` queries mein exact same number of columns project hone chahiye.
+2. **Type Compatibility**: Corresponding positions wale columns ke data types identical ya database engine dwara implicitly convertible hone chahiye (jaise integer aur float chal jayenge, lekin date aur binary blob nahi).
+3. **Order of Evaluation**: Final output result set ke column names, aliases, aur character collations union chain ke *pehli* `SELECT` statement se decide hote hain.
 
 ### Q3: How can you apply an `ORDER BY` to an entire compound query versus applying an `ORDER BY` to an individual branch of a `UNION`?
 **Answer**:
-* **Poore compound result set par `ORDER BY`**: Query chain ke bilkul aakhiri mein bina parentheses ke single `ORDER BY` lagaya jata hai. Yeh overall combined data par sort execute karta hai.
-* **Individual branches par `ORDER BY` (aur `LIMIT`)**: Har ek branch query ko apne alag parentheses ke andar wrap karna zaroori hota hai:
+* Poore **compound result set** par `ORDER BY` lagane ke liye, aakhiri query ke bilkul end mein bina parentheses ke single `ORDER BY` clause likha jata hai. Ye poore combined output par evaluate hota hai.
+* **Individual branches** par `ORDER BY` (aur usually sath mein `LIMIT`) lagane ke liye, har branch query ko uske apne parentheses mein wrap karna padta hai:
   ```sql
   (SELECT * FROM table1 ORDER BY score DESC LIMIT 5)
   UNION ALL
@@ -284,10 +290,10 @@ Unified Corporate Directory ka partial output:
 
 ---
 
-## 12. Quick Revision (त्वरित सारांश)
+## 12. Quick Revision
 
-* **`UNION`** queries ko vertically jodta hai aur duplicate rows ko discard karta hai (sorting ka overhead rehta hai).
-* **`UNION ALL`** queries ko vertically jodta hai bina duplicates check kiye (maximum fast performance).
-* Sabhi combine ki gayi queries mein **columns ki sankhya aur data types compatible** hone chahiye.
-* Output ke column names aur aliases hamesha **pehli query** se tay hote hain.
-* Agar individual branch mein `LIMIT` ya `ORDER BY` lagana ho, toh query ko parentheses `(...)` mein wrap karein.
+* **`UNION`** query results ko vertically stack karta hai aur duplicate rows eliminate karta hai (sorting overhead lagta hai).
+* **`UNION ALL`** query results ko vertically stack karta hai bina duplicates hataye (maximum performance).
+* Sabhi combined queries mein **same number of columns** aur compatible data types hone chahiye.
+* Final result set ke column names aur aliases **pehli query** decide karti hai.
+* Branch-level `LIMIT` ya `ORDER BY` use karte waqt individual queries ko parentheses mein wrap karein.

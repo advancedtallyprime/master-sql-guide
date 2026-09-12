@@ -1,456 +1,456 @@
-# अध्याय 30 — मास्टर MySQL प्रोडक्शन चीट शीट (Master MySQL Production Cheat Sheet)
+# Chapter 30 — The Master MySQL Production Cheat Sheet
 
-डेवलपर्स, डेटा इंजीनियर्स और डेटाबेस एडमिनिस्ट्रेटर्स के लिए एक कॉम्पैक्ट, कॉम्प्रिहेंसिव सिंटैक्स संदर्भ।
+Developers, data engineers, aur database administrators ke liye ek compact, comprehensive syntax reference.
 
 ---
 
-### डेटाबेस कमांड्स (DATABASE COMMANDS)
-* **`CREATE DATABASE`**: UTF-8 कैरेक्टर एन्कोडिंग के साथ एक नया डेटाबेस कैटलॉग बनाता है।
+### DATABASE COMMANDS
+* **`CREATE DATABASE`**: UTF-8 character encoding ke saath ek naya database catalog create karta hai.
   ```sql
   CREATE DATABASE IF NOT EXISTS app_db CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
   ```
-* **`DROP DATABASE`**: किसी डेटाबेस और उसके सभी टेबल्स को स्थायी रूप से नष्ट करता है।
+* **`DROP DATABASE`**: Ek database aur uski saari tables ko permanently destroy kar deta hai.
   ```sql
   DROP DATABASE IF EXISTS app_db;
   ```
-* **`USE`**: बाद की सभी क्वेरीज के लिए सक्रिय डेटाबेस संदर्भ (context) का चयन करता है।
+* **`USE`**: Subsequent queries run karne ke liye active database context select karta hai.
   ```sql
   USE sql_mastery;
   ```
-* **`SHOW DATABASES`**: MySQL इंस्टेंस पर मौजूद सभी डेटाबेस को सूचीबद्ध करता है।
+* **`SHOW DATABASES`**: MySQL instance par present saare databases ki list show karta hai.
   ```sql
   SHOW DATABASES;
   ```
 
 ---
 
-### टेबल कमांड्स (TABLE COMMANDS)
-* **`CREATE TABLE`**: कॉलम्स और कंस्ट्रेंट्स के साथ एक नया टेबल स्कीमा बनाता है।
+### TABLE COMMANDS
+* **`CREATE TABLE`**: Columns aur constraints ke saath ek nayi table schema create karta hai.
   ```sql
   CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(50) NOT NULL);
   ```
-* **`DROP TABLE`**: किसी टेबल और उसके डेटा पेजेज को स्थायी रूप से हटा देता है।
+* **`DROP TABLE`**: Ek table aur uske data pages ko permanently delete kar deta hai.
   ```sql
   DROP TABLE IF EXISTS users;
   ```
-* **`TRUNCATE TABLE`**: सभी टेबल डेटा पेजेज को डीएलोकेट करता है और ऑटो-इन्क्रीमेंट काउंटरों को रीसेट करता है।
+* **`TRUNCATE TABLE`**: Table ke saare data pages ko deallocate karta hai aur auto-increment counter reset kar deta hai.
   ```sql
   TRUNCATE TABLE users;
   ```
-* **`DESCRIBE` / `DESC`**: कॉलम प्रकार, नलेबिलिटी, कीज़ और डिफ़ॉल्ट मान प्रदर्शित करता है।
+* **`DESCRIBE` / `DESC`**: Column types, nullability, keys, aur default values display karta hai.
   ```sql
   DESCRIBE employees;
   ```
-* **`SHOW CREATE TABLE`**: टेबल बनाने के लिए उपयोग किए गए सटीक SQL DDL स्टेटमेंट को प्रदर्शित करता है।
+* **`SHOW CREATE TABLE`**: Table create karne ke liye use hui exact SQL DDL statement display karta hai.
   ```sql
   SHOW CREATE TABLE employees;
   ```
 
 ---
 
-### CRUD ऑपरेशन्स (CRUD OPERATIONS)
-* **`INSERT INTO`**: किसी टेबल में एक या अधिक पंक्तियाँ सम्मिलित करता है।
+### CRUD OPERATIONS
+* **`INSERT INTO`**: Table mein ek ya multiple rows insert karta hai.
   ```sql
   INSERT INTO departments (department_name, location) VALUES ('DevOps', 'London');
   ```
-* **`INSERT ... ON DUPLICATE KEY UPDATE`**: एक पंक्ति को अपसर्ट (upsert) करता है, यदि कोई की टकराव होता है तो मान अपडेट करता है।
+* **`INSERT ... ON DUPLICATE KEY UPDATE`**: Row ko upsert karta hai; agar key conflict ho toh existing values update karta hai.
   ```sql
   INSERT INTO products (product_id, stock_quantity) VALUES (1, 5) ON DUPLICATE KEY UPDATE stock_quantity = stock_quantity + 5;
   ```
-* **`SELECT`**: एक या अधिक टेबल्स से पंक्तियाँ और कॉलम्स प्राप्त करता है।
+* **`SELECT`**: Ek ya multiple tables se rows aur columns retrieve karta hai.
   ```sql
   SELECT employee_id, first_name, salary FROM employees;
   ```
-* **`UPDATE`**: फ़िल्टर स्थिति के आधार पर मौजूदा टेबल पंक्तियों को संशोधित करता है।
+* **`UPDATE`**: Filter condition ke basis par existing table rows ko modify karta hai.
   ```sql
   UPDATE employees SET salary = salary * 1.05 WHERE department_id = 1;
   ```
-* **`DELETE FROM`**: ट्रिगर्स को फायर करते हुए किसी शर्त से मेल खाने वाली पंक्तियों को हटाता है।
+* **`DELETE FROM`**: Condition match karne wali rows ko remove karta hai aur triggers fire karta hai.
   ```sql
   DELETE FROM orders WHERE status = 'Cancelled' AND order_date < '2023-01-01';
   ```
 
 ---
 
-### फिल्टरिंग और लॉजिकल ऑपरेटर्स (FILTERING & LOGICAL OPERATORS)
-* **`WHERE`**: ग्रुपिंग या एग्रीगेशन से पहले पंक्तियों को फ़िल्टर करता है।
+### FILTERING & LOGICAL OPERATORS
+* **`WHERE`**: Grouping ya aggregation se pehle raw rows ko filter karta hai.
   ```sql
   SELECT * FROM products WHERE unit_price > 100.00;
   ```
-* **`AND`**: केवल तभी सत्य लौटाता है जब दोनों स्थितियाँ सत्य हों।
+* **`AND`**: Sirf tabhi true return karta hai jab dono conditions true hon.
   ```sql
   SELECT * FROM employees WHERE department_id = 1 AND salary > 100000;
   ```
-* **`OR`**: यदि कोई भी स्थिति सत्य है तो सत्य लौटाता है।
+* **`OR`**: Agar koi bhi ek condition true ho toh true return karta hai.
   ```sql
   SELECT * FROM customers WHERE country = 'USA' OR country = 'Germany';
   ```
-* **`NOT`**: किसी स्थिति के सत्य मान को उलट देता है।
+* **`NOT`**: Kisi condition ki truth value ko invert/reverse karta hai.
   ```sql
   SELECT * FROM products WHERE NOT (stock_quantity = 0);
   ```
-* **`LIKE`**: वाइल्डकार्ड (`%` 0+ कैरेक्टर्स के लिए, `_` 1 कैरेक्टर के लिए) का उपयोग करके पैटर्न मिलान करता है।
+* **`LIKE`**: Wildcards (`%` zero ya zyada chars ke liye, `_` ek single char ke liye) ka use karke pattern match karta hai.
   ```sql
   SELECT * FROM customers WHERE email LIKE '%@gmail.com';
   ```
-* **`IN`**: जाँचता है कि कोई मान किसी प्रगणित सूची या सबक्वेरी में किसी भी आइटम से मेल खाता है या नहीं।
+* **`IN`**: Check karta hai ki koi value di gayi list ya subquery mein exist karti hai ya nahi.
   ```sql
   SELECT * FROM customers WHERE country IN ('USA', 'Germany', 'Japan');
   ```
-* **`BETWEEN`**: एक समावेशी निरंतर सीमा (inclusive range) के भीतर मानों को फ़िल्टर करता है।
+* **`BETWEEN`**: Inclusive continuous range ke andar values ko filter karta hai.
   ```sql
   SELECT * FROM orders WHERE order_date BETWEEN '2023-08-01' AND '2023-08-31';
   ```
-* **`IS NULL` / `IS NOT NULL`**: परीक्षण करता है कि कोई कॉलम मान गायब (missing) है या नहीं।
+* **`IS NULL` / `IS NOT NULL`**: Test karta hai ki column value missing hai ya present hai.
   ```sql
   SELECT * FROM customers WHERE phone IS NULL;
   ```
-* **`<=>` (NULL-Safe Equality)**: दो मानों की तुलना करता है और यदि दोनों NULL हैं तो true लौटाता है।
+* **`<=>` (NULL-Safe Equality)**: Do values ko compare karta hai aur true return karta hai agar dono NULL hon.
   ```sql
   SELECT * FROM employees WHERE manager_id <=> NULL;
   ```
 
 ---
 
-### सॉर्टिंग और पेजिनेशन (SORTING & PAGINATION)
-* **`ORDER BY`**: परिणामों को आरोही (`ASC`) या अवरोही (`DESC`) क्रम में सॉर्ट करता है।
+### SORTING & PAGINATION
+* **`ORDER BY`**: Results ko ascending (`ASC`) ya descending (`DESC`) order mein sort karta hai.
   ```sql
   SELECT * FROM employees ORDER BY salary DESC, last_name ASC;
   ```
-* **`LIMIT`**: लौटाई गई पंक्तियों की अधिकतम संख्या को सीमित करता है।
+* **`LIMIT`**: Return hone wali rows ki maximum sankhya restrict karta hai.
   ```sql
   SELECT * FROM products ORDER BY unit_price DESC LIMIT 5;
   ```
-* **`LIMIT offset, count`**: `offset` पंक्तियों को छोड़ता है और `count` पंक्तियों तक लौटाता है।
+* **`LIMIT offset, count`**: Shuru ki `offset` rows skip karke `count` rows return karta hai.
   ```sql
   SELECT * FROM products ORDER BY product_id ASC LIMIT 10 OFFSET 20;
   ```
-* **`DISTINCT`**: परिणाम सेट से समान पंक्तियों के डुप्लिकेट को समाप्त करता है।
+* **`DISTINCT`**: Result set se identical duplicate rows ko remove karta hai.
   ```sql
   SELECT DISTINCT country FROM customers;
   ```
 
 ---
 
-### ग्रुपिंग और एग्रीगेशन (GROUPING & AGGREGATION)
-* **`GROUP BY`**: समान मानों वाली पंक्तियों को सारांश बकेट्स में समूहित करता है।
+### GROUPING & AGGREGATION
+* **`GROUP BY`**: Matching values wali rows ko summary buckets mein group karta hai.
   ```sql
   SELECT department_id, COUNT(*), AVG(salary) FROM employees GROUP BY department_id;
   ```
-* **`HAVING`**: `GROUP BY` चरण के बाद एग्रीगेटेड समूहों को फ़िल्टर करता है।
+* **`HAVING`**: `GROUP BY` phase ke baad aggregated groups ko filter karta hai.
   ```sql
   SELECT department_id, AVG(salary) FROM employees GROUP BY department_id HAVING AVG(salary) > 90000;
   ```
-* **`WITH ROLLUP`**: ग्रुपिंग डायमेंशन्स में हायरार्किकल सबटोटल और ग्रैंड टोटल की गणना करता है।
+* **`WITH ROLLUP`**: Grouping dimensions across hierarchical subtotals aur grand totals compute karta hai.
   ```sql
   SELECT department_id, SUM(salary) FROM employees GROUP BY department_id WITH ROLLUP;
   ```
-* **`GROUP_CONCAT()`**: प्रत्येक समूह के गैर-नल मानों को एक एकल स्ट्रिंग में जोड़ता है।
+* **`GROUP_CONCAT()`**: Har group ki non-null values ko concatenate karke ek single string banata hai.
   ```sql
   SELECT department_id, GROUP_CONCAT(first_name SEPARATOR ', ') FROM employees GROUP BY department_id;
   ```
 
 ---
 
-### रिलेशनल जॉइन्स (RELATIONAL JOINS)
-* **`INNER JOIN`**: दोनों टेबल्स में मिलान मान वाले रिकॉर्ड लौटाता है।
+### RELATIONAL JOINS
+* **`INNER JOIN`**: Dono tables mein matching values wale records return karta hai.
   ```sql
   SELECT e.first_name, d.department_name FROM employees e INNER JOIN departments d ON e.department_id = d.department_id;
   ```
-* **`LEFT JOIN`**: बाईं टेबल से सभी पंक्तियों और दाईं टेबल से मिलान की गई पंक्तियों को लौटाता है।
+* **`LEFT JOIN`**: Left table ki saari rows aur right table ki matched rows return karta hai.
   ```sql
   SELECT c.first_name, o.order_id FROM customers c LEFT JOIN orders o ON c.customer_id = o.customer_id;
   ```
-* **`RIGHT JOIN`**: दाईं टेबल से सभी पंक्तियों और बाईं टेबल से मिलान की गई पंक्तियों को लौटाता है।
+* **`RIGHT JOIN`**: Right table ki saari rows aur left table ki matched rows return karta hai.
   ```sql
   SELECT d.department_name, e.first_name FROM employees e RIGHT JOIN departments d ON e.department_id = d.department_id;
   ```
-* **`CROSS JOIN`**: दो टेबल्स का कार्टेशियन उत्पाद (Cartesian product) निकालता है।
+* **`CROSS JOIN`**: Do tables ka Cartesian product compute karta hai.
   ```sql
   SELECT p.product_name, c.city FROM products p CROSS JOIN customers c;
   ```
-* **`Self JOIN`**: अलग-अलग एलियास का उपयोग करके किसी टेबल को खुद से जोड़ता है।
+* **`Self JOIN`**: Table ko apne hi saath alag aliases ke through join karta hai.
   ```sql
   SELECT e.first_name AS worker, m.first_name AS manager FROM employees e LEFT JOIN employees m ON e.manager_id = m.employee_id;
   ```
-* **`FULL OUTER JOIN` (Emulation)**: `UNION` के साथ `LEFT JOIN` और `RIGHT JOIN` को जोड़कर एम्यूलेट करता है।
+* **`FULL OUTER JOIN` (Emulation)**: `LEFT JOIN` aur `RIGHT JOIN` ko `UNION` ke saath combine karta hai.
   ```sql
   SELECT * FROM tableA a LEFT JOIN tableB b ON a.id = b.id UNION SELECT * FROM tableA a RIGHT JOIN tableB b ON a.id = b.id;
   ```
 
 ---
 
-### सेट ऑपरेशन्स (SET OPERATIONS)
-* **`UNION`**: क्वेरी परिणामों को लंबवत रूप से मर्ज करता है और डुप्लिकेट पंक्तियों को समाप्त करता है।
+### SET OPERATIONS
+* **`UNION`**: Query results ko vertically merge karta hai aur duplicates eliminate karta hai.
   ```sql
   SELECT city FROM customers UNION SELECT city FROM suppliers;
   ```
-* **`UNION ALL`**: डुप्लिकेट को हटाए बिना क्वेरी परिणामों को लंबवत रूप से मर्ज करता है।
+* **`UNION ALL`**: Duplicates remove kiye bina query results ko vertically merge karta hai.
   ```sql
   SELECT city FROM customers UNION ALL SELECT city FROM suppliers;
   ```
 
 ---
 
-### सबक्वेरीज और कॉमन टेबल एक्सप्रेशन्स (CTEs)
-* **Scalar Subquery**: एकल 1x1 मान लौटाने वाली आंतरिक क्वेरी।
+### SUBQUERIES & COMMON TABLE EXPRESSIONS (CTEs)
+* **Scalar Subquery**: Inner query jo ek single 1x1 scalar value return karti hai.
   ```sql
   SELECT * FROM employees WHERE salary > (SELECT AVG(salary) FROM employees);
   ```
-* **Multi-Row Subquery**: मानों का एक कॉलम लौटाने वाली आंतरिक क्वेरी।
+* **Multi-Row Subquery**: Inner query jo values ka ek column return karti hai.
   ```sql
   SELECT * FROM products WHERE category_id IN (SELECT category_id FROM categories WHERE category_name LIKE '%Office%');
   ```
-* **`EXISTS`**: सबक्वेरी में पंक्तियों के अस्तित्व का परीक्षण करता है।
+* **`EXISTS`**: Subquery ke andar rows ki existence test karta hai.
   ```sql
   SELECT * FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id);
   ```
-* **CTE (`WITH ...`)**: क्वेरी स्कोप के लिए एक अस्थायी नामित परिणाम सेट को परिभाषित करता है।
+* **CTE (`WITH ...`)**: Query scope ke liye ek temporary named result set define karta hai.
   ```sql
   WITH RegionalSales AS (SELECT country, SUM(total_amount) AS revenue FROM orders o JOIN customers c ON o.customer_id = c.customer_id GROUP BY country)
   SELECT * FROM RegionalSales WHERE revenue > 2000;
   ```
-* **Recursive CTE**: पदानुक्रम (hierarchies) और अनुक्रमों को पुनरावर्ती रूप से ट्रैवर्स करता है।
+* **Recursive CTE**: Hierarchies aur sequences ko recursively traverse karta hai.
   ```sql
   WITH RECURSIVE Seq AS (SELECT 1 AS n UNION ALL SELECT n + 1 FROM Seq WHERE n < 10) SELECT * FROM Seq;
   ```
 
 ---
 
-### एग्रीगेट फंक्शन्स (AGGREGATE FUNCTIONS)
-* **`COUNT(*)`**: पंक्तियों की कुल संख्या लौटाता है।
+### AGGREGATE FUNCTIONS
+* **`COUNT(*)`**: Rows ki total sankhya return karta hai.
   ```sql
   SELECT COUNT(*) FROM orders;
   ```
-* **`SUM()`**: गैर-नल मानों के कुल योग की गणना करता है।
+* **`SUM()`**: Non-null values ka total sum calculate karta hai.
   ```sql
   SELECT SUM(total_amount) FROM orders;
   ```
-* **`AVG()`**: NULLs को अनदेखा करते हुए गणितीय औसत की गणना करता है।
+* **`AVG()`**: Mathematical mean calculate karta hai, NULLs ko ignore karte hue.
   ```sql
   SELECT AVG(salary) FROM employees;
   ```
-* **`MIN()` / `MAX()`**: सबसे छोटा या सबसे बड़ा गैर-नल मान लौटाता है।
+* **`MIN()` / `MAX()`**: Sabse chhoti ya sabse badi non-null value return karta hai.
   ```sql
   SELECT MIN(unit_price), MAX(unit_price) FROM products;
   ```
 
 ---
 
-### स्ट्रिंग फंक्शन्स (STRING FUNCTIONS)
-* **`CONCAT()`**: कई स्ट्रिंग्स को एक में मिलाता है।
+### STRING FUNCTIONS
+* **`CONCAT()`**: Multiple strings ko ek sath merge karta hai.
   ```sql
   SELECT CONCAT(first_name, ' ', last_name) FROM employees;
   ```
-* **`CONCAT_WS()`**: NULLs को छोड़ते हुए एक डेलिमिटर का उपयोग करके स्ट्रिंग्स को मिलाता है।
+* **`CONCAT_WS()`**: Delimiter ka use karke strings merge karta hai aur NULLs skip karta hai.
   ```sql
   SELECT CONCAT_WS(', ', city, state, country) FROM customers;
   ```
-* **`LOWER()` / `UPPER()`**: स्ट्रिंग केस को परिवर्तित करता है।
+* **`LOWER()` / `UPPER()`**: String ke case ko lowercase ya uppercase mein convert karta hai.
   ```sql
   SELECT LOWER(email), UPPER(country) FROM customers;
   ```
-* **`CHAR_LENGTH()`**: किसी स्ट्रिंग में कैरेक्टर्स की गिनती करता है।
+* **`CHAR_LENGTH()`**: String mein characters ki count return karta hai.
   ```sql
   SELECT CHAR_LENGTH(product_name) FROM products;
   ```
-* **`SUBSTRING()`**: 1-आधारित इंडेक्स से शुरू होकर सबस्ट्रिंग निकालता है।
+* **`SUBSTRING()`**: 1-based index se start karke substring extract karta hai.
   ```sql
   SELECT SUBSTRING(phone, 1, 3) FROM customers;
   ```
-* **`TRIM()`**: आगे और पीछे के रिक्त स्थान को हटाता है।
+* **`TRIM()`**: Leading aur trailing spaces ko strip kar deta hai.
   ```sql
   SELECT TRIM('  clean text  ');
   ```
-* **`REPLACE()`**: सबस्ट्रिंग की सभी घटनाओं को बदल देता है।
+* **`REPLACE()`**: Substring ke saare occurrences ko replace karta hai.
   ```sql
   SELECT REPLACE('v1.0.0', '1', '2');
   ```
-* **`LPAD()` / `RPAD()`**: निर्दिष्ट लंबाई तक पहुंचने के लिए स्ट्रिंग को कैरेक्टर्स से पैड करता है।
+* **`LPAD()` / `RPAD()`**: String ko specified length tak characters se pad karta hai.
   ```sql
   SELECT LPAD('42', 5, '0'); -- '00042'
   ```
 
 ---
 
-### डेट और टाइम फंक्शन्स (DATE & TIME FUNCTIONS)
-* **`NOW()`**: स्टेटमेंट शुरू होने पर वर्तमान टाइमस्टैम्प लौटाता है।
+### DATE & TIME FUNCTIONS
+* **`NOW()`**: Statement start hone par current timestamp return karta hai.
   ```sql
   SELECT NOW();
   ```
-* **`CURDATE()` / `CURTIME()`**: वर्तमान दिनांक या समय लौटाता है।
+* **`CURDATE()` / `CURTIME()`**: Current date ya current time return karta hai.
   ```sql
   SELECT CURDATE(), CURTIME();
   ```
-* **`DATEDIFF()`**: दो तिथियों के बीच दिनों का अंतर (`d1 - d2`) लौटाता है।
+* **`DATEDIFF()`**: Do dates ke beech days mein difference return karta hai (`d1 - d2`).
   ```sql
   SELECT DATEDIFF(CURDATE(), '2023-01-01');
   ```
-* **`TIMESTAMPDIFF()`**: निर्दिष्ट टेम्पोरल इकाइयों में तिथियों के बीच अंतर लौटाता है।
+* **`TIMESTAMPDIFF()`**: Specified temporal units (YEAR, MONTH, DAY) mein dates ka difference return karta hai.
   ```sql
   SELECT TIMESTAMPDIFF(YEAR, hire_date, CURDATE()) FROM employees;
   ```
-* **`DATE_ADD()` / `DATE_SUB()`**: टेम्पोरल अंतराल जोड़ता या घटाता है।
+* **`DATE_ADD()` / `DATE_SUB()`**: Temporal intervals ko add ya subtract karta hai.
   ```sql
   SELECT DATE_ADD(CURDATE(), INTERVAL 30 DAY);
   ```
-* **`DATE_FORMAT()`**: किसी तिथि को कस्टम स्ट्रिंग पैटर्न में फॉर्मेट करता है।
+* **`DATE_FORMAT()`**: Date ko custom string pattern mein format karta hai.
   ```sql
   SELECT DATE_FORMAT(NOW(), '%W, %M %d, %Y');
   ```
 
 ---
 
-### न्यूमेरिक फंक्शन्स (NUMERIC FUNCTIONS)
-* **`ROUND()`**: किसी संख्या को निर्दिष्ट दशमलव स्थानों तक राउंड करता है।
+### NUMERIC FUNCTIONS
+* **`ROUND()`**: Number ko specified decimal places tak round karta hai.
   ```sql
   SELECT ROUND(123.456, 2); -- 123.46
   ```
-* **`TRUNCATE()`**: बिना राउंड किए दशमलव स्थानों को काट देता है।
+* **`TRUNCATE()`**: Bina rounding ke decimal places ko cut kar deta hai.
   ```sql
   SELECT TRUNCATE(123.456, 2); -- 123.45
   ```
-* **`FLOOR()` / `CEIL()`**: निकटतम छोटे पूर्णांक तक राउंड डाउन या निकटतम बड़े पूर्णांक तक राउंड अप करता है।
+* **`FLOOR()` / `CEIL()`**: Nearest lower integer ya nearest higher integer par round karta hai.
   ```sql
   SELECT FLOOR(15.9), CEIL(15.1); -- 15, 16
   ```
-* **`ABS()`**: निरपेक्ष धनात्मक मान (absolute positive value) लौटाता है।
+* **`ABS()`**: Absolute positive value return karta hai.
   ```sql
   SELECT ABS(-50); -- 50
   ```
-* **`MOD()`**: विभाजन का शेषफल (remainder) लौटाता है।
+* **`MOD()`**: Division ka remainder return karta hai.
   ```sql
   SELECT MOD(10, 3); -- 1
   ```
-* **`POWER()` / `SQRT()`**: घात (powers) और वर्गमूल (square roots) की गणना करता है।
+* **`POWER()` / `SQRT()`**: Powers aur square roots compute karta hai.
   ```sql
   SELECT POWER(2, 3), SQRT(144); -- 8, 12
   ```
 
 ---
 
-### फ्लो कंट्रोल फंक्शन्स (FLOW CONTROL FUNCTIONS)
-* **`IF()`**: सरल इनलाइन कंडीशनल: `IF(test, true_val, false_val)`।
+### FLOW CONTROL FUNCTIONS
+* **`IF()`**: Simple inline conditional: `IF(test, true_val, false_val)`.
   ```sql
   SELECT IF(salary > 100000, 'Senior', 'Junior') FROM employees;
   ```
-* **`IFNULL()`**: अभिव्यक्ति के NULL होने पर फॉलबैक मान लौटाता है।
+* **`IFNULL()`**: Agar expression NULL ho toh fallback value return karta hai.
   ```sql
   SELECT IFNULL(phone, 'N/A') FROM customers;
   ```
-* **`COALESCE()`**: सूची में से पहला गैर-नल एक्सप्रेशन लौटाता है।
+* **`COALESCE()`**: List mein se pehli non-NULL expression return karta hai.
   ```sql
   SELECT COALESCE(phone, state, country, 'Unknown') FROM customers;
   ```
-* **`NULLIF()`**: यदि दोनों तर्क समान हैं तो NULL लौटाता है।
+* **`NULLIF()`**: Agar dono arguments equal hon toh NULL return karta hai.
   ```sql
   SELECT 100 / NULLIF(divisor, 0);
   ```
-* **`CASE`**: मानक मल्टी-ब्रांच कंडीशनल एक्सप्रेशन।
+* **`CASE`**: Standard multi-branch conditional expression.
   ```sql
   SELECT CASE WHEN points > 500 THEN 'Gold' WHEN points > 200 THEN 'Silver' ELSE 'Bronze' END FROM customers;
   ```
 
 ---
 
-### कंस्ट्रेंट्स और `ALTER TABLE` (CONSTRAINTS & ALTER TABLE)
-* **`PRIMARY KEY`**: विशिष्टता लागू करता है और NULLs को अस्वीकार करता है।
+### CONSTRAINTS & `ALTER TABLE`
+* **`PRIMARY KEY`**: Uniqueness enforce karta hai aur NULLs disallow karta hai.
   ```sql
   ALTER TABLE users ADD PRIMARY KEY (user_id);
   ```
-* **`FOREIGN KEY`**: पैरेंट टेबल की ओर इशारा करते हुए रेफरेंशियल इंटीग्रिटी लागू करता है।
+* **`FOREIGN KEY`**: Parent table ko point karke referential integrity enforce karta hai.
   ```sql
   ALTER TABLE orders ADD CONSTRAINT fk_ord_cust FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE;
   ```
-* **`UNIQUE`**: गैर-नल पंक्तियों में अलग-अलग मान लागू करता है।
+* **`UNIQUE`**: Non-null rows ke across distinct values enforce karta hai.
   ```sql
   ALTER TABLE customers ADD CONSTRAINT uq_email UNIQUE (email);
   ```
-* **`CHECK`**: बूलियन स्थिति के विरुद्ध पंक्ति मानों को मान्य करता है।
+* **`CHECK`**: Row values ko boolean condition ke against validate karta hai.
   ```sql
   ALTER TABLE products ADD CONSTRAINT chk_price CHECK (unit_price >= 0);
   ```
-* **`NOT NULL`**: लापता मानों को अस्वीकार करता है।
+* **`NOT NULL`**: Missing values ko disallow karta hai.
   ```sql
   ALTER TABLE employees MODIFY COLUMN email VARCHAR(100) NOT NULL;
   ```
-* **`DROP CONSTRAINT`**: किसी नामित कंस्ट्रेंट को हटा देता है।
+* **`DROP CONSTRAINT`**: Kisi named constraint ko drop karta hai.
   ```sql
   ALTER TABLE orders DROP FOREIGN KEY fk_ord_cust;
   ```
 
 ---
 
-### इंडेक्स और परफॉरमेंस (INDEXES & PERFORMANCE)
-* **`CREATE INDEX`**: एक या अधिक कॉलम्स पर B+ Tree इंडेक्स बनाता है।
+### INDEXES & PERFORMANCE
+* **`CREATE INDEX`**: Ek ya multiple columns par B+ Tree index build karta hai.
   ```sql
   CREATE INDEX idx_emp_dept_salary ON employees(department_id, salary);
   ```
-* **`CREATE UNIQUE INDEX`**: एक इंडेक्स बनाता है जो विशिष्टता को भी लागू करता है।
+* **`CREATE UNIQUE INDEX`**: Index build karta hai jo saath hi uniqueness bhi enforce karta hai.
   ```sql
   CREATE UNIQUE INDEX uq_supplier_code ON suppliers(supplier_name);
   ```
-* **`DROP INDEX`**: किसी टेबल से इंडेक्स को हटाता है।
+* **`DROP INDEX`**: Table se kisi index ko remove karta hai.
   ```sql
   DROP INDEX idx_emp_dept_salary ON employees;
   ```
-* **`SHOW INDEX`**: किसी टेबल के सभी इंडेक्स प्रदर्शित करता है।
+* **`SHOW INDEX`**: Table par currently defined saare indexes display karta hai.
   ```sql
   SHOW INDEX FROM employees;
   ```
-* **`EXPLAIN`**: क्वेरी निष्पादन योजना और इंडेक्स उपयोग प्रदर्शित करता है।
+* **`EXPLAIN`**: Query execution plan aur index usage display karta hai.
   ```sql
   EXPLAIN SELECT * FROM employees WHERE department_id = 1;
   ```
-* **`EXPLAIN ANALYZE`**: वास्तविक निष्पादन समय और इटरेटर पंक्ति गणना को मापता है।
+* **`EXPLAIN ANALYZE`**: Actual execution time aur iterator row counts measure karta hai.
   ```sql
   EXPLAIN ANALYZE SELECT * FROM orders WHERE total_amount > 500;
   ```
 
 ---
 
-### व्यूज (VIEWS)
-* **`CREATE VIEW`**: क्वेरी के आधार पर एक सहेजा गया वर्चुअल टेबल परिभाषित करता है।
+### VIEWS
+* **`CREATE VIEW`**: Query par based ek saved virtual table define karta hai.
   ```sql
   CREATE OR REPLACE VIEW v_active_products AS SELECT * FROM products WHERE is_active = TRUE;
   ```
-* **`DROP VIEW`**: व्यू परिभाषा को हटाता है।
+* **`DROP VIEW`**: View definition ko delete kar deta hai.
   ```sql
   DROP VIEW IF EXISTS v_active_products;
   ```
-* **`WITH CHECK OPTION`**: व्यू के माध्यम से ऐसे इन्सर्ट/अपडेट को रोकता है जो इसके `WHERE` फ़िल्टर का उल्लंघन करते हैं।
+* **`WITH CHECK OPTION`**: View ke `WHERE` filter ko violate karne wale inserts/updates ko block karta hai.
   ```sql
   CREATE VIEW v_us_cust AS SELECT * FROM customers WHERE country = 'USA' WITH CHECK OPTION;
   ```
 
 ---
 
-### ट्रांजेक्शन्स और कॉनकरेंसी (TRANSACTIONS & CONCURRENCY)
-* **`START TRANSACTION`**: एक स्पष्ट एटॉमिक ट्रांजैक्शन ब्लॉक शुरू करता है।
+### TRANSACTIONS & CONCURRENCY
+* **`START TRANSACTION`**: Ek explicit atomic transaction block begin karta hai.
   ```sql
   START TRANSACTION;
   ```
-* **`COMMIT`**: ट्रांजैक्शनल संशोधनों को डिस्क पर स्थायी रूप से सहेजता है।
+* **`COMMIT`**: Transactional modifications ko permanently disk par persist karta hai.
   ```sql
   COMMIT;
   ```
-* **`ROLLBACK`**: सक्रिय ट्रांजैक्शन के दौरान किए गए सभी संशोधनों को पूर्ववत करता है।
+* **`ROLLBACK`**: Active transaction ke dauran kiye gaye saare changes ko revert kar deta hai.
   ```sql
   ROLLBACK;
   ```
-* **`SAVEPOINT`**: एक मध्यवर्ती रोलबैक बिंदु स्थापित करता है।
+* **`SAVEPOINT`**: Ek intermediate rollback checkpoint establish karta hai.
   ```sql
   SAVEPOINT pt1; ROLLBACK TO SAVEPOINT pt1; RELEASE SAVEPOINT pt1;
   ```
-* **`SELECT ... FOR UPDATE`**: मिलान पंक्तियों पर एक एक्सक्लूसिव रो लॉक (X-lock) प्राप्त करता है।
+* **`SELECT ... FOR UPDATE`**: Matching rows par Exclusive row lock (X-lock) acquire karta hai.
   ```sql
   SELECT * FROM products WHERE product_id = 1 FOR UPDATE;
   ```
 
 ---
 
-### स्टोर्ड प्रोसीजर्स और ट्रिगर्स (STORED PROCEDURES & TRIGGERS)
-* **`CREATE PROCEDURE`**: एक पूर्व-संकलित प्रक्रियात्मक रूटीन को परिभाषित करता है।
+### STORED PROCEDURES & TRIGGERS
+* **`CREATE PROCEDURE`**: Precompiled procedural routine define karta hai.
   ```sql
   DELIMITER //
   CREATE PROCEDURE sp_get_emp(IN p_id INT)
@@ -459,11 +459,11 @@
   END //
   DELIMITER ;
   ```
-* **`CALL`**: स्टोर्ड प्रोसीजर को निष्पादित करता है।
+* **`CALL`**: Stored procedure ko execute karta hai.
   ```sql
   CALL sp_get_emp(1);
   ```
-* **`CREATE TRIGGER`**: टेबल DML के लिए एक स्वचालित इवेंट हैंडलर को बांधता है।
+* **`CREATE TRIGGER`**: Table DML ke saath automated event handler bind karta hai.
   ```sql
   DELIMITER //
   CREATE TRIGGER trg_emp_audit AFTER UPDATE ON employees
@@ -476,16 +476,16 @@
 
 ---
 
-### उपयोगी `information_schema` क्वेरीज (USEFUL information_schema QUERIES)
-* **टेबल स्टोरेज साइज़ (MB) की सूची**:
+### USEFUL `information_schema` QUERIES
+* **Table Storage Sizes (MB) List Karein**:
   ```sql
   SELECT table_name, ROUND(((data_length + index_length) / 1024 / 1024), 2) AS size_mb FROM information_schema.TABLES WHERE table_schema = 'sql_mastery';
   ```
-* **डेटाबेस में सभी फॉरेन कीज की सूची**:
+* **Database ki Saari Foreign Keys List Karein**:
   ```sql
   SELECT table_name, constraint_name, referenced_table_name FROM information_schema.KEY_COLUMN_USAGE WHERE table_schema = 'sql_mastery' AND referenced_table_name IS NOT NULL;
   ```
-* **सक्रिय डेटाबेस लॉक्स का निरीक्षण**:
+* **Active Database Locks Inspect Karein**:
   ```sql
   SELECT * FROM performance_schema.data_locks;
   ```

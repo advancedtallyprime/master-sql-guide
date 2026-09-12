@@ -93,14 +93,14 @@ const englishSidebar = [
 
 const hinglishSidebar = [
   {
-    text: 'Overview (अवलोकन)',
+    text: 'Overview (Intro)',
     items: [
-      { text: 'Home & Syllabus (होम)', link: '/hi/index' },
-      { text: 'Master Table of Contents (विषय सूची)', link: '/hi/00_master_table_of_contents' }
+      { text: 'Home & Syllabus', link: '/hi/index' },
+      { text: 'Master Table of Contents', link: '/hi/00_master_table_of_contents' }
     ]
   },
   {
-    text: 'Phase 1: Foundations (बुनियादी बातें)',
+    text: 'Phase 1: Foundations (Core Concepts)',
     collapsed: false,
     items: [
       { text: '01. SQL & RDBMS Fundamentals', link: '/hi/01_sql_fundamentals' },
@@ -111,7 +111,7 @@ const hinglishSidebar = [
     ]
   },
   {
-    text: 'Phase 2: Querying & Analytics (डेटा विश्लेषण)',
+    text: 'Phase 2: Querying & Analytics (Data Retrieval)',
     collapsed: false,
     items: [
       { text: '06. SELECT & Filtering (3VL Logic)', link: '/hi/06_select_and_filtering' },
@@ -122,7 +122,7 @@ const hinglishSidebar = [
     ]
   },
   {
-    text: 'Phase 3: Relational Modeling & Joins (टेबल संबंध)',
+    text: 'Phase 3: Relational Modeling & Joins (Table Relations)',
     collapsed: false,
     items: [
       { text: '11. JOIN Operations & Venn Diagrams', link: '/hi/11_joins' },
@@ -132,7 +132,7 @@ const hinglishSidebar = [
     ]
   },
   {
-    text: 'Phase 4: Schema Architecture (डेटाबेस डिज़ाइन)',
+    text: 'Phase 4: Schema Architecture (Database Design)',
     collapsed: false,
     items: [
       { text: '15. Database Design & ER Modeling', link: '/hi/15_database_design' },
@@ -141,7 +141,7 @@ const hinglishSidebar = [
     ]
   },
   {
-    text: 'Phase 5: Engines & Transactions (ट्रांजेक्शन और स्टोरेज)',
+    text: 'Phase 5: Engines & Transactions (Storage & ACID)',
     collapsed: false,
     items: [
       { text: '18. Indexes & B+ Tree Internals', link: '/hi/18_indexes' },
@@ -152,7 +152,7 @@ const hinglishSidebar = [
     ]
   },
   {
-    text: 'Phase 6: Advanced SQL & Performance (एडवांस्ड और ऑप्टिमाइज़ेशन)',
+    text: 'Phase 6: Advanced SQL & Performance (Optimization)',
     collapsed: false,
     items: [
       { text: '23. Window Functions & JSON Support', link: '/hi/23_advanced_sql' },
@@ -161,7 +161,7 @@ const hinglishSidebar = [
     ]
   },
   {
-    text: 'Phase 7: Portfolio & Practice (प्रोजेक्ट्स और अभ्यास)',
+    text: 'Phase 7: Portfolio & Practice (Projects & Practice)',
     collapsed: false,
     items: [
       { text: '26. 5 Real-World Enterprise Projects', link: '/hi/26_real_world_projects' },
@@ -171,7 +171,7 @@ const hinglishSidebar = [
     ]
   },
   {
-    text: 'Phase 8: Toolkits & Reference (टूलकिट और संदर्भ)',
+    text: 'Phase 8: Toolkits & Reference (Cheat Sheets & Lexicon)',
     collapsed: false,
     items: [
       { text: '30. Production SQL Cheat Sheet', link: '/hi/30_sql_cheat_sheet' },
@@ -211,23 +211,23 @@ export default defineConfig({
       }
     },
     hi: {
-      label: 'Hinglish (हिंदी)',
-      lang: 'hi-IN',
+      label: 'Hinglish',
+      lang: 'en-IN',
       link: '/hi/',
       title: "Master SQL Guide (Hinglish)",
-      description: "Complete SQL & MySQL Course in Simple Hinglish",
+      description: "Complete SQL & MySQL Course in Simple Roman Hinglish",
       themeConfig: {
         siteTitle: "SQL Mastery (Hinglish)",
         nav: [
-          { text: 'विषय सूची', link: '/hi/00_master_table_of_contents' },
-          { text: 'मॉड्यूल्स', link: '/hi/01_sql_fundamentals' },
-          { text: 'प्रोजेक्ट्स', link: '/hi/26_real_world_projects' },
-          { text: '300 अभ्यास प्रश्न', link: '/hi/27_exercises' },
-          { text: 'उत्तर कुंजी (Answers)', link: '/hi/28_answer_key' },
-          { text: 'इंटरव्यू प्रश्न', link: '/hi/29_interview_questions' },
-          { text: 'चीट शीट', link: '/hi/30_sql_cheat_sheet' },
-          { text: 'रोडमैप', link: '/hi/31_learning_roadmaps' },
-          { text: 'A-Z संदर्भ', link: '/hi/33_az_sql_reference' }
+          { text: 'Table of Contents', link: '/hi/00_master_table_of_contents' },
+          { text: 'Modules', link: '/hi/01_sql_fundamentals' },
+          { text: 'Projects', link: '/hi/26_real_world_projects' },
+          { text: '300 Exercises', link: '/hi/27_exercises' },
+          { text: 'Answer Key', link: '/hi/28_answer_key' },
+          { text: 'Interview Prep', link: '/hi/29_interview_questions' },
+          { text: 'Cheat Sheet', link: '/hi/30_sql_cheat_sheet' },
+          { text: 'Roadmaps', link: '/hi/31_learning_roadmaps' },
+          { text: 'A-Z Reference', link: '/hi/33_az_sql_reference' }
         ],
         sidebar: hinglishSidebar
       }

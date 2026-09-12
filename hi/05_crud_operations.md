@@ -1,31 +1,31 @@
-# Chapter 05 — Data Manipulation: CRUD Operations
+# Chapter 05 — Data Manipulation: CRUD Operations (Data Manipulation: CRUD Operations)
 
 ---
 
-## 1. What is it? (यह क्या है?)
+## 1. What is it? (Ye Kya Hai?)
 
-**CRUD** सॉफ्टवेयर डेवलपमेंट इंडस्ट्री का वह सबसे बुनियादी और मशहूर एक्रोनियम (acronym) है जो किसी भी डेटा-आधारित ऍप्लिकेशन के चार मुख्य स्तंभों (pillars) को दर्शाता है:
-* **C**reate $\rightarrow$ `INSERT` (और इसके एडवांस्ड रूप: `INSERT IGNORE`, `ON DUPLICATE KEY UPDATE`, `REPLACE`)
+**CRUD** software development industry ka ek universal acronym hai jo persistent applications ke chaar sabse fundamental data operations ko represent karta hai:
+* **C**reate $\rightarrow$ `INSERT` (aur advanced forms: `INSERT IGNORE`, `ON DUPLICATE KEY UPDATE`, `REPLACE`)
 * **R**ead $\rightarrow$ `SELECT`
 * **U**pdate $\rightarrow$ `UPDATE`
 * **D**elete $\rightarrow$ `DELETE`
 
-रिलेशनल डेटाबेस मैनेजमेंट में, CRUD ऑपरेशन्स को **Data Manipulation Language (DML)** कहा जाता है। DDL कमांड्स जहाँ टेबल का ढाँचा (schema blueprint) तैयार करती हैं, वहीं DML स्टेटमेंट्स उन टेबल्स के अंदर मौजूद वास्तविक रिकॉर्ड्स (rows) के साथ छेड़छाड़ या बदलाव करते हैं।
+Relational database systems me CRUD operations ko **Data Manipulation Language (DML)** kaha jata hai. DDL commands jahan database ke structural blueprint (skeletons) par kaam karte hain, wahi DML statements tables ke andar store hone wale actual records (data) ko manipulate karte hain.
 
-MySQL के डिफ़ॉल्ट InnoDB स्टोरेज इंजन में सभी DML ऑपरेशन्स सख्त Transactional Boundaries के अंदर चलते हैं: जब भी आप कोई रो जोड़ते, बदलते या हटाते हैं, तो डिस्क पर स्थायी रूप से लिखने से पहले उन बदलावों को **Undo Log** (ताकि ज़रूरत पड़ने पर रोलबैक किया जा सके) और **Redo Log** (ताकि सर्वर क्रैश होने पर भी डेटा रिकवर हो सके) में दर्ज किया जाता है।
-
----
-
-## 2. Why do we use it? (हम इसका उपयोग क्यों करते हैं?)
-
-1. **Transactional Record Ingestion (डेटा को सुरक्षित जोड़ना)**: हाई-ट्रैफिक ऍप्लिकेशन्स को सिंगल इवेंट्स, बैच लोड्स, या लाखों रिकॉर्ड्स के मास इम्पोर्ट को बिना इंडेक्स करप्ट किए तेज़ी से इंसर्ट करने की ज़रूरत होती है।
-2. **Idempotent Data Synchronization / UPSERT (स्मार्ट सिंक)**: जब हम बाहरी APIs या पेमेंट गेटवे से डेटा सिंक करते हैं, तो अक्सर हमें ऐसा ऑपरेशन चाहिए होता है जो रिकॉर्ड नया हो तो जोड़ दे (`INSERT`), और अगर पहले से मौजूद हो तो उसकी वैल्यूज अपडेट कर दे (`UPDATE`) — वो भी एक ही एटॉमिक क्वेरी में!
-3. **Targeted State Mutation (सटीक बदलाव)**: बिज़नेस लॉजिक में आर्डर का स्टेटस 'Pending' से 'Delivered' करना हो, वॉलेट बैलेंस काटना हो, या नाम की स्पेलिंग ठीक करनी हो — इसके लिए `UPDATE` ज़रूरी है।
-4. **Data Lifecycle Hygiene (डेटा की सफ़ाई)**: कैंसिल हो चुके कार्ट सेशंस, एक्सपायर हो चुके OTPs या टेस्ट रिकॉर्ड्स को `DELETE` करके हम डेटाबेस की स्टोरेज और परफॉरमेंस को हल्का रखते हैं।
+MySQL ke default InnoDB engine me sabhi DML operations strictly transactional boundaries ke andar execute hote hain: koi bhi data modification permanent hone se pehle active transaction ke **Undo Log** (taki zaroorat padne par rollback ho sake) aur **Redo Log** (taki system crash hone par recovery ho sake) me likha jata hai, jiske baad hi changes disk pages par commit hote hain.
 
 ---
 
-## 3. Syntax (सिंटैक्स)
+## 2. Why do we use it? (Hum Iska Use Kyun Karte Hain?)
+
+1. **Transactional Record Ingestion (Data Store Karna)**: Modern applications me single user signups se lekar massive bulk imports tak, billions of events ko bina indexes corrupt kiye reliably table me insert karna padta hai.
+2. **Idempotent Data Synchronization (UPSERT Mechanism)**: Jab aap external third-party APIs ya message queues se data sync karte hain, to aksar aisi zaroorat hoti hai ki agar record naya hai to insert ho jaye, aur agar already exist karta hai to uske attributes atomically update ho jayein.
+3. **Targeted State Mutation (Live Status Badalna)**: E-commerce aur fintech systems me continuously order statuses change hote hain (`Pending` se `Delivered`), account balances update hote hain ya shipping addresses correct kiye jaate hain.
+4. **Data Lifecycle Hygiene (Purana Data Hatana)**: Expired shopping cart sessions, test orders ya cancelled subscriptions ko delete karke disk space aur database memory ko optimize rakha jata hai.
+
+---
+
+## 3. Syntax
 
 ### INSERT Operations
 ```sql
@@ -96,9 +96,9 @@ LIMIT 100;
 
 ---
 
-## 4. Basic Example (बेसिक उदाहरण)
+## 4. Basic Example
 
-आइए एक सैंडबॉक्स टेबल बनाकर उस पर CRUD का पूरा लाइफसाइकिल चलाकर देखते हैं:
+Aaiye ek temporary sandbox table bana kar complete CRUD lifecycle ko practically execute karke dekhte hain:
 
 ```sql
 USE sql_mastery;
@@ -138,13 +138,13 @@ DROP TABLE audit_notes;
 
 ---
 
-## 5. Real-World Example (रियल-वर्ल्ड उदाहरण)
+## 5. Real-World Example
 
-हमारे `sql_mastery` प्रोडक्शन डेटाबेस में, आइए एक पूरा बिज़नेस वर्कफ़्लो चलाकर देखते हैं:
-1. नए कस्टमर को रजिस्टर करना (`CREATE`)।
-2. `ON DUPLICATE KEY UPDATE` (UPSERT) का इस्तेमाल करके इन्वेंट्री स्टॉक अपडेट करना।
-3. $1,000 से बड़े ऑर्डर्स देने वाले कस्टमर्स के लॉयल्टी पॉइंट्स बढ़ाना (`UPDATE`)।
-4. डेमो कस्टमर रिकॉर्ड को सुरक्षित हटाना (`DELETE`)।
+Hamare production `sql_mastery` database me, aaiye ek complete end-to-end business transaction walk-through karte hain:
+1. Ek naye customer ko register karna.
+2. `ON DUPLICATE KEY UPDATE` use karke product inventory sync karna.
+3. Delivered orders ke basis par customer ko loyalty points award karna.
+4. Demo customer ko cleanly remove karna.
 
 ```sql
 USE sql_mastery;
@@ -183,26 +183,28 @@ WHERE product_id = 1;
 
 ---
 
-## 6. Step-by-Step Explanation (स्टेप-बाय-स्टेप व्याख्या)
+## 6. Step-by-Step Explanation
+
+Aaiye upar diye gaye transaction flow ke execution steps ko detail me samajhte hain:
 
 1. `INSERT INTO customers (...) VALUES (...)`:
-   * SQL Parser यह जाँचता है कि सभी आवश्यक `NOT NULL` कॉलम्स (`first_name`, `last_name`, `email`, `city`, `country`, `registered_at`) क्वेरी में दिए गए हैं या नहीं।
-   * स्टोरेज इंजन यह सुनिश्चित करता है कि `vikram.sharma@example.in` ईमेल पहले से टेबल में मौजूद न हो (`UNIQUE` कंस्ट्रेंट)।
-   * ऑटो-इंक्रीमेंट लॉक मैकेनिज्म (`innodb_autoinc_lock_mode`) नया क्रमिक नंबर `customer_id` (जैसे `11`) असाइन करता है, रिकॉर्ड को B+ Tree के लीफ पेज में जोड़ता है, और Redo Log में एंट्री लिख देता है।
+   * SQL parser check karta hai ki sabhi required non-nullable columns jinki default values nahi hain (`first_name`, `last_name`, `email`, `city`, `country`, `registered_at`) query me provided hain ya nahi.
+   * Storage engine verify karta hai ki `vikram.sharma@example.in` email table ke `UNIQUE (email)` constraint ko violate na kare.
+   * Auto-increment lock (`innodb_autoinc_lock_mode`) customer ko agla sequential integer ID (jaise `11`) assign karta hai, record ko clustered index leaf page me append karta hai, aur transaction ko Redo Log me flush karta hai.
 2. `INSERT ... ON DUPLICATE KEY UPDATE`:
-   * MySQL सबसे पहले `product_id = 1` के लिए क्लस्टर्ड इंडेक्स में लुकअप करता है।
-   * चूँकि रो पहले से मौजूद है, MySQL डुप्लीकेट की एरर `1062` देने के बजाय, प्रोडक्ट 1 की रो पर एक एक्सक्लूसिव रो-लेवल लॉक लेता है और `stock_quantity = stock_quantity + 10` का असाइनमेंट चलाकर स्टॉक 45 से बढ़ाकर 55 कर देता है।
+   * MySQL pehle `product_id = 1` par index lookup karta hai.
+   * Clustered index me record pehle se maujood milne par, MySQL duplicate key error `1062` throw nahi karta; balki wo product 1 ki row par exclusive lock leta hai aur assignment execute karta hai: `stock_quantity = stock_quantity + 10`.
 3. `UPDATE customers c JOIN orders o ...`:
-   * Query Optimizer `customers` और `orders` टेबल्स के बीच इनर जॉइन करता है।
-   * केवल वही कस्टमर रोज़ लॉक और अपडेट की जाती हैं जिनके आर्डर की कंडीशन `total_amount > 1000.00 AND status = 'Delivered'` सच होती है। `SET` क्लॉज़ मौके पर ही `loyalty_points` बढ़ा देता है।
+   * Query optimizer `customers` aur `orders` tables ke beech join plan banata hai.
+   * Sirf wahi customer rows filter aur lock hoti hain jinke matching orders `total_amount > 1000.00 AND status = 'Delivered'` condition satisfy karte hain. Fir `SET` clause unke `loyalty_points` ko in-place increment kar deta hai.
 4. `DELETE FROM customers WHERE email = 'vikram.sharma@example.in'`:
-   * ईमेल के यूनिक इंडेक्स के ज़रिए ठीक वही रो पहचानी जाती है। चूँकि इस नए कस्टमर का कोई आर्डर `orders` टेबल में नहीं बना था, इसलिए यह रो बिना किसी Foreign Key एरर के आसानी से डिलीट हो जाती है।
+   * Unique index ki madad se engine customer row ko directly locate karta hai. Kyunki customer 11 ka koi child record `orders` table me nahi tha, isliye ye row bina foreign key restriction ke safely delete ho jaati hai.
 
 ---
 
-## 7. Expected Result (अपेक्षित परिणाम / Expected Output)
+## 7. Expected Result
 
-नया कस्टमर इंसर्ट करने के बाद `SELECT` क्वेरी का परिणाम:
+Customer insert karne ke baad verification query ka output:
 
 ```
 +-------------+------------+-----------+--------------------------+----------------+---------------+
@@ -213,7 +215,7 @@ WHERE product_id = 1;
 1 row in set (0.00 sec)
 ```
 
-`ON DUPLICATE KEY UPDATE` के बाद प्रोडक्ट स्टॉक का परिणाम:
+`ON DUPLICATE KEY UPDATE` run karne ke baad product stock ka output:
 
 ```
 +------------+-----------------------+----------------+
@@ -226,96 +228,96 @@ WHERE product_id = 1;
 
 ---
 
-## 8. Common Mistakes (सामान्य गलतियाँ और Pitfalls)
+## 8. Common Mistakes
 
-1. **बिना `WHERE` क्लॉज़ के `UPDATE` या `DELETE` चला देना (डेवलपर्स का सबसे बड़ा डरावना सपना!)**:
-   * *भयानक गलती*:
+1. **Bina `WHERE` Clause Ke `UPDATE` Ya `DELETE` Run Kar Dena**:
+   * *The Nightmare Scenario*:
      ```sql
      UPDATE employees SET salary = 50000;
      ```
-   * *परिणाम*: `WHERE` न लगाने से टेबल की **हर एक रो** अपडेट हो जाएगी! कंपनी के CEO से लेकर इंटर्न तक सबका वेतन 50,000 हो जाएगा!
-   * *सुरक्षा उपाय*: हमेशा Safe Updates मोड ऑन रखें: `SET sql_safe_updates = 1;`। यह मोड ऐसी किसी भी `UPDATE` या `DELETE` क्वेरी को चलने से रोक देता है जिसमें प्राइमरी/इंडेक्स्ड की का `WHERE` क्लॉज़ या `LIMIT` न लगा हो।
-2. **`INSERT` में कॉलम्स के नाम न लिखना (Implicit Column List)**:
-   * *कमज़ोर कोड*:
+   * *Consequence*: Agar aap `WHERE` lagana bhool gaye, to table ki **ek-ek row update ho jayegi!** Poori company ke har employee ki salary badal kar 50,000 ho jayegi.
+   * *Protection*: Hamesha MySQL Safe Updates mode enable rakhein (`SET sql_safe_updates = 1;`). Ye aisi kisi bhi `UPDATE` ya `DELETE` query ko block kar deta hai jisme key-based `WHERE` ya `LIMIT` clause na ho.
+2. **`INSERT` Me Column Lists Na Likhna**:
+   * *Fragile Syntax*:
      ```sql
      INSERT INTO categories VALUES (6, 'Apparel', 'Clothing');
      ```
-   * *समस्या*: अगर भविष्य में किसी DBA ने टेबल में एक नया कॉलम जोड़ दिया (`ALTER TABLE categories ADD COLUMN icon_url VARCHAR(255);`), तो आपका पूरा बैकएंड कोड तुरंत क्रैश हो जाएगा:
+   * *Problem*: Agar future me koi DBA table me naya column add kar de (`ALTER TABLE categories ADD COLUMN icon_url VARCHAR(255);`), to purani saari queries turant fail ho jayengi:
      `ERROR 1136 (21S01): Column count doesn't match value count at row 1.`
-   * *नियम*: हमेशा स्पष्ट रूप से कॉलम्स के नाम लिखें: `INSERT INTO categories (category_id, category_name, description) VALUES (...)`।
-3. **लूप में एक-एक रो इंसर्ट करना बनाम बल्क इंसर्ट**:
-   * *गलत तरीका*: अपने Python/Node.js कोड में लूप चलाकर 1,000 बार अलग-अलग `INSERT INTO ... VALUES (...)` चलाना।
-   * *नुकसान*: हर क्वेरी के लिए अलग नेटवर्क राउंड-ट्रिप होगी, पार्सर चलेगा, और 1,000 बार डिस्क पर Redo Log सिंक होगा। यह बेहद धीमा होता है।
-   * *सही तरीका*: एक ही क्वेरी में मल्टी-रो इंसर्ट करें (`INSERT INTO table VALUES (...), (...), (...)`)। यह 50 से 100 गुना तेज़ होता है!
-4. **`REPLACE INTO` और `ON DUPLICATE KEY UPDATE` में फर्क न समझना**:
-   * `REPLACE INTO` बैकएंड में पहले पुरानी रो को `DELETE` करता है और फिर नई रो को `INSERT` करता है। इसके बहुत खतरनाक साइड इफेक्ट्स होते हैं: ऑटो-इंक्रीमेंट आईडी बदल जाती है, बिना बताए कॉलम्स डिफ़ॉल्ट पर रीसेट हो जाते हैं, और `ON DELETE CASCADE` की वजह से जुड़ी हुई चाइल्ड टेबल्स का डेटा भी डिलीट हो सकता है! हमेशा `ON DUPLICATE KEY UPDATE` को ही प्राथमिकता दें।
+   * *Rule*: Hamesha explicit column list likhein: `INSERT INTO categories (category_id, category_name, description) VALUES (...)`.
+3. **Loop Me Single-Row INSERTs Chalana (Bulk Insert Ke Bajaye)**:
+   * *Bad Practice*: Application code me loop chalakar 1,000 baar alag-alag `INSERT INTO ... VALUES (...)` queries bhejna.
+   * *Problem*: Har query apna network round-trip, statement parsing aur transaction log disk flush leti hai.
+   * *Solution*: Multi-row bulk insert use karein (`INSERT INTO table VALUES (...), (...), (...)`), jo 50x se 100x tak fast execute hota hai.
+4. **`REPLACE INTO` Ko `ON DUPLICATE KEY UPDATE` Ke Sath Confuse Karna**:
+   * `REPLACE INTO` internally pehle purani row ko `DELETE` karta hai aur fir nayi row `INSERT` karta hai. Iske dangerous side effects hote hain: auto-increment ID change ho jata hai, unmentioned columns default values par reset ho jaate hain, aur child tables me `ON DELETE CASCADE` configured ho to related child records delete ho sakte hain! Isliye hamesha `ON DUPLICATE KEY UPDATE` prefer karein.
 
 ---
 
-## 9. Best Practices (बेस्ट प्रैक्टिसेस)
+## 9. Best Practices
 
-1. **डेवलपमेंट में हमेशा `sql_safe_updates` ऑन रखें**:
+1. **Development Me Hamesha `sql_safe_updates` On Rakhein**:
    ```sql
    SET sql_safe_updates = 1;
    ```
-2. **`UPDATE` या `DELETE` चलाने से पहले हमेशा `SELECT` करके चेक करें**:
-   * इसे चलाने से पहले:
+2. **`UPDATE` Aur `DELETE` Chalane Se Pehle Hamesha `SELECT` Karke Check Karein**:
+   * Is query ko execute karne se pehle:
      ```sql
      DELETE FROM orders WHERE status = 'Cancelled' AND order_date < '2022-01-01';
      ```
-   * हमेशा पहले यह चलाएं:
+   * Pehle count check karein:
      ```sql
      SELECT COUNT(*) FROM orders WHERE status = 'Cancelled' AND order_date < '2022-01-01';
      ```
-   * संख्या देखकर पुष्टि करें कि सिर्फ वही रिकॉर्ड्स प्रभावित हो रहे हैं जिन्हें आप सच में हटाना चाहते हैं।
-3. **मल्टी-स्टेप बदलावों के लिए हमेशा Transactions का उपयोग करें**:
-   * जब एक टेबल को अपडेट करना दूसरी टेबल पर निर्भर हो (जैसे आर्डर बनाना और इन्वेंट्री स्टॉक घटाना), तो दोनों को एक ट्रांजेक्शन में लपेटें: `START TRANSACTION; ... COMMIT;` ताकि आधा-अधूरा काम कभी न हो।
-4. **बड़ी टेबल्स से डेटा हटाते समय `LIMIT` के साथ बैचिंग करें**:
-   * करोड़ों रिकॉर्ड्स को एक साथ डिलीट करने से टेबल लॉक हो जाती है और Undo Log भर जाता है। हमेशा टुकड़ों (batches) में डिलीट करें:
+   * Record count inspect karne ke baad hi mutation run karein.
+3. **Multi-Step Updates Ke Liye Transactions Use Karein**:
+   * Jab ek table ka modification doosre table par depend kare (jaise naya order create karke product ki `stock_quantity` ghatana), to dono statements ko transaction me wrap karein: `START TRANSACTION; ... COMMIT;`.
+4. **Large Datasets Par Deletions Ko `LIMIT` Ke Sath Batch Karein**:
+   * Millions of rows ek sath delete karne se table lock ho jaati hai aur Undo Log blow up ho jata hai. Isliye batching karein:
      ```sql
      DELETE FROM application_logs WHERE log_date < '2022-01-01' LIMIT 5000;
      ```
-     इसे तब तक लूप में चलाएं जब तक 0 rows affected न आ जाए।
+     Is query ko loop me tab tak chalayein jab tak 0 rows affected na ho jayein.
 
 ---
 
-## 10. Practice Questions (अभ्यास प्रश्न)
+## 10. Practice Questions
 
-### Easy (सरल)
-1. `departments` टेबल में `'Legal'` नाम का एक नया डिपार्टमेंट जोड़ने के लिए SQL क्वेरी लिखें जिसकी लोकेशन `'London'` हो।
-2. `employees` टेबल से केवल `first_name`, `last_name`, और `salary` निकालने के लिए स्टेटमेंट लिखें।
-3. `customers` टेबल में उस कस्टमर का फोन नंबर `'555-9999'` अपडेट करने की क्वेरी लिखें जिसकी `customer_id = 1` है।
+### Easy
+1. `departments` table me `'London'` city me situated `'Legal'` naam ka ek naya department insert karne ke liye SQL query likhiye.
+2. `employees` table se sirf `first_name`, `last_name`, aur `salary` fetch karne ke liye statement likhiye.
+3. Customer jiska `customer_id = 1` hai, uska phone number update karke `'555-9999'` set karne ke liye query likhiye.
 
-### Medium (मध्यम)
-4. एक ही बल्क `INSERT` स्टेटमेंट में `products` टेबल के अंदर स्टेशनरी से जुड़े तीन अलग-अलग प्रोडक्ट्स एक साथ जोड़ने की क्वेरी लिखें।
-5. एक ऐसी `UPDATE` स्टेटमेंट लिखें जो डिपार्टमेंट 1 (`Engineering`) के सभी कर्मचारियों की सैलरी में 8% की बढ़ोतरी कर दे।
-6. `payments` टेबल से उन सभी पेमेंट्स को डिलीट करने के लिए क्वेरी लिखें जिनका `payment_status` `'Failed'` है।
+### Medium
+4. Ek single bulk `INSERT` statement likhiye jo `products` table me ek hi command ke andar teen alag-alag office supply products add kare.
+5. Ek `UPDATE` statement likhiye jo department 1 (`Engineering`) ke har employee ki `salary` 8% badha de.
+6. Aisi sabhi payments ko delete karne ke liye query likhiye jinka `payment_status` value `'Failed'` hai.
 
-### Difficult (कठिन)
-7. `suppliers` टेबल के लिए एक ऐसा `INSERT ... ON DUPLICATE KEY UPDATE` स्टेटमेंट लिखें जो यदि सप्लायर पहले से मौजूद हो, तो उसके `contact_name` और `contact_phone` को नए मानों से अपडेट कर दे, अन्यथा नया सप्लायर इंसर्ट करे।
-8. एक मल्टी-टेबल `DELETE` स्टेटमेंट लिखें जो उन कस्टमर्स के सभी ऑर्डर्स को हटा दे जो `2021-01-01` से पहले रजिस्टर हुए थे और जिनके `loyalty_points = 0` हैं (और मान लें कि `order_items` कैस्केडिंग डिलीट से हट जाएंगे)।
+### Difficult
+7. `suppliers` table ke liye ek idempotent `INSERT ... ON DUPLICATE KEY UPDATE` statement likhiye. Agar `supplier_name` ya `contact_email` already exist karta hai to `contact_name` aur `contact_phone` ko nayi values se update karein; warna naya supplier insert karein.
+8. Ek multi-table `DELETE` statement likhiye jo un customers ke orders ko remove kare jinhone `2021-01-01` se pehle register kiya tha aur jinke `loyalty_points = 0` hain (aur `ON DELETE CASCADE` ke through unke order items bhi delete ho jayein).
 
 ---
 
-## 11. Interview Questions (इंटरव्यू प्रश्न और उत्तर)
+## 11. Interview Questions
 
-### Q1: 1,000 अलग-अलग सिंगल इंसर्ट्स चलाने और 1,000 टुपल्स वाले एक सिंगल बल्क इंसर्ट में परफॉरमेंस का क्या फर्क होता है?
-**Answer**: अलग-अलग 1,000 `INSERT` स्टेटमेंट्स चलाने का मतलब है 1,000 अलग-अलग नेटवर्क राउंड-ट्रिप्स, 1,000 बार क्वेरी पार्सिंग और ऑप्टिमाइज़ेशन, और यदि `autocommit` ऑन है, तो InnoDB ट्रांजेक्शन Redo Log में 1,000 बार डिस्क राइट (I/O flush)। इसके विपरीत, एक सिंगल मल्टी-रो `INSERT INTO table VALUES (...), (...), ...` सारा डेटा एक नेटवर्क पैकेट में भेजता है, एक बार पार्स होता है, और एक ही लॉग राइट में पूरा बैच कमिट हो जाता है। यह अक्सर 20x से 100x गुना तेज़ परफॉरमेंस देता है।
+### Q1: 1,000 individual row inserts ke comparison me 1,000 tuples ka ek single batch insert chalane me kya performance difference hota hai?
+**Answer**: Agar aap 1,000 alag-alag `INSERT` statements bhejte hain, to database 1,000 alag-alag network round-trips face karta hai, query parser 1,000 baar execute hota hai, aur agar `autocommit` on hai to InnoDB Redo Log disk par 1,000 baar flush hota hai. Jabki ek single multi-row `INSERT INTO table VALUES (...), (...), ...` statement saari rows ko ek hi network packet me bundle karta hai, ek baar parse hota hai, aur batch ko single log write me commit karta hai. Isse aksar 20x se 100x tak massive performance speedup milta hai.
 
-### Q2: `REPLACE INTO` और `INSERT ... ON DUPLICATE KEY UPDATE` में क्या अंतर है?
+### Q2: `REPLACE INTO` aur `INSERT ... ON DUPLICATE KEY UPDATE` me kya farq hota hai?
 **Answer**:
-* `REPLACE INTO` अंदरूनी तौर पर पहले `DELETE` और फिर `INSERT` करता है। अगर डुप्लीकेट की मिलती है, तो पुरानी रो को मिटाकर नई रो बनाई जाती है। इसका नतीजा यह होता है कि `AUTO_INCREMENT` आईडी आगे बढ़ जाती है, जो कॉलम्स क्वेरी में नहीं दिए गए वे डिफ़ॉल्ट पर रीसेट हो जाते हैं, और यदि किसी टेबल पर `ON DELETE CASCADE` लगा है तो उससे जुड़े चाइल्ड रिकॉर्ड्स भी डिलीट हो सकते हैं।
-* `INSERT ... ON DUPLICATE KEY UPDATE` (UPSERT) उसी पुरानी रो पर इन-प्लेस `UPDATE` करता है। इससे रो की पहचान, ऑटो-इंक्रीमेंट आईडी और बाकी सभी अनछुए कॉलम्स सुरक्षित रहते हैं, और कोई खतरनाक कैस्केड डिलीट ट्रिगर नहीं होता।
+* `REPLACE INTO` ka internal mechanism ye hota hai ki duplicate key milne par purani row physically `DELETE` hoti hai aur bilkul nayi row `INSERT` hoti hai. Is wajah se auto-increment counter aage badh jata hai, statement me mention na kiye gaye columns default values par reset ho jaate hain, aur dependent child tables me `ON DELETE CASCADE` laga ho to child records permanently delete ho jaate hain.
+* `INSERT ... ON DUPLICATE KEY UPDATE` existing row par ek in-place `UPDATE` perform karta hai. Purani row ki identity, auto-increment counter aur unmentioned columns intact rehte hain, aur foreign key cascade delete hone ka koi risk nahi rehta.
 
-### Q3: MySQL का `sql_safe_updates` मोड क्या होता है और यह क्यों ज़रूरी है?
-**Answer**: `sql_safe_updates` एक सेशन और ग्लोबल कॉन्फ़िगरेशन वेरिएबल है (`SET sql_safe_updates = 1;`)। जब यह सक्रिय होता है, तो MySQL ऐसी किसी भी `UPDATE` या `DELETE` स्टेटमेंट को चलाने से साफ मना कर देता है जिसमें प्राइमरी की या इंडेक्स्ड कॉलम वाला `WHERE` क्लॉज़ न हो, या explicit `LIMIT` न लगा हो। यह डेवलपर्स को उन जानलेवा मानवीय गलतियों से बचाता है जहाँ बिना `WHERE` क्लॉज़ के पूरी टेबल का डेटा अनजाने में बदल या उड़ जाता है।
+### Q3: MySQL ka `sql_safe_updates` mode kya hota hai aur ye kyun important hai?
+**Answer**: `sql_safe_updates` ek safety configuration variable hai (`SET sql_safe_updates = 1;`). Jab ye mode enabled hota hai, to MySQL aisi kisi bhi `UPDATE` ya `DELETE` query ko execute karne se strictly refuse kar deta hai jisme key column (primary key ya indexed column) par based `WHERE` clause na ho ya explicit `LIMIT` clause missing ho. Iska sabse bada benefit ye hai ki developers ya DBAs ki accidental galti se poori table ka data wipe out ya overwrite hone se bacha rehta hai.
 
 ---
 
-## 12. Quick Revision (त्वरित सारांश / क्विक रिविजन)
+## 12. Quick Revision
 
-* **CRUD** का सीधा संबंध SQL की चार मुख्य क्रियाओं से है: `INSERT`, `SELECT`, `UPDATE`, और `DELETE`।
-* भविष्य के स्कीमा बदलावों से अपने कोड को सुरक्षित रखने के लिए `INSERT` में हमेशा **Explicit Column Lists** लिखें।
-* बड़े डेटासेट्स को बिजली की तेज़ी से लोड करने के लिए हमेशा **Bulk Inserts** का इस्तेमाल करें।
-* कभी भी बिना पहले `SELECT` करके चेक किए `UPDATE` या `DELETE` न चलाएं, और डेवलपमेंट में `sql_safe_updates = 1` हमेशा ऑन रखें।
-* डेटा सिंक करने के लिए हमेशा `INSERT ... ON DUPLICATE KEY UPDATE` (UPSERT) का उपयोग करें; `REPLACE INTO` से बचें क्योंकि यह डेटा डिलीट करके फिर से इंसर्ट करता है।
+* **CRUD** operations directly SQL ke char main verbs se map hote hain: `INSERT`, `SELECT`, `UPDATE`, aur `DELETE`.
+* Future schema alterations se code ko safe rakhne ke liye `INSERT` me hamesha **explicit column lists** mention karein.
+* Large data volumes ko fast ingest karne ke liye single inserts ke bajaye hamesha **bulk inserts** use karein.
+* Bina `WHERE` clause check kiye kabhi bhi `UPDATE` ya `DELETE` mat chalayein, aur development me hamesha `sql_safe_updates` mode on rakhein.
+* Idempotent data synchronization ke liye hamesha `INSERT ... ON DUPLICATE KEY UPDATE` (UPSERT) use karein; `REPLACE INTO` ko delete-and-reinsert side effects ki wajah se avoid karein.

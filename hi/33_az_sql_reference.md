@@ -1,313 +1,313 @@
-# अध्याय 33 — मास्टर A–Z SQL और MySQL संदर्भ लेक्सिकॉन (A–Z SQL Reference Lexicon)
+# Chapter 33 — The Master A–Z SQL & MySQL Reference Lexicon
 
-SQL कीवर्ड्स, MySQL कमांड्स, बिल्ट-इन फंक्शन्स, ऑपरेटर्स और रिलेशनल डेटाबेस कॉन्सेप्ट्स का एक विस्तृत वर्णमाला (alphabetical) डिक्शनरी संदर्भ।
+SQL keywords, MySQL commands, built-in functions, operators, aur relational database concepts ki ek exhaustive alphabetical dictionary.
 
 ---
 
 ### A
-* **`ABS(X)`**: बिल्ट-इन मैथमेटिकल फंक्शन जो $X$ का निरपेक्ष (absolute/positive) मान लौटाता है।
+* **`ABS(X)`**: Built-in mathematical function jo $X$ ka absolute (positive) magnitude return karta hai.
   ```sql
   SELECT ABS(-25.5); -- 25.5
   ```
-* **`ACID`**: रिलेशनल ट्रांजैक्शन की चार मूलभूत गारंटियाँ: **A**tomicity (परमाणुता), **C**onsistency (सुसंगतता), **I**solation (अलगाव), **D**urability (स्थायित्व)।
-* **`ACTION`**: रेफरेंशियल इंटीग्रिटी स्पेसिफिकेशन्स में इस्तेमाल होने वाला कीवर्ड (`ON DELETE NO ACTION`, `ON UPDATE CASCADE`)।
-* **`ADD COLUMN`**: टेबल में नया कॉलम जोड़ने के लिए `ALTER TABLE` का क्लॉज।
+* **`ACID`**: Relational transaction ki chaar fundamental guarantees: **A**tomicity, **C**onsistency, **I**solation, **D**urability.
+* **`ACTION`**: Referential integrity specifications mein use hone wala keyword (`ON DELETE NO ACTION`, `ON UPDATE CASCADE`).
+* **`ADD COLUMN`**: Table mein naya column add karne ke liye use hone wala `ALTER TABLE` clause.
   ```sql
   ALTER TABLE employees ADD COLUMN middle_name VARCHAR(50);
   ```
 * **`AFTER`**:
-  1. `ALTER TABLE ... ADD COLUMN col INT AFTER existing_col;` में स्थितीय संशोधक (positional modifier)।
-  2. डेटाबेस ट्रिगर्स के लिए टाइमिंग स्पेसिफायर (`CREATE TRIGGER trg AFTER INSERT ...`)।
+  1. `ALTER TABLE ... ADD COLUMN col INT AFTER existing_col;` mein positional modifier.
+  2. Database triggers ke liye timing specifier (`CREATE TRIGGER trg AFTER INSERT ...`).
 * **`ALL`**:
-  1. `UNION ALL` में सेट ऑपरेटर संशोधक जो डुप्लिकेट पंक्तियों को सुरक्षित रखता है।
-  2. सबक्वेरी तुलना क्वांटिफायर (`WHERE salary > ALL (SELECT salary FROM ...)` )।
-* **`ALTER DATABASE`**: किसी मौजूदा डेटाबेस की विशेषताओं (जैसे डिफ़ॉल्ट कैरेक्टर सेट और कोलेशन) को संशोधित करता है।
-* **`ALTER TABLE`**: टेबल कॉलम्स, इंडेक्स और कंस्ट्रेंट्स को जोड़ने, संशोधित करने, नाम बदलने या हटाने के लिए प्रयुक्त DDL स्टेटमेंट।
-* **`ALTER VIEW`**: किसी मौजूदा व्यू को बिना ड्रॉप किए उसकी क्वेरी परिभाषा को संशोधित करता है।
-* **`AND`**: लॉजिकल ऑपरेटर जो दोनों बूलियन कंडीशन्स के `TRUE` होने पर ही `TRUE` लौटाता है। इसकी प्राथमिकता `OR` से अधिक होती है।
-* **`ANY`**: सबक्वेरी तुलना ऑपरेटर जो सबक्वेरी द्वारा लौटाई गई कम से कम एक पंक्ति के लिए तुलना संतुष्ट होने पर `TRUE` लौटाता है।
-* **`AS`**: कॉलम एलियास (`SELECT salary AS base_pay`) या टेबल एलियास (`FROM customers AS c`) को परिभाषित करने के लिए उपयोग किया जाने वाला कीवर्ड।
-* **`ASC`**: `ORDER BY` में सॉर्ट ऑर्डर स्पेसिफायर जो आरोही (ascending) क्रम (छोटे से बड़ा) इंगित करता है। यह डिफ़ॉल्ट होता है।
-* **`AUTO_INCREMENT`**: MySQL में कॉलम विशेषता जो नई पंक्तियों के लिए स्वचालित रूप से क्रमिक पूर्णांक पहचानकर्ता (sequential integer IDs) उत्पन्न करती है।
-* **`AVG(X)`**: एग्रीगेट फंक्शन जो $X$ के नॉन-नल मानों का अंकगणितीय औसत (arithmetic mean) लौटाता है।
+  1. `UNION ALL` mein set operator modifier jo duplicate rows ko preserve rakhta hai.
+  2. Subquery comparison quantifier (`WHERE salary > ALL (SELECT salary FROM ...)`).
+* **`ALTER DATABASE`**: Existing database ki characteristics (jaise default character set aur collation) ko modify karta hai.
+* **`ALTER TABLE`**: Table columns, indexes, aur constraints ko add, modify, rename, ya drop karne ke liye use hone wala DDL statement.
+* **`ALTER VIEW`**: Existing view ko drop kiye bina uski query definition ko modify karta hai.
+* **`AND`**: Logical operator jo sirf tabhi `TRUE` return karta hai jab dono boolean conditions `TRUE` hon. Iski precedence `OR` se higher hoti hai.
+* **`ANY`**: Subquery comparison operator jo `TRUE` return karta hai agar subquery dwara return ki gayi kam se kam ek row ke liye condition satisfy ho jaye.
+* **`AS`**: Column aliases (`SELECT salary AS base_pay`) ya table aliases (`FROM customers AS c`) define karne ke liye use hone wala keyword.
+* **`ASC`**: `ORDER BY` mein ascending sort sequence (smallest se largest) indicate karne wala specifier. Ye default hota hai.
+* **`AUTO_INCREMENT`**: MySQL column attribute jo nayi rows ke liye automatically sequential integer identifiers generate karta hai.
+* **`AVG(X)`**: Aggregate function jo $X$ ki non-null values ka arithmetic mean return karta hai.
 
 ---
 
 ### B
-* **`BCNF` (Boyce-Codd Normal Form)**: उन्नत सामान्य रूप (advanced normal form) जहाँ प्रत्येक फंक्शनल डिपेंडेंसी $X \rightarrow Y$ के लिए, $X$ एक सुपर की (Super Key) होना चाहिए।
-* **`BEFORE`**: ट्रिगर्स के लिए टाइमिंग स्पेसिफायर (`CREATE TRIGGER trg BEFORE INSERT ...`), जो डेटा वैलिडेशन और आने वाले `NEW` रो मानों को संशोधित करने के लिए उपयोगी है।
-* **`BEGIN`**: ट्रांजैक्शन ब्लॉक शुरू करने का शॉर्टहैंड (`BEGIN;` या `START TRANSACTION;`), या प्रक्रियात्मक कोड को घेरने के लिए (`BEGIN ... END`)।
-* **`BETWEEN`**: रेंज ऑपरेटर जो परीक्षण करता है कि कोई मान समावेशी निरंतर सीमा $[A, B]$ के अंतर्गत आता है या नहीं।
+* **`BCNF` (Boyce-Codd Normal Form)**: Advanced normal form jahan har functional dependency $X \rightarrow Y$ ke liye, determinant $X$ hamesha ek Super Key hona chahiye.
+* **`BEFORE`**: Triggers ke liye timing specifier (`CREATE TRIGGER trg BEFORE INSERT ...`), jo data validation aur incoming `NEW` row values modify karne ke liye useful hota hai.
+* **`BEGIN`**: Transaction block start karne ka shorthand (`BEGIN;` ya `START TRANSACTION;`), ya procedural code ko enclose karne wala keyword (`BEGIN ... END`).
+* **`BETWEEN`**: Range operator jo test karta hai ki koi value inclusive continuous range $[A, B]$ ke andar fall karti hai ya nahi.
   ```sql
   WHERE unit_price BETWEEN 10.00 AND 50.00
   ```
-* **`BIGINT`**: 8-बाइट पूर्णांक प्रकार जो $-9.22 \times 10^{18}$ से $+9.22 \times 10^{18}$ तक के मानों को कवर करता है (या `UNSIGNED` होने पर $1.84 \times 10^{19}$ तक)।
-* **`BINARY`**: कैरेक्टर सेट इंटरप्रिटेशन के बिना फिक्स्ड-लेंथ रॉ बाइट स्ट्रिंग्स को स्टोर करने वाला डेटा टाइप।
-* **`BIT`**: बिट-फील्ड मानों को स्टोर करने वाला डेटा टाइप (उदा. `BIT(8)`)।
-* **`BLOB`**: बाइनरी लार्ज ऑब्जेक्ट डेटा टाइप जिसका उपयोग वेरिएबल-लेंथ बाइनरी पेलोड (स्टैंडर्ड `BLOB` के लिए 64 KB तक, `LONGBLOB` के लिए 4 GB तक) स्टोर करने के लिए किया जाता है।
-* **`BOOLEAN` / `BOOL`**: MySQL में `TINYINT(1)` के समानार्थी। शून्य (`0`) `FALSE` का प्रतिनिधित्व करता है; गैर-शून्य (आमतौर पर `1`) `TRUE` का प्रतिनिधित्व करता है।
-* **`B+ Tree`**: बैलेंस्ड ट्री डेटा संरचना जिसका उपयोग MySQL InnoDB द्वारा क्लस्टर्ड और सेकेंडरी इंडेक्स को स्टोर करने के लिए किया जाता है।
+* **`BIGINT`**: 8-byte integer type jo $-9.22 \times 10^{18}$ se $+9.22 \times 10^{18}$ tak (ya `UNSIGNED` hone par $1.84 \times 10^{19}$ tak) values cover karta hai.
+* **`BINARY`**: Fixed-length raw byte strings ko bina character set interpretation ke store karne wala data type.
+* **`BIT`**: Bit-field values store karne wala data type (e.g., `BIT(8)`).
+* **`BLOB`**: Binary Large Object data type jo variable-length binary payloads store karne ke liye use hota hai (standard `BLOB` ke liye 64 KB tak, `LONGBLOB` ke liye 4 GB tak).
+* **`BOOLEAN` / `BOOL`**: MySQL mein `TINYINT(1)` ke synonyms. Zero (`0`) `FALSE` represent karta hai; non-zero (typically `1`) `TRUE` represent karta hai.
+* **`B+ Tree`**: Balanced tree data structure jise MySQL InnoDB clustered aur secondary indexes store karne ke liye use karta hai.
 
 ---
 
 ### C
-* **`CALL`**: स्टोर्ड प्रोसीजर को निष्पादित करने के लिए उपयोग किया जाने वाला स्टेटमेंट।
+* **`CALL`**: Stored Procedure ko execute karne ke liye use hone wala statement.
   ```sql
   CALL sp_get_employee_payroll(101);
   ```
-* **`CASCADE`**: फॉरेन कीज में रेफरेंशियल एक्शन (`ON DELETE CASCADE`, `ON UPDATE CASCADE`) जो पैरेंट रो के विलोपन या अपडेट को चाइल्ड पंक्तियों में स्वचालित रूप से प्रोपेगेट करता है।
-* **`CASE`**: मल्टी-ब्रांच कंडीशनल एक्सप्रेशन जो बूलियन मूल्यांकन के आधार पर मान लौटाता है।
+* **`CASCADE`**: Foreign keys mein referential action (`ON DELETE CASCADE`, `ON UPDATE CASCADE`) jo parent deletions ya updates ko child rows par propagate karta hai.
+* **`CASE`**: Boolean evaluations ke basis par values return karne wala multi-branch conditional expression.
   ```sql
   CASE WHEN points > 500 THEN 'Gold' ELSE 'Silver' END
   ```
-* **`CAST()`**: वह फंक्शन जो किसी एक्सप्रेशन को एक डेटा प्रकार से दूसरे में स्पष्ट रूप से परिवर्तित करता है (`CAST('2023-01-01' AS DATE)` )।
-* **`CEIL()` / `CEILING()`**: किसी संख्या से बड़े या उसके बराबर सबसे छोटे पूर्णांक को लौटाता है (राउंड अप करता है)।
-* **`CHANGE COLUMN`**: कॉलम का नाम बदलने और वैकल्पिक रूप से इसके डेटा प्रकार और विशेषताओं को बदलने के लिए इस्तेमाल किया जाने वाला `ALTER TABLE` का क्लॉज।
-* **`CHAR()`**: फिक्स्ड-लेंथ कैरेक्टर स्ट्रिंग प्रकार जो स्पेस के साथ राइट-पैड होकर 255 कैरेक्टर्स तक स्टोर करता है।
-* **`CHAR_LENGTH()`**: किसी स्ट्रिंग में कैरेक्टर्स की संख्या लौटाता है (UTF-8 कैरेक्टर-अवेयर)।
-* **`CHECK`**: इंटीग्रिटी कंस्ट्रेंट जो सत्यापित करता है कि पंक्ति के मान बूलियन अभिव्यक्ति को संतुष्ट करते हैं (MySQL 8.0.16+ में एनफोर्स किया गया)।
-* **`CLUSTERED INDEX`**: InnoDB में प्राथमिक भौतिक B+ Tree इंडेक्स जहाँ लीफ पेजेज वास्तविक टेबल रो डेटा को स्टोर करते हैं।
-* **`COALESCE()`**: एक आर्बिट्रेरी तर्क सूची में से पहला गैर-नल (non-NULL) एक्सप्रेशन लौटाने वाला फंक्शन।
-* **`COLLATE`**: कैरेक्टर स्ट्रिंग की तुलना और सॉर्टिंग के लिए कोलेशन नियम (केस सेंसिटिविटी, एक्सेंट सेंसिटिविटी) निर्दिष्ट करता है।
-* **`COMMIT`**: TCL स्टेटमेंट जो सक्रिय ट्रांजैक्शन के दौरान किए गए सभी संशोधनों को डिस्क पर स्थायी रूप से सहेजता है।
-* **`CONCAT()`**: कई स्ट्रिंग्स को एक साथ जोड़ने वाला फंक्शन। यदि कोई तर्क `NULL` हो तो `NULL` लौटाता है।
-* **`CONCAT_WS()`**: Concatenate With Separator। एक डेलिमिटर का उपयोग करके स्ट्रिंग्स को जोड़ता है और `NULL` तर्कों को छोड़ देता है।
-* **`CONSTRAINT`**: रिलेशनल या डोमेन वैधता को लागू करने वाला स्कीमा नियम (`PRIMARY KEY`, `FOREIGN KEY`, `UNIQUE`, `CHECK`)।
-* **`COUNT()`**: मानदंडों से मेल खाने वाली पंक्तियों की संख्या लौटाने वाला एग्रीगेट फंक्शन (`COUNT(*)` बनाम `COUNT(col)`)।
-* **`CREATE`**: डेटाबेस, टेबल, व्यू, इंडेक्स, प्रोसीजर, फंक्शन या ट्रिगर बनाने के लिए प्रयुक्त DDL स्टेटमेंट।
-* **`CROSS JOIN`**: दो टेबल्स का कार्टेशियन उत्पाद ($N \times M$) उत्पन्न करने वाला जॉइन।
-* **`CTE (Common Table Expression)`**: `WITH` क्लॉज का उपयोग करके परिभाषित अस्थायी, नामित परिणाम सेट।
-* **`CURDATE()`**: वर्तमान तिथि को `'YYYY-MM-DD'` प्रारूप में लौटाने वाला फंक्शन।
-* **`CURRENT_TIMESTAMP()`**: वर्तमान दिनांक और समय लौटाने वाला फंक्शन (`NOW()` का समानार्थी)।
-* **`CURTIME()`**: वर्तमान समय को `'HH:MM:SS'` प्रारूप में लौटाने वाला फंक्शन।
+* **`CAST()`**: Expression ko explicitly ek data type se doosre data type mein convert karne wala function (`CAST('2023-01-01' AS DATE)`).
+* **`CEIL()` / `CEILING()`**: Number se greater than ya equal smallest integer return karta hai (rounds up).
+* **`CHANGE COLUMN`**: Column ko rename karne aur optionally uska data type aur attributes alter karne ke liye use hone wala `ALTER TABLE` clause.
+* **`CHAR()`**: Fixed-length character string type jo 255 characters tak store karta hai aur right side spaces se pad hota hai.
+* **`CHAR_LENGTH()`**: String mein characters ki sankhya return karta hai (UTF-8 character-aware).
+* **`CHECK`**: Integrity constraint jo validate karta hai ki row values boolean expression ko satisfy karein (MySQL 8.0.16+ mein enforced).
+* **`CLUSTERED INDEX`**: InnoDB mein primary physical B+ Tree index jahan leaf pages actual table row data store karte hain.
+* **`COALESCE()`**: Arbitrary argument list se pehli non-NULL expression return karne wala function.
+* **`COLLATE`**: Character string comparison aur sorting ke liye collation rules (case sensitivity, accent sensitivity) specify karta hai.
+* **`COMMIT`**: TCL statement jo active transaction ke dauran kiye gaye saare modifications ko disk par permanently persist karta hai.
+* **`CONCAT()`**: Multiple strings ko join karke ek string banata hai. Agar koi bhi argument `NULL` ho toh `NULL` return karta hai.
+* **`CONCAT_WS()`**: Concatenate With Separator. Delimiter ka use karke strings join karta hai aur `NULL` arguments ko skip kar deta hai.
+* **`CONSTRAINT`**: Schema rule jo relational ya domain validity enforce karta hai (`PRIMARY KEY`, `FOREIGN KEY`, `UNIQUE`, `CHECK`).
+* **`COUNT()`**: Criteria match karne wali rows ki sankhya return karne wala aggregate function (`COUNT(*)` vs `COUNT(col)`).
+* **`CREATE`**: Databases, tables, views, indexes, procedures, functions, ya triggers instantiate karne ke liye use hone wala DDL statement.
+* **`CROSS JOIN`**: Do tables ka Cartesian Product ($N \times M$) produce karne wala join.
+* **`CTE (Common Table Expression)`**: `WITH` clause ka use karke define kiya gaya temporary named result set.
+* **`CURDATE()`**: Current date ko `'YYYY-MM-DD'` format mein return karne wala function.
+* **`CURRENT_TIMESTAMP()`**: Current date aur time return karne wala function (`NOW()` ka synonym).
+* **`CURTIME()`**: Current time ko `'HH:MM:SS'` format mein return karne wala function.
 
 ---
 
 ### D
-* **`DATABASE()`**: सक्रिय डिफ़ॉल्ट डेटाबेस का नाम लौटाने वाला बिल्ट-इन फंक्शन।
-* **`DATE`**: `'1000-01-01'` से `'9999-12-31'` तक कैलेंडर तिथियों को संग्रहीत करने वाला 3-बाइट टेम्पोरल डेटा प्रकार।
-* **`DATETIME`**: टाइमज़ोन रूपांतरण के बिना दिनांक और समय को स्थिर रूप से संग्रहीत करने वाला 5-बाइट टेम्पोरल डेटा प्रकार।
-* **`DATE_ADD()`**: किसी तिथि में टेम्पोरल अंतराल जोड़ने वाला फंक्शन (`DATE_ADD(CURDATE(), INTERVAL 7 DAY)` )।
-* **`DATE_FORMAT()`**: किसी प्रारूप स्ट्रिंग के अनुसार दिनांक मान को फॉर्मेट करने वाला फंक्शन (`DATE_FORMAT(NOW(), '%Y-%m-%d')` )।
-* **`DATE_SUB()`**: किसी तिथि से टेम्पोरल अंतराल घटाने वाला फंक्शन।
-* **`DATEDIFF()`**: दो तिथियों के बीच दिनों का अंतर लौटाने वाला फंक्शन (`d1 - d2`)।
-* **`DAY()` / `DAYOFMONTH()`**: किसी तिथि से महीने का दिन (1-31) निकालता है।
-* **`DAYNAME()`**: सप्ताह के दिन का नाम लौटाता है (उदा. `'Monday'`)।
-* **`DECIMAL(M, D)`**: फिक्स्ड-पॉइंट न्यूमेरिक डेटा टाइप जो $M$ कुल अंकों और $D$ दशमलव स्थानों के साथ सटीक संख्यात्मक मान संग्रहीत करता है। मुद्रा (currency) के लिए अनिवार्य।
-* **`DECLARE`**: स्थानीय वेरिएबल्स, कंडीशन्स, कर्सर और एरर हैंडलर्स को परिभाषित करने के लिए स्टोर्ड रूटीन में उपयोग किया जाने वाला कीवर्ड।
-* **`DEFAULT`**: कॉलम के लिए फॉलबैक मान निर्दिष्ट करने वाला कंस्ट्रेंट जब कोई `INSERT` स्टेटमेंट इसे छोड़ देता है।
-* **`DELETE`**: फ़िल्टर स्थिति के आधार पर किसी टेबल से मौजूदा पंक्तियों को हटाने के लिए उपयोग किया जाने वाला DML स्टेटमेंट।
-* **`DELIMITER`**: स्टोर्ड रूटीन बनाते समय स्टेटमेंट टर्मिनेशन कैरेक्टर को बदलने के लिए क्लाइंट यूटिलिटी कमांड।
-* **`DENSE_RANK()`**: विंडो फंक्शन जो टाई होने पर नंबर छोड़े बिना पार्टीशन के भीतर पंक्तियों को रैंक नंबर प्रदान करता है।
+* **`DATABASE()`**: Active default database ka naam return karne wala built-in function.
+* **`DATE`**: 3-byte temporal data type jo `'1000-01-01'` se `'9999-12-31'` tak calendar dates store karta hai.
+* **`DATETIME`**: 5-byte temporal data type jo bina timezone conversion ke statically date aur time store karta hai.
+* **`DATE_ADD()`**: Date mein temporal interval add karne wala function (`DATE_ADD(CURDATE(), INTERVAL 7 DAY)`).
+* **`DATE_FORMAT()`**: Format string ke mutabiq date value ko format karne wala function (`DATE_FORMAT(NOW(), '%Y-%m-%d')`).
+* **`DATE_SUB()`**: Date se temporal interval subtract karne wala function.
+* **`DATEDIFF()`**: Do dates ke beech days mein difference return karne wala function (`d1 - d2`).
+* **`DAY()` / `DAYOFMONTH()`**: Date se day of the month component (1–31) extract karta hai.
+* **`DAYNAME()`**: Day of the week ka name return karta hai (e.g., `'Monday'`).
+* **`DECIMAL(M, D)`**: Exact numerical values store karne wala fixed-point numeric data type ($M$ total digits aur $D$ decimal places). Currency ke liye mandatory hai.
+* **`DECLARE`**: Stored routines mein local variables, conditions, cursors, aur error handlers define karne ke liye use hone wala procedural keyword.
+* **`DEFAULT`**: Column ke liye fallback value specify karne wala constraint jab `INSERT` statement use omit kar de.
+* **`DELETE`**: Filter condition ke basis par table se existing rows remove karne ke liye use hone wala DML statement.
+* **`DELIMITER`**: Stored routines create karte waqt statement termination character change karne ke liye client utility command.
+* **`DENSE_RANK()`**: Window function jo ties par numbers skip kiye bina partition ke andar rows ko rank assign karta hai.
 * **`DESC` / `DESCRIBE`**:
-  1. टेबल संरचनात्मक मेटाडेटा का निरीक्षण करने के लिए स्टेटमेंट (`DESC employees;`)।
-  2. `ORDER BY` में अवरोही (descending) सॉर्ट क्रम को इंगित करने वाला कीवर्ड।
-* **`DETERMINISTIC`**: कीवर्ड यह घोषित करता है कि स्टोर्ड फंक्शन समान इनपुट के लिए हमेशा सटीक समान परिणाम लौटाएगा।
-* **`DISTINCT`**: क्वेरी परिणामों से डुप्लिकेट पंक्तियों को समाप्त करने के लिए `SELECT` में उपयोग किया जाने वाला कीवर्ड।
-* **`DROP`**: डेटाबेस, टेबल, व्यू, इंडेक्स या स्टोर्ड रूटीन को स्थायी रूप से नष्ट करने वाला DDL स्टेटमेंट।
+  1. Table structural metadata inspect karne ke liye statement (`DESC employees;`).
+  2. `ORDER BY` mein descending sort order indicate karne wala keyword.
+* **`DETERMINISTIC`**: Keyword jo declare karta hai ki stored function identical inputs ke liye hamesha exact same result return karega.
+* **`DISTINCT`**: Query results se duplicate rows eliminate karne ke liye `SELECT` mein use hone wala keyword.
+* **`DROP`**: Databases, tables, views, indexes, ya stored routines ko permanently destroy karne wala DDL statement.
 
 ---
 
 ### E
-* **`ENUM`**: टेबल निर्माण के दौरान परिभाषित अनुमत मानों की एक स्थिर सूची में से चुने गए मान के साथ स्ट्रिंग ऑब्जेक्ट।
-* **`eq_ref`**: `EXPLAIN` में उच्च-प्रदर्शन जॉइन एक्सेस प्रकार जहाँ पूर्ववर्ती टेबल के प्रत्येक पंक्ति संयोजन के लिए टेबल से ठीक एक पंक्ति पढ़ी जाती है।
-* **`EXISTS`**: सबक्वेरी द्वारा लौटाई गई पंक्तियों के अस्तित्व का परीक्षण करने वाला बूलियन ऑपरेटर।
-* **`EXPLAIN`**: MySQL कॉस्ट-बेस्ड ऑप्टिमाइज़र (CBO) द्वारा चुने गए निष्पादन योजना (execution plan) को प्रदर्शित करने वाला स्टेटमेंट।
-* **`EXPLAIN ANALYZE`**: प्रोफाइलिंग स्टेटमेंट (MySQL 8.0.18+) जो क्वेरी को निष्पादित करता है और वास्तविक रनटाइम प्रदर्शन और इटरेटर रो काउंट्स की रिपोर्ट करता है।
+* **`ENUM`**: String object jiska value table creation ke dauran define ki gayi permitted static values ki list mein se choose hota hai.
+* **`eq_ref`**: `EXPLAIN` mein high-performance join access type jahan preceding table ke har row combination ke liye table se exactly ek row read hoti hai.
+* **`EXISTS`**: Subquery dwara return ki gayi rows ki existence test karne wala boolean operator.
+* **`EXPLAIN`**: MySQL Cost-Based Optimizer dwara choose kiye gaye execution plan ko display karne wala statement.
+* **`EXPLAIN ANALYZE`**: Profiling statement (MySQL 8.0.18+) jo query execute karta hai aur actual runtime performance aur iterator row counts report karta hai.
 
 ---
 
 ### F
-* **`FIRST`**: `ALTER TABLE ... ADD COLUMN` में स्थितीय कीवर्ड जो नए कॉलम को टेबल की शुरुआत में रखता है।
-* **`FIRST_VALUE()`**: विंडो फ्रेम के भीतर पहला मान लौटाने वाला विंडो फंक्शन।
-* **`FLOOR()`**: किसी संख्या से कम या उसके बराबर सबसे बड़े पूर्णांक को लौटाने वाला गणितीय फंक्शन (राउंड डाउन करता है)।
-* **`FOREIGN KEY`**: चाइल्ड टेबल कॉलम को पैरेंट टेबल की प्राइमरी की से बांधने वाला रेफरेंशियल कंस्ट्रेंट।
-* **`FROM`**: SQL क्लॉज जो उन टेबल्स को निर्दिष्ट करता है जिनसे रिकॉर्ड प्राप्त किए जाते हैं।
-* **`FULLTEXT`**: टेक्स्ट कॉलम्स पर प्राकृतिक भाषा कीवर्ड खोज करने के लिए उपयोग किया जाने वाला विशेष इंडेक्स प्रकार।
-* **`FUNCTION`**: एक स्टोर्ड रूटीन जो पैरामीटर्स स्वीकार करता है और एक एकल स्केलर मान लौटाता है।
+* **`FIRST`**: `ALTER TABLE ... ADD COLUMN` mein positional keyword jo naye column ko table ke bilkul shuru mein place karta hai.
+* **`FIRST_VALUE()`**: Window frame ke andar pehli value return karne wala window function.
+* **`FLOOR()`**: Number se less than ya equal largest integer return karne wala mathematical function (rounds down).
+* **`FOREIGN KEY`**: Referential constraint jo child table column ko parent table ki primary key se bind karta hai.
+* **`FROM`**: SQL clause jo specify karta hai ki records kis table(s) se retrieve karne hain.
+* **`FULLTEXT`**: Text columns par natural language keyword searches perform karne ke liye use hone wala specialized index type.
+* **`FUNCTION`**: Ek stored routine jo parameters accept karti hai aur strictly ek single scalar value return karti hai.
 
 ---
 
 ### G
-* **`GRANT`**: डेटाबेस यूजर खातों को विशेषाधिकार या रोल सौंपने के लिए उपयोग किया जाने वाला DCL स्टेटमेंट।
-* **`GROUP BY`**: क्लॉज जो एग्रीगेशन के लिए समान मान साझा करने वाली पंक्तियों को सारांश बकेट्स में समूहित करता है।
-* **`GROUP_CONCAT()`**: एग्रीगेट फंक्शन जो प्रत्येक ग्रुप के नॉन-नल स्ट्रिंग्स को एक एकल डेलिमिटेड स्ट्रिंग में जोड़ता है।
-* **`GROUPING()`**: `WITH ROLLUP` के साथ उपयोग किया जाने वाला फंक्शन जो जनरेट किए गए रोलअप सारांश NULLs के लिए `1` और वास्तविक डेटा मानों के लिए `0` लौटाता है।
+* **`GRANT`**: Database user accounts ko privileges ya roles assign karne ke liye use hone wala DCL statement.
+* **`GROUP BY`**: Identical values share karne wali rows ko aggregation ke liye summary buckets mein group karne wala clause.
+* **`GROUP_CONCAT()`**: Har group ki non-null strings ko concatenate karke ek single delimited string banane wala aggregate function.
+* **`GROUPING()`**: `WITH ROLLUP` ke saath use hone wala function jo generated rollup summary NULLs ke liye `1` aur genuine data values ke liye `0` return karta hai.
 
 ---
 
 ### H
-* **`HASH JOIN`**: MySQL 8.0.18+ में आधुनिक जॉइन एल्गोरिदम जो इन-मेमोरी हैश टेबल का उपयोग करके इंडेक्स की कमी वाले टेबल्स को जोड़ता है।
-* **`HAVING`**: `GROUP BY` निष्पादित होने के बाद एग्रीगेटेड सारांश समूहों को फ़िल्टर करने के लिए उपयोग किया जाने वाला क्लॉज।
-* **`HOUR()`**: समय या डेट-टाइम मान से घंटे का घटक (0-23) निकालने वाला फंक्शन।
+* **`HASH JOIN`**: MySQL 8.0.18+ mein modern join algorithm jo indexes na hone par tables ko in-memory hash table ke through join karta hai.
+* **`HAVING`**: `GROUP BY` execute hone ke baad aggregated summary groups ko filter karne ke liye use hone wala clause.
+* **`HOUR()`**: Time ya datetime value se hour component (0–23) extract karne wala function.
 
 ---
 
 ### I
-* **`IF()`**: इनलाइन कंडीशनल फंक्शन: `IF(test_condition, true_value, false_value)`।
-* **`IFNULL()`**: लक्ष्य अभिव्यक्ति के `NULL` होने पर फॉलबैक मान लौटाने वाला फंक्शन।
-* **`IN`**: ऑपरेटर जो परीक्षण करता है कि कोई मान किसी प्रगणित सूची या सबक्वेरी के भीतर किसी भी आइटम से मेल खाता है या नहीं।
-* **`INDEX`**: डेटा पुनर्प्राप्ति गति को तेज करने के लिए डिज़ाइन की गई B+ Tree डेटा संरचना।
-* **`INNER JOIN`**: रिलेशनल जॉइन केवल उन पंक्तियों को लौटाता है जिनके दोनों टेबल्स में मिलान मान हैं।
-* **`INSERT`**: टेबल में नए रिकॉर्ड सम्मिलित करने के लिए प्रयुक्त DML स्टेटमेंट।
-* **`INSTR()`**: किसी स्ट्रिंग में सबस्ट्रिंग की पहली घटना की 1-आधारित स्थिति लौटाने वाला फंक्शन।
-* **`INT` / `INTEGER`**: $-2.14 \times 10^9$ से $+2.14 \times 10^9$ तक की संख्याओं को संग्रहीत करने वाला 4-बाइट पूर्णांक प्रकार (`UNSIGNED` होने पर $4.29 \times 10^9$ तक)।
-* **`IS NULL` / `IS NOT NULL`**: `NULL` मार्कर की उपस्थिति या अनुपस्थिति का परीक्षण करने वाले यूनरी ऑपरेटर्स।
-* **`ISOLATION LEVEL`**: वह डिग्री परिभाषित करता है जिस तक किसी ट्रांजैक्शन के संचालन अन्य समवर्ती ट्रांजेक्शन्स के लिए दृश्यमान होते हैं (`READ COMMITTED`, `REPEATABLE READ`, आदि)।
+* **`IF()`**: Inline conditional function: `IF(test_condition, true_value, false_value)`.
+* **`IFNULL()`**: Agar target expression `NULL` ho toh fallback value return karne wala function.
+* **`IN`**: Operator jo test karta hai ki koi value enumerated list ya subquery ke kisi item se match karti hai ya nahi.
+* **`INDEX`**: Data retrieval speed accelerate karne ke liye design kiya gaya B+ Tree data structure.
+* **`INNER JOIN`**: Relational join jo sirf wahi rows return karta hai jinke paas dono tables mein matching values hon.
+* **`INSERT`**: Table mein naye records insert karne ke liye use hone wala DML statement.
+* **`INSTR()`**: String mein kisi substring ke pehle occurrence ka 1-based position return karne wala function.
+* **`INT` / `INTEGER`**: 4-byte integer type jo $-2.14 \times 10^9$ se $+2.14 \times 10^9$ tak (ya `UNSIGNED` hone par $4.29 \times 10^9$ tak) numbers store karta hai.
+* **`IS NULL` / `IS NOT NULL`**: `NULL` markers ki presence ya absence test karne wale unary operators.
+* **`ISOLATION LEVEL`**: Ye define karta hai ki kisi transaction ke operations concurrent transactions ko kis hadd tak visible hain (`READ COMMITTED`, `REPEATABLE READ`, etc.).
 
 ---
 
 ### J
-* **`JOIN`**: ऑपरेशन जो संबंधित कॉलम के आधार पर दो या दो से अधिक टेबल्स से कॉलम को जोड़ता है।
-* **`JSON`**: बाइनरी पार्सिंग और वैलिडेशन के साथ सेमी-स्ट्रक्चर्ड JSON डॉक्यूमेंट्स को स्टोर करने वाला नेटिव डेटा टाइप।
-* **`JSON_EXTRACT()`**: JSONPath (ऑपरेटर: `->`) का उपयोग करके JSON डॉक्यूमेंट से मान निकालने वाला फंक्शन।
-* **`JSON_UNQUOTE()`**: JSON स्ट्रिंग से कोट्स हटाने वाला फंक्शन (ऑपरेटर: `->>`)।
+* **`JOIN`**: Related column ke basis par do ya do se zyada tables ke columns ko combine karne wala operation.
+* **`JSON`**: Semi-structured JSON documents ko binary parsing aur validation ke saath store karne wala native data type.
+* **`JSON_EXTRACT()`**: JSONPath ka use karke JSON document se values extract karne wala function (operator: `->`).
+* **`JSON_UNQUOTE()`**: JSON string se quotes strip karne wala function (operator: `->>`).
 
 ---
 
 ### K
-* **`KEY`**: MySQL टेबल निर्माण सिंटैक्स में `INDEX` का समानार्थी।
-* **`Keyset Pagination`**: पेजिनेशन तकनीक जो `OFFSET` का उपयोग करने के बजाय एक अद्वितीय अनुक्रमित कॉलम (`WHERE id < last_id`) पर फ़िल्टर करती है।
+* **`KEY`**: MySQL table creation syntax mein `INDEX` ka synonym.
+* **`Keyset Pagination`**: Pagination technique jo `OFFSET` use karne ke bajaye unique indexed column (`WHERE id < last_id`) par filter karti hai.
 
 ---
 
 ### L
-* **`LAG()`**: विंडो फंक्शन जो सेल्फ-जॉइन के बिना निर्दिष्ट ऑफसेट पर पिछली पंक्ति से डेटा एक्सेस करता है।
-* **`LAST_INSERT_ID()`**: कनेक्शन पर सबसे हालिया `INSERT` स्टेटमेंट द्वारा सेट किए गए पहले ऑटो-जनरेटेड `AUTO_INCREMENT` मान को लौटाने वाला फंक्शन।
-* **`LEAD()`**: विंडो फंक्शन जो निर्दिष्ट ऑफसेट पर अगली पंक्ति से डेटा एक्सेस करता है।
-* **`LEFT()`**: किसी स्ट्रिंग से सबसे बाईं ओर के $N$ कैरेक्टर्स लौटाने वाला फंक्शन।
-* **`LEFT JOIN`**: आउटर जॉइन जो बाईं टेबल से सभी पंक्तियों को और दाईं टेबल से मिलान की गई पंक्तियों को लौटाता है।
-* **`LENGTH()`**: कच्चे बाइट्स में स्ट्रिंग की लंबाई लौटाने वाला फंक्शन।
-* **`LIKE`**: वाइल्डकार्ड (`%` और `_`) का समर्थन करने वाला पैटर्न-मैचिंग ऑपरेटर।
-* **`LIMIT`**: क्वेरी द्वारा लौटाई गई पंक्तियों की अधिकतम संख्या को सीमित करने वाला क्लॉज।
-* **`LOWER()` / `LCASE()`**: कैरेक्टर स्ट्रिंग्स को लोअरकेस में बदलने वाला फंक्शन।
-* **`LPAD()`**: लक्ष्य लंबाई तक पहुंचने के लिए किसी स्ट्रिंग को एक निर्दिष्ट कैरेक्टर अनुक्रम के साथ बाईं ओर पैड करने वाला फंक्शन।
+* **`LAG()`**: Window function jo bina self-join kiye specified offset par preceding row se data access karta hai.
+* **`LAST_INSERT_ID()`**: Connection par most recent `INSERT` statement dwara set ki gayi pehli automatically generated `AUTO_INCREMENT` value return karne wala function.
+* **`LEAD()`**: Window function jo specified offset par subsequent row se data access karta hai.
+* **`LEFT()`**: String se leftmost $N$ characters return karne wala function.
+* **`LEFT JOIN`**: Outer join jo left table ki saari rows aur right table ki matching rows return karta hai.
+* **`LENGTH()`**: String ki length raw bytes mein return karne wala function.
+* **`LIKE`**: Wildcards (`%` aur `_`) support karne wala pattern-matching operator.
+* **`LIMIT`**: Query dwara return ki jaane wali rows ki maximum sankhya constrain karne wala clause.
+* **`LOWER()` / `LCASE()`**: Character strings ko lowercase mein convert karne wala function.
+* **`LPAD()`**: Target length reach karne ke liye string ko left side se specified characters se pad karne wala function.
 
 ---
 
 ### M
-* **`MAX()`**: किसी कॉलम में उच्चतम गैर-नल मान लौटाने वाला एग्रीगेट फंक्शन।
-* **`MEDIUMINT`**: $-8,388,608$ से $+8,388,607$ तक के मानों को संग्रहीत करने वाला 3-बाइट पूर्णांक प्रकार।
-* **`MIN()`**: किसी कॉलम में सबसे कम गैर-नल मान लौटाने वाला एग्रीगेट फंक्शन।
-* **`MINUTE()`**: समय मान से मिनट घटक (0-59) निकालने वाला फंक्शन।
-* **`MOD()`**: विभाजन शेष ($N \pmod M$) लौटाने वाला मॉड्यूलो ऑपरेटर/फंक्शन।
-* **`MODIFY COLUMN`**: बिना नाम बदले कॉलम परिभाषाओं को संशोधित करने वाला `ALTER TABLE` का क्लॉज।
-* **`MONTH()`**: किसी तिथि से महीने का घटक (1-12) निकालने वाला फंक्शन।
-* **`MONTHNAME()`**: महीने का पूरा नाम लौटाने वाला फंक्शन (उदा. `'August'`)।
-* **`MVCC` (Multi-Version Concurrency Control)**: इंजन आर्किटेक्चर जो समवर्ती रीडर्स को रीड लॉक प्राप्त किए बिना अनडू लॉग के माध्यम से ऐतिहासिक डेटा स्नैपशॉट तक पहुंचने की अनुमति देता है।
+* **`MAX()`**: Column mein highest non-null value return karne wala aggregate function.
+* **`MEDIUMINT`**: 3-byte integer type jo $-8,388,608$ se $+8,388,607$ tak values store karta hai.
+* **`MIN()`**: Column mein lowest non-null value return karne wala aggregate function.
+* **`MINUTE()`**: Time value se minute component (0–59) extract karne wala function.
+* **`MOD()`**: Division remainder return karne wala modulo operator/function ($N \pmod M$).
+* **`MODIFY COLUMN`**: Column ko rename kiye bina in-place column definition alter karne wala `ALTER TABLE` clause.
+* **`MONTH()`**: Date se month component (1–12) extract karne wala function.
+* **`MONTHNAME()`**: Month ka full name return karne wala function (e.g., `'August'`).
+* **`MVCC` (Multi-Version Concurrency Control)**: Engine architecture jo concurrent readers ko bina read locks acquire kiye Undo logs ke through historical data snapshots access karne allow karti hai.
 
 ---
 
 ### N
-* **`NATURAL JOIN`**: जॉइन जो स्वचालित रूप से दोनों टेबल्स में समान नामों वाले सभी कॉलम्स का मिलान करता है (प्रोडक्शन में अनुशंसित नहीं)।
-* **`NOT`**: बूलियन सत्य मान को उलटने वाला लॉजिकल ऑपरेटर।
-* **`NOT NULL`**: किसी कॉलम में `NULL` मानों को अस्वीकार करने वाला इंटीग्रिटी कंस्ट्रेंट।
-* **`NOW()`**: क्वेरी निष्पादन शुरू होने के समय वर्तमान टाइमस्टैम्प लौटाने वाला फंक्शन।
-* **`NTILE()`**: विंडो फंक्शन जो पार्टीशन को $N$ समान आकार के बकेट्स में विभाजित करता है।
-* **`NULL`**: लापता, अज्ञात, या अनुपयुक्त डेटा को इंगित करने वाला मार्कर।
-* **`NULLIF(A, B)`**: फंक्शन जो `NULL` लौटाता है यदि $A = B$; अन्यथा $A$ लौटाता है।
+* **`NATURAL JOIN`**: Join jo dono tables mein identical names wale saare columns ko automatically match karta hai (production mein discouraged hai).
+* **`NOT`**: Boolean truth value ko invert/reverse karne wala logical operator.
+* **`NOT NULL`**: Column mein `NULL` values ko disallow karne wala integrity constraint.
+* **`NOW()`**: Query execution shuru hone ke moment par current timestamp return karne wala function.
+* **`NTILE()`**: Partition ko $N$ equal-sized buckets mein divide karne wala window function.
+* **`NULL`**: Missing, unknown, ya inapplicable data indicate karne wala marker.
+* **`NULLIF(A, B)`**: Function jo agar $A = B$ ho toh `NULL` return karta hai; warna $A$ return karta hai.
 
 ---
 
 ### O
-* **`ON`**: `JOIN` में टेबल्स को जोड़ने के लिए उपयोग की जाने वाली रिलेशनल स्थिति निर्दिष्ट करने वाला क्लॉज।
-* **`ON DELETE`**: संदर्भित पैरेंट रो हटाए जाने पर रेफरेंशियल एक्शन्स (`CASCADE`, `RESTRICT`, `SET NULL`) निर्दिष्ट करता है।
-* **`ON UPDATE`**: संदर्भित पैरेंट की संशोधित होने पर रेफरेंशियल एक्शन्स निर्दिष्ट करता है।
-* **`OR`**: लॉजिकल ऑपरेटर जो दोनों में से किसी भी स्थिति के `TRUE` होने पर `TRUE` लौटाता है।
-* **`ORDER BY`**: आउटपुट पंक्तियों को आरोही या अवरोही क्रम में सॉर्ट करने वाला क्लॉज।
-* **`OUT`**: कॉलिंग क्लाइंट को परिकलित मान वापस लौटाने वाला स्टोर्ड प्रोसीजर पैरामीटर मोड।
-* **`OVER()`**: विंडो फंक्शन्स के लिए एनालिटिकल विंडो (पार्टिशनिंग, ऑर्डरिंग, फ्रेम्स) को परिभाषित करने वाला क्लॉज।
+* **`ON`**: `JOIN` mein tables ko link karne ke liye relational condition specify karne wala clause.
+* **`ON DELETE`**: Referenced parent row delete hone par referential actions (`CASCADE`, `RESTRICT`, `SET NULL`) specify karta hai.
+* **`ON UPDATE`**: Referenced parent key modify hone par referential actions specify karta hai.
+* **`OR`**: Logical operator jo `TRUE` return karta hai agar koi bhi ek condition `TRUE` evaluate ho.
+* **`ORDER BY`**: Output rows ko ascending ya descending sequence mein sort karne wala clause.
+* **`OUT`**: Stored procedures mein parameter mode jo computed values calling client ko wapas return karta hai.
+* **`OVER()`**: Window Functions ke liye analytical window (partitioning, ordering, frames) define karne wala clause.
 
 ---
 
 ### P
-* **`PARTITION BY`**: विंडो फंक्शन के भीतर पंक्तियों को अलग-अलग प्रोसेसिंग बकेट्स में विभाजित करने वाला क्लॉज।
-* **`POW()` / `POWER()`**: बेस संख्या को एक निर्दिष्ट घातांक ($X^Y$) तक बढ़ाने वाला गणितीय फंक्शन।
-* **`PRIMARY KEY`**: टेबल में प्रत्येक पंक्ति को विशिष्ट रूप से पहचानने वाला कॉलम; InnoDB में क्लस्टर्ड इंडेक्स को परिभाषित करता है।
-* **`PROCEDURE`**: `CALL` के माध्यम से निष्पादित पूर्व-संकलित (pre-compiled) डेटाबेस रूटीन।
+* **`PARTITION BY`**: Window Function ke andar rows ko distinct processing buckets mein divide karne wala clause.
+* **`POW()` / `POWER()`**: Base number ko specified exponent tak raise karne wala mathematical function ($X^Y$).
+* **`PRIMARY KEY`**: Table ke har row ko uniquely identify karne wala column(s); InnoDB mein clustered index define karta hai.
+* **`PROCEDURE`**: Pre-compiled database routine jise `CALL` ke through execute kiya jaata hai.
 
 ---
 
 ### R
-* **`RANK()`**: विंडो फंक्शन जो पंक्तियों को रैंक नंबर प्रदान करता है, बराबरी पर समान रैंक देता है और बाद में नंबर छोड़ देता है।
-* **`READ COMMITTED`**: ट्रांजैक्शन आइसोलेशन स्तर जो डर्टी रीड्स को रोकता है, लेकिन नॉन-रिपीटेबल और फैंटम रीड्स की अनुमति देता है।
-* **`REDO LOG`**: राइट-अहेड लॉग (WAL) फ़ाइल जो सिस्टम रिकवरी के दौरान ट्रांजैक्शन ड्यूरेबिलिटी की गारंटी देती है।
-* **`REFERENCES`**: `FOREIGN KEY` कंस्ट्रेंट में पैरेंट टेबल और कॉलम को परिभाषित करने वाला कीवर्ड।
-* **`REGEXP` / `RLIKE`**: रेगुलर एक्सप्रेशन्स का समर्थन करने वाला पैटर्न-मैचिंग ऑपरेटर।
-* **`RENAME TABLE`**: एक या अधिक डेटाबेस टेबल्स का नाम बदलने वाला DDL स्टेटमेंट।
-* **`REPEATABLE READ`**: डिफ़ॉल्ट MySQL ट्रांजैक्शन आइसोलेशन स्तर; डर्टी, नॉन-रिपीटेबल और फैंटम रीड्स को रोकता है।
-* **`REPLACE()`**: किसी स्ट्रिंग के भीतर किसी सबस्ट्रिंग की सभी घटनाओं को बदलने वाला फंक्शन।
-* **`RESTRICT`**: आश्रित चाइल्ड रिकॉर्ड मौजूद होने पर पैरेंट के विलोपन या संशोधन को रोकने वाला रेफरेंशियल एक्शन।
-* **`REVOKE`**: डेटाबेस खातों से विशेषाधिकार या रोल हटाने वाला DCL स्टेटमेंट।
-* **`RIGHT()`**: किसी स्ट्रिंग के सबसे दाईं ओर के $N$ कैरेक्टर्स लौटाने वाला फंक्शन।
-* **`RIGHT JOIN`**: आउटर जॉइन जो दाईं टेबल से सभी पंक्तियों को और बाईं टेबल से मिलान की गई पंक्तियों को लौटाता है।
-* **`ROLLBACK`**: TCL स्टेटमेंट जो सक्रिय ट्रांजैक्शन के दौरान किए गए सभी अनकमिटेड संशोधनों को पूर्ववत (undo) करता है।
-* **`ROUND()`**: किसी संख्यात्मक मान को दशमलव स्थानों की एक निर्दिष्ट संख्या तक राउंड करने वाला फंक्शन।
-* **`ROW_NUMBER()`**: विंडो फंक्शन जो पार्टीशन के भीतर पंक्तियों को सख्त अनुक्रमिक पूर्णांक ($1, 2, 3, \dots$) प्रदान करता है।
+* **`RANK()`**: Window function jo rows ko rank numbers assign karta hai, ties ke liye identical ranks aur subsequent gaps produce karta hai.
+* **`READ COMMITTED`**: Transaction isolation level jo Dirty Reads prevent karta hai, lekin Non-Repeatable aur Phantom Reads allow karta hai.
+* **`REDO LOG`**: Write-Ahead Log (WAL) file jo system crash recovery ke dauran transaction Durability guarantee karti hai.
+* **`REFERENCES`**: `FOREIGN KEY` constraint mein parent table aur column define karne wala keyword.
+* **`REGEXP` / `RLIKE`**: Regular expressions support karne wala pattern-matching operator.
+* **`RENAME TABLE`**: Ek ya multiple database tables ko rename karne wala DDL statement.
+* **`REPEATABLE READ`**: MySQL ka default transaction isolation level; Dirty, Non-Repeatable, aur Phantom reads prevent karta hai.
+* **`REPLACE()`**: String ke andar kisi substring ke sabhi occurrences ko replace karne wala function.
+* **`RESTRICT`**: Referential action jo parent deletion ya modification ko block karti hai agar dependent child records exist karte hon.
+* **`REVOKE`**: Database accounts se privileges ya roles remove karne wala DCL statement.
+* **`RIGHT()`**: String ke rightmost $N$ characters return karne wala function.
+* **`RIGHT JOIN`**: Outer join jo right table ki saari rows aur left table ki matching rows return karta hai.
+* **`ROLLBACK`**: TCL statement jo active transaction ke dauran kiye gaye saare uncommitted modifications ko undo/revert karta hai.
+* **`ROUND()`**: Numeric value ko specified decimal places tak round karne wala function.
+* **`ROW_NUMBER()`**: Window function jo partition ke andar rows ko strict sequential integers ($1, 2, 3, \dots$) assign karta hai.
 
 ---
 
 ### S
-* **`SARGable`**: Search Argument Able। B+ Tree इंडेक्स सीक का उपयोग करने में सक्षम क्वेरी प्रेडिकेट्स।
-* **`SAVEPOINT`**: आंशिक रोलबैक को सक्षम करने वाला ट्रांजैक्शन के भीतर एक मार्कर।
-* **`SELECT`**: टेबल्स से रिकॉर्ड प्राप्त करने वाला मुख्य DQL स्टेटमेंट।
+* **`SARGable`**: Search Argument Able. Query predicates jo B+ Tree index seeks utilize karne ke capable hote hain.
+* **`SAVEPOINT`**: Transaction ke andar partial rollback enable karne wala marker.
+* **`SELECT`**: Tables se records retrieve karne wala core DQL statement.
 * **`SET`**:
-  1. `UPDATE` में कॉलम्स को नए मान निर्दिष्ट करने वाला क्लॉज।
-  2. एक स्थिर सूची में से कई स्ट्रिंग विकल्पों को संग्रहीत करने वाला DDL डेटा प्रकार।
-* **`SIGNAL`**: स्टोर्ड रूटीन के अंदर कस्टम रनटाइम एक्सेप्शन्स और एरर मैसेज उठाने वाला स्टेटमेंट।
-* **`SMALLINT`**: $-32,768$ से $+32,767$ तक के मानों को संग्रहीत करने वाला 2-बाइट पूर्णांक प्रकार।
-* **`SQRT()`**: किसी संख्या का वर्गमूल लौटाने वाला गणितीय फंक्शन।
-* **`START TRANSACTION`**: एक एटॉमिक ट्रांजैक्शन ब्लॉक को स्पष्ट रूप से शुरू करने वाला स्टेटमेंट।
-* **`SUBSTRING()` / `SUBSTR()`**: 1-आधारित ऑफसेट से शुरू होकर किसी स्ट्रिंग का एक भाग निकालने वाला फंक्शन।
-* **`SUM()`**: नॉन-नल मानों का संचयी योग (cumulative sum) लौटाने वाला एग्रीगेट फंक्शन।
+  1. `UPDATE` statement mein columns ko nayi values assign karne wala clause.
+  2. Static list se multiple string choices store karne wala DDL data type.
+* **`SIGNAL`**: Stored routines ke andar custom runtime exceptions aur error messages raise karne wala statement.
+* **`SMALLINT`**: 2-byte integer type jo $-32,768$ se $+32,767$ tak values store karta hai.
+* **`SQRT()`**: Number ka square root return karne wala mathematical function.
+* **`START TRANSACTION`**: Explicit atomic transaction block shuru karne wala statement.
+* **`SUBSTRING()` / `SUBSTR()`**: Designated 1-based offset se start karke string ka ek portion extract karta hai.
+* **`SUM()`**: Non-null values ka cumulative sum return karne wala aggregate function.
 
 ---
 
 ### T
-* **`TEXT`**: बड़े कैरेक्टर स्ट्रिंग्स को स्टोर करने वाला डेटा टाइप (मानक `TEXT` के लिए 64 KB तक, `LONGTEXT` के लिए 4 GB तक)।
-* **`TIME`**: दिन का समय या बीती हुई अवधि (`'-838:59:59'` से `'838:59:59'`) स्टोर करने वाला 3-बाइट टेम्पोरल डेटा प्रकार।
-* **`TIMESTAMP`**: 4-बाइट टेम्पोरल डेटा प्रकार जिसे UTC में/से परिवर्तित किया जाता है; वर्ष 2038 सीमा के अधीन।
-* **`TIMESTAMPDIFF()`**: निर्दिष्ट इकाइयों (वर्ष, महीने, दिन, आदि) में दो तिथियों के बीच बीते हुए अंतर की गणना करने वाला फंक्शन।
-* **`TINYINT`**: $-128$ से $+127$ (या `UNSIGNED` होने पर 0 से 255) तक के मानों को संग्रहीत करने वाला 1-बाइट पूर्णांक प्रकार।
-* **`TRIGGER`**: एक प्रोग्राम जो किसी विशिष्ट टेबल पर `INSERT`, `UPDATE`, या `DELETE` इवेंट के जवाब में स्वचालित रूप से निष्पादित होता है।
-* **`TRIM()`**: स्ट्रिंग्स से अग्रणी और अनुगामी व्हाइटस्पेस को हटाने वाला फंक्शन।
-* **`TRUNCATE TABLE`**: सभी टेबल डेटा पेजेज को डीएलोकेट करने और ऑटो-इन्क्रीमेंट काउंटरों को रीसेट करने वाला DDL स्टेटमेंट।
+* **`TEXT`**: Badi character strings store karne wala data type (standard `TEXT` ke liye 64 KB tak, `LONGTEXT` ke liye 4 GB tak).
+* **`TIME`**: Time-of-day ya elapsed durations store karne wala 3-byte temporal data type (`'-838:59:59'` se `'838:59:59'`).
+* **`TIMESTAMP`**: UTC mein convert karke store hone wala 4-byte temporal data type; Year 2038 boundary ke subject hai.
+* **`TIMESTAMPDIFF()`**: Do dates ke beech specified units (years, months, days, etc.) mein elapsed difference calculate karne wala function.
+* **`TINYINT`**: 1-byte integer type jo $-128$ se $+127$ tak (ya `UNSIGNED` par 0 se 255 tak) values store karta hai.
+* **`TRIGGER`**: Program jo `INSERT`, `UPDATE`, ya `DELETE` event par automatically execute hota hai.
+* **`TRIM()`**: Strings se leading aur trailing whitespace remove karne wala function.
+* **`TRUNCATE TABLE`**: Table ke saare data pages ko deallocate karne aur auto-increment counters reset karne wala DDL statement.
 
 ---
 
 ### U
-* **`UCASE()` / `UPPER()`**: स्ट्रिंग्स को अपरकेस में बदलने वाला फंक्शन।
-* **`UNDO LOG`**: ट्रांजैक्शन रोलबैक और MVCC का समर्थन करने के लिए पूर्व-संशोधन रो संस्करणों को बनाए रखने वाला InnoDB स्टोरेज क्षेत्र।
-* **`UNION`**: डुप्लीकेशन को समाप्त करते हुए कई क्वेरीज के परिणामों को लंबवत रूप से संयोजित करने वाला सेट ऑपरेटर।
-* **`UNION ALL`**: बिना डुप्लीकेट हटाए कई क्वेरीज के परिणामों को लंबवत रूप से संयोजित करने वाला सेट ऑपरेटर।
-* **`UNIQUE`**: किसी कॉलम या कॉलम समूह में सभी नॉन-नल पंक्तियों में अलग-अलग मान लागू करने वाला कंस्ट्रेंट।
-* **`UNSIGNED`**: संख्यात्मक विशेषता जो नकारात्मक संख्याओं को अस्वीकार करती है और सकारात्मक भंडारण सीमा को दोगुना करती है।
-* **`UPDATE`**: किसी टेबल में मौजूदा कॉलम मानों को संशोधित करने वाला DML स्टेटमेंट।
-* **`USE`**: सक्रिय डेटाबेस स्कीमा संदर्भ सेट करने वाला स्टेटमेंट।
+* **`UCASE()` / `UPPER()`**: Strings ko uppercase mein convert karta hai.
+* **`UNDO LOG`**: Transaction rollback aur MVCC support karne ke liye pre-modification row versions maintain karne wala InnoDB storage area.
+* **`UNION`**: Multiple queries ke results ko deduplication ke saath combine karne wala set operator.
+* **`UNION ALL`**: Multiple queries ke results ko bina deduplication ke combine karne wala set operator.
+* **`UNIQUE`**: Column ya column group mein saari non-null rows ke across distinct values enforce karne wala constraint.
+* **`UNSIGNED`**: Numeric attribute jo negative numbers disallow karta hai aur positive storage range double kar deta hai.
+* **`UPDATE`**: Table mein existing column values ko modify karne wala DML statement.
+* **`USE`**: Active database schema context set karne wala statement.
 
 ---
 
 ### V
-* **`VALUES`**: `INSERT` में डाला जाने वाला रो डेटा निर्दिष्ट करने वाला क्लॉज।
-* **`VARCHAR()`**: 1- या 2-बाइट लंबाई उपसर्ग के साथ 65,535 बाइट्स तक स्टोर करने वाली वेरिएबल-लेंथ कैरेक्टर स्ट्रिंग।
-* **`VIEW`**: एक संग्रहीत SQL क्वेरी द्वारा परिभाषित वर्चुअल टेबल।
+* **`VALUES`**: `INSERT` mein insert kiye jaane wale row data ko specify karne wala clause.
+* **`VARCHAR()`**: 1- ya 2-byte length prefix ke saath 65,535 bytes tak store karne wala variable-length character string.
+* **`VIEW`**: Stored SQL query dwara defined virtual table.
 
 ---
 
 ### W
-* **`WHERE`**: ग्रुपिंग या एग्रीगेशन से पहले पंक्तियों को फ़िल्टर करने वाला क्लॉज।
-* **`WINDOW`**: एकाधिक विंडो फंक्शन्स में पुन: उपयोग के लिए नामित विंडो विनिर्देशों को परिभाषित करने वाला क्लॉज।
-* **`WITH`**: कॉमन टेबल एक्सप्रेशन्स (CTEs) को परिभाषित करने वाला क्लॉज।
-* **`WITH CHECK OPTION`**: व्यूज पर एक कंस्ट्रेंट जो ऐसे इन्सर्ट या अपडेट को रोकता है जो व्यू के `WHERE` फिल्टर का उल्लंघन करते हैं।
-* **`WITH ROLLUP`**: `GROUP BY` के लिए संशोधक जो मल्टी-लेवल सबटोटल और ग्रैंड टोटल उत्पन्न करता है।
+* **`WHERE`**: Grouping ya aggregation se pehle rows filter karne wala clause.
+* **`WINDOW`**: Multiple window functions mein reuse ke liye named window specifications define karne wala clause.
+* **`WITH`**: Common Table Expressions (CTEs) define karne wala clause.
+* **`WITH CHECK OPTION`**: Views par constraint jo un inserts ya updates ko prevent karta hai jo view ke `WHERE` filter ko violate karein.
+* **`WITH ROLLUP`**: Multi-level subtotals aur grand totals generate karne ke liye `GROUP BY` modifier.
 
 ---
 
 ### X
-* **`XOR`**: लॉजिकल ऑपरेटर जो `TRUE` लौटाता है यदि दो स्थितियों में से ठीक एक स्थिति `TRUE` हो।
+* **`XOR`**: Logical operator jo `TRUE` return karta hai agar dono conditions mein se exactly ek `TRUE` ho.
 
 ---
 
 ### Y
-* **`YEAR`**: 4-अंकीय कैलेंडर वर्ष (`1901` से `2155`) संग्रहीत करने वाला 1-बाइट टेम्पोरल डेटा प्रकार।
-* **`YEAR()`**: किसी तिथि से 4-अंकीय वर्ष पूर्णांक निकालने वाला फंक्शन।
+* **`YEAR`**: 4-digit calendar years (`1901` se `2155`) store karne wala 1-byte temporal data type.
+* **`YEAR()`**: Date se 4-digit year integer extract karne wala function.

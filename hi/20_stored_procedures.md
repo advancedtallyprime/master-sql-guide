@@ -1,23 +1,23 @@
-# Chapter 20 — Database Programmability: Stored Procedures & Control Flow (स्टोर्ड प्रोसीजर्स और कण्ट्रोल फ्लो)
+# Chapter 20 — Database Programmability: Stored Procedures & Control Flow (Stored Procedures Aur Control Flow)
 
 ---
 
-## 1. What is it? (यह क्या है? — स्टोर्ड प्रोसीजर्स और DELIMITER)
+## 1. What is it? (Ye Kya Hai?)
 
-MySQL mein **Stored Procedure** ek pre-compiled subroutine (ya functions ka block) hota hai jisme ek ya ek se zyada SQL statements aur procedural control-flow logic (`IF`, `CASE`, `WHILE`, `LOOP`) shamil hote hain, jo seedhe database dictionary ke andar permanently store rehte hain.
+MySQL me **Stored Procedure** ek pre-compiled subroutine (ya functions ka block) hota hai jisme ek ya ek se zyada SQL statements aur procedural control-flow logic (`IF`, `CASE`, `WHILE`, `LOOP`) shamil hote hain, jo seedhe database dictionary ke andar permanently store rehte hain.
 
-Application servers database ko sirf ek single command bhejkar procedure call karte hain: **`CALL procedure_name(...)`**. Kyunki ye routine database server par pehle se maujood rehti hai, isliye SQL queries pehle se parsed, validated aur compiled hoti hain, jisse execution speed kaafi tez ho jaati hai.
+Application servers database ko sirf ek single command bhejkar procedure call karte hain: **`CALL procedure_name(...)`**. Kyunki ye routine database server par pehle se maujood rehti hai, isliye SQL queries pehle se parsed, validated aur optimized hoti hain, jisse execution speed kaafi tez ho jaati hai.
 
-### The `DELIMITER` Command: Iski Zaroorat Kyu Padti Hai?
-By default, MySQL client terminal ek semicolon (`;`) ko SQL statement ka ending point (termination delimiter) maanta hai. Lekin ek Stored Procedure ke andar kayi saare internal SQL statements hote hain jo har line ke aage semicolon (`;`) lagate hain. Agar aap client delimiter nahi badlenge, toh MySQL parser pehli internal line ke semicolon par hi procedure ko tod dega aur poora procedure banne se pehle hi syntax error throw kar dega!
+### The `DELIMITER` Command: Iski Zaroorat Kyun Padti Hai?
+By default, MySQL client terminal ek semicolon (`;`) ko SQL statement ka termination delimiter maanta hai. Lekin ek Stored Procedure ke andar multiple internal SQL statements hote hain jo har line ke aage semicolon (`;`) lagate hain. Agar aap client delimiter nahi badlenge, toh MySQL parser pehli internal line ke semicolon par hi procedure ko execute karne ki koshish karega aur poora procedure banne se pehle hi syntax error throw kar dega!
 
-Isliye MySQL CLI mein procedure likhte waqt hum temporary roop se statement delimiter ko kisi doosre symbol (aamtaur par `//` ya `$$`) par switch karte hain, poora procedure compile karte hain, aur fir delimiter ko wapas standard semicolon (`;`) par reset kar dete hain:
+Isliye MySQL CLI me procedure likhte waqt hum temporary roop se statement delimiter ko kisi doosre symbol (aamtaur par `//` ya `$$`) par switch karte hain, poora procedure compile karte hain, aur fir delimiter ko wapas standard semicolon (`;`) par reset kar dete hain:
 
 ```sql
 DELIMITER //
 CREATE PROCEDURE my_procedure()
 BEGIN
-    -- Internal statements standard semicolon ; se end honge
+    -- Internal statements end with standard semicolon ;
     SELECT * FROM employees;
 END //
 DELIMITER ;
@@ -25,24 +25,24 @@ DELIMITER ;
 
 ---
 
-## 2. Why do we use it? (हम इसका उपयोग क्यों करते हैं?)
+## 2. Why do we use it? (Hum Iska Use Kyun Karte Hain?)
 
-1. **Reduced Network Traffic**: Agar kisi complex business process ke liye 15 alag-alag queries run karni hain, toh application aur database server ke beech 15 baar network round-trip lene ke bajaye, app sirf ek `CALL` command bhejti hai. Poora 15-step execution database ke andar hi fast local memory mein execute ho jata hai, jisse network latency drastic roop se kam ho jaati hai.
-2. **Encapsulation & Strong Security**: Aap users aur applications ko stored procedure par `EXECUTE` privilege de sakte hain aur base tables par direct `SELECT`, `UPDATE`, ya `DELETE` permissions poori tarah revoke kar sakte hain. Stored procedure ek secure API gateway ban jata hai jo kisi ko bhi sensitive raw tables chhoone nahi deta.
-3. **Centralized Business Logic**: Agar aapki company mein alag-alag technology stacks hain (jaise Python backend, Java enterprise microservice, aur React Native mobile app), toh business logic (jaise checkout rules ya salary calculation) har jagah duplicate likhne ke bajaye stored procedure mein daal dijiye. Sabhi clients ke liye bilkul identical rules chalenge!
-4. **Pre-Compiled Efficiency**: Repeated queries ke liye query parsing aur optimization plan memory mein cache ho jata hai.
+1. **Reduced Network Traffic**: Agar kisi complex business process ke liye 15 alag-alag queries run karni hain, toh application aur database server ke beech 15 baar network round-trip lene ke bajaye, app sirf ek `CALL` command bhejti hai. Poora 15-step execution database ke andar hi fast local memory me execute ho jata hai, jisse network latency drastically reduce ho jaati hai.
+2. **Encapsulation & Strong Security**: Aap users aur applications ko stored procedure par `EXECUTE` privilege de sakte hain aur base tables par direct `SELECT`, `UPDATE`, ya `DELETE` permissions poori tarah revoke kar sakte hain. Stored procedure ek secure API gateway ban jata hai jo sensitive raw tables ko directly expose nahi hone deta.
+3. **Centralized Business Logic**: Agar aapki company me alag-alag technology stacks hain (jaise Python backend, Java enterprise microservice, aur mobile reporting tool), toh business logic (jaise checkout validation ya salary calculation) har jagah duplicate likhne ke bajaye stored procedure me daal dijiye. Sabhi clients ke liye bilkul identical rules chalenge!
+4. **Pre-Compiled Efficiency**: Repeated executions ke liye query parsing aur optimization overhead reduce ho jata hai.
 
 ---
 
-## 3. Syntax & Parameter Modes (सिंटैक्स और पैरामीटर मोड्स — IN, OUT, INOUT)
+## 3. Syntax (Syntax)
 
 Stored procedures calling application ke sath teen tarah ke parameter modes ke zariye communicate karte hain:
 
 | Parameter Mode | Direction | Behavior Description |
 | :--- | :--- | :--- |
 | **`IN`** (Default) | Caller $\rightarrow$ Procedure | Procedure ke andar data pass karta hai. Procedure is variable ko andar read aur modify kar sakta hai, lekin caller ke original variable par koi asar nahi padta. |
-| **`OUT`** | Procedure $\rightarrow$ Caller | Procedure ke andar ek blank variable bheja jata hai. Procedure calculation karta hai aur result isme set karke caller ko wapas return karta hai. |
-| **`INOUT`** | Caller $\leftrightarrow$ Procedure | Ek initial value procedure ke andar aati hai; procedure use read karta hai, modify karta hai, aur badli hui value caller ko wapas bhej deta hai. |
+| **`OUT`** | Procedure $\rightarrow$ Caller | Procedure ke andar ek uninitialized variable bheja jata hai. Procedure calculation karta hai aur result isme assign karke caller ko wapas return karta hai. |
+| **`INOUT`** | Caller $\leftrightarrow$ Procedure | Ek initial value procedure ke andar aati hai; procedure use read karta hai, modify karta hai, aur badli hui value caller ko wapas return karta hai. |
 
 ### Procedural Control-Flow Constructs
 ```sql
@@ -53,7 +53,7 @@ CREATE PROCEDURE sp_demo_flow(
     OUT p_bonus_amount DECIMAL(10,2)
 )
 BEGIN
-    -- 1. Local Variable Declarations (BEGIN block ke bilkul top par aana zaroori hai!)
+    -- 1. Local Variable Declarations (Must appear first in BEGIN block)
     DECLARE v_salary DECIMAL(10,2);
     DECLARE v_tenure_years INT;
 
@@ -91,7 +91,7 @@ DROP PROCEDURE IF EXISTS procedure_name;
 
 ---
 
-## 4. Basic Example (बेसिक उदाहरण)
+## 4. Basic Example (Basic Example)
 
 Ek simple stored procedure banate hain aur call karke dekhte hain:
 
@@ -119,14 +119,14 @@ DROP PROCEDURE sp_get_department_employees;
 
 ---
 
-## 5. Real-World Example (रियल-वर्ल्ड उदाहरण — एंटरप्राइज चेकआउट ऑर्डर प्रोसेसर)
+## 5. Real-World Example (Real-World Example)
 
-Chaliye ek production-ready enterprise stored procedure `sp_process_order_checkout` banate hain jo complete business transaction handle karta hai:
-1. Product ki existence aur stock availability verify karta hai.
+Chaliye ek production-ready enterprise stored procedure `sp_process_order_checkout` banate hain jo complete business transaction coordinate karta hai:
+1. Product ki existence aur sufficient stock availability verify karta hai.
 2. Error aane par poore transaction ko automatic `ROLLBACK` karne ke liye `SQLEXCEPTION` handler declare karta hai.
-3. Managed transaction ke andar naya order generate karta hai.
+3. Managed transaction ke andar naya order record generate karta hai.
 4. Line item create karta hai aur inventory ko automatically decrement karta hai.
-5. Naya generated `order_id` aur status message `OUT` parameters ke roop mein caller ko safely return karta hai.
+5. Naya generated `order_id` aur status message `OUT` parameters ke roop me caller ko safely return karta hai.
 
 ```sql
 USE sql_mastery;
@@ -168,7 +168,6 @@ BEGIN
     ELSEIF v_current_stock < p_quantity THEN
         SET p_new_order_id = NULL;
         SET p_status_message = CONCAT('REJECTED: Insufficient stock. Only ', v_current_stock, ' available.');
-    -- If valid, process the order
     ELSE
         -- Step 2: Begin Transaction
         START TRANSACTION;
@@ -204,7 +203,7 @@ DELIMITER ;
 
 ---
 
-## 6. Step-by-Step Explanation (स्टेप-बाय-स्टेप व्याख्या)
+## 6. Step-by-Step Explanation (Step-by-Step Explanation)
 
 Chaliye procedure ko test karke execution steps verify karte hain:
 
@@ -232,7 +231,7 @@ DROP PROCEDURE sp_process_order_checkout;
 
 ---
 
-## 7. Expected Result (अपेक्षित परिणाम)
+## 7. Expected Result (Expected Result)
 
 Stored procedure call karne par terminal output:
 
@@ -256,12 +255,12 @@ mysql> SELECT @failed_order_id AS failed_order_id, @failed_msg AS rejection_reas
 
 ---
 
-## 8. Common Mistakes (सामान्य गलतियाँ और Pitfalls)
+## 8. Common Mistakes (Common Mistakes)
 
-1. **`DELIMITER` ko Wapas Reset karna bhool jana**:
-   * *Mistake*: `DELIMITER //` karke procedure compile kar liya aur aakhiri line mein `DELIMITER ;` run karna bhool gaye.
-   * *Natija*: Iske baad aapki koi bhi aam query (jaise `SELECT * FROM employees;`) run nahi hogi aur terminal freeze hokar `//` symbol aane ka intezaar karta rahega!
-2. **Variable Shadowing (Name Collisions ka Khatarnak Jaal)**:
+1. **`DELIMITER` Ko Wapas Reset Karna Bhool Jana**:
+   * *Mistake*: `DELIMITER //` karke procedure compile kar liya aur aakhiri line me `DELIMITER ;` run karna bhool gaye.
+   * *Natija*: Iske baad aapki koi bhi aam query (jaise `SELECT * FROM employees;`) run nahi hogi aur terminal freeze hokar `//` symbol aane ka wait karta rahega!
+2. **Variable Shadowing (Name Collisions Ka Khatarnak Jaal)**:
    * *The Nightmare Trap*:
      ```sql
      CREATE PROCEDURE get_emp(IN employee_id INT)
@@ -271,70 +270,70 @@ mysql> SELECT @failed_order_id AS failed_order_id, @failed_msg AS rejection_reas
      ```
    * *Result*: MySQL parser `employee_id = employee_id` ko ek tautology (`WHERE 1 = 1`) samajh leta hai aur specific employee ke bajaye **company ke sabhi employees ka data ek sath return kar deta hai**! Massive security aur privacy leak!
    * *Rule*: Hamesha parameters ke aage `p_` lagayein (`p_employee_id`) aur local variables ke aage `v_` lagayein (`v_salary`).
-3. **`DECLARE` Statements ko Galat Jagah Likhna**:
-   * MySQL stored procedures mein sabhi `DECLARE` statements (variables, handlers, cursors) ko `BEGIN ... END` block ke **bilkul shuruat** mein likhna anivarya hota hai. Kisi bhi executable statement (jaise `SET` ya `SELECT`) ke baad `DECLARE` likhne par syntax error aata hai.
+3. **`DECLARE` Statements Ko Galat Jagah Likhna**:
+   * MySQL stored procedures me sabhi `DECLARE` statements (variables, handlers, cursors) ko `BEGIN ... END` block ke **bilkul shuruat** me likhna mandatory hota hai. Kisi bhi executable statement (jaise `SET` ya `SELECT`) ke baad `DECLARE` likhne par syntax error aata hai.
 
 ---
 
-## 9. Best Practices (बेस्ट प्रैक्टिसेज)
+## 9. Best Practices (Best Practices)
 
-1. **Strict Naming Conventions apnayein**:
-   * Procedures ke aage `sp_` ya `usp_` lagayein.
+1. **Strict Naming Conventions Apnayein**:
+   * Procedures ke aage `sp_` ya `usp_` (User Stored Procedure) lagayein.
    * Parameters ke aage hamesha `p_` aur local variables ke aage `v_` lagayein taaki column name collisions ka koi chance na rahe.
-2. **Transactions ke sath hamesha Exception Handlers lagayein**:
-   * Multi-statement transactional procedures mein hamesha `DECLARE EXIT HANDLER FOR SQLEXCEPTION` use karein taaki runtime error aane par uncommitted locks na fasein aur database automatically `ROLLBACK` ho jaye.
-3. **Procedural Loops ke bajaye Set-Based SQL use karein**:
-   * Beginners aksar row-by-row data process karne ke liye `WHILE` loops aur `CURSORS` likhne lagte hain. Relational database engines set-based operations (`UPDATE table SET col = ... WHERE ...`) par 100 guna zyada tez chalte hain. Loops ka prayog sirf tabhi karein jab koi task pure SQL mein solve karna namumkin ho.
+2. **Transactions Ke Sath Hamesha Exception Handlers Lagayein**:
+   * Multi-statement transactional procedures me hamesha `DECLARE EXIT HANDLER FOR SQLEXCEPTION` use karein taaki runtime error aane par uncommitted locks na phasein aur database automatically `ROLLBACK` ho jaye.
+3. **Procedural Loops Ke Bajaye Set-Based SQL Use Karein**:
+   * Beginners aksar row-by-row data process karne ke liye `WHILE` loops aur `CURSORS` likhne lagte hain. Relational database engines set-based operations (`UPDATE table SET col = ... WHERE ...`) par 100 guna zyada tez chalte hain. Loops ka use sirf tabhi karein jab koi task pure SQL me solve karna impossible ho.
 
 ---
 
-## 10. Practice Questions (अभ्यास प्रश्न)
+## 10. Practice Questions (Practice Questions)
 
-### Easy (सरल)
-1. MySQL mein stored procedure banate waqt client `DELIMITER` ko change karna kyu zaroori hota hai?
-2. `IN` parameter aur `OUT` parameter ke beech kya mukhya antar hai?
-3. Kisi stored procedure ko execute karne ke liye kaun si SQL command use ki jaati hai?
+### Easy
+1. Why must you change the client `DELIMITER` when creating a stored procedure in MySQL?
+2. What is the difference between an `IN` parameter and an `OUT` parameter?
+3. Which SQL command executes a stored procedure?
 
-### Medium (मध्यम)
-4. `sp_update_product_price` naam ka ek stored procedure likhiye jo `p_product_id INT` aur `p_percentage_increase DECIMAL(4,2)` ko `IN` parameters ke roop mein le aur product ke `unit_price` ko us percentage se update kare.
-5. Ek procedure `sp_get_customer_metrics` likhiye jo `customer_id` ko `IN` parameter ke roop mein le, aur customer ke total orders count ko ek `OUT` parameter mein aur total kharch (spend) ko doosre `OUT` parameter mein return kare.
-6. Ek aisa stored procedure likhiye jo `WHILE` loop ka use karke kisi test table ke andar 5 test records sequentially insert kare.
+### Medium
+4. Write a stored procedure named `sp_update_product_price` that accepts a `p_product_id INT` and a `p_percentage_increase DECIMAL(4,2)` as `IN` parameters and increases the product's `unit_price` by that percentage.
+5. Write a procedure `sp_get_customer_metrics` that takes a `customer_id` as an `IN` parameter and returns their total order count as an `OUT` parameter and total spend as an `OUT` parameter.
+6. Write a stored procedure using a `WHILE` loop to insert 5 test records into a table.
 
-### Difficult (कठिन)
-7. Ek enterprise procedure `sp_transfer_department` likhiye jo kisi employee ko uske current department se naye department mein move kare, uska salary naye department ke average salary ke basis par update kare, aur is event ko ek audit table mein log kare. Is poore logic ko ek atomic transaction mein wrap kijiye jisme `EXIT HANDLER FOR SQLEXCEPTION` maujood ho.
-8. MySQL stored procedures ke andar heavy business logic likhne aur wahi logic application backend service layer (jaise Go, Java, ya Python microservices) mein likhne ke beech kya architectural tradeoffs hote hain? Horizontal scaling par iska kya asar padta hai?
+### Difficult
+7. Write a stored procedure `sp_transfer_department` that moves an employee from their current department to a new department, updates their salary based on the new department's average, and logs the transfer in an audit table. Wrap all operations in a transaction with an `EXIT HANDLER FOR SQLEXCEPTION`.
+8. Explain the performance implications of placing heavy business logic inside MySQL stored procedures versus executing that logic within an application service layer (e.g., Go, Java, or Python microservices). What are the scaling tradeoffs?
 
 ---
 
-## 11. Interview Questions (इंटरव्यू सवाल और जवाब)
+## 11. Interview Questions (Interview Questions)
 
-### Q1: Stored Procedures use karne ke mukhya fayde aur nuksan kya hain?
+### Q1: What are the primary advantages and disadvantages of using Stored Procedures?
 **Answer**:
-* **Fayde (Advantages)**:
-  1. **Reduced Network Traffic**: Multiple queries ko ek single network call (`CALL`) mein bundle karke application aur database ke beech latency khatam karta hai.
-  2. **Security & Abstraction**: Users ko direct tables ka access diye bina sirf procedure execute karne ki permission di ja sakti hai (Principle of Least Privilege).
-  3. **Centralized Logic**: Alag-alag platforms (web, mobile, backend services) ke liye business rules ek hi central jagah maintain hote hain.
-* **Nuksan (Disadvantages)**:
-  1. **Database CPU Load**: Heavy computations database server ke CPU ko consume karti hain. Database ko horizontally scale karna stateless app servers ko scale karne ke mukable bohot mushkil aur mehenga hota hai.
-  2. **CI/CD & Version Control**: Stored procedures ke code ko version control, automated testing aur migration pipelines mein manage karna standard application code ke mukable zyada complex hota hai.
-  3. **Vendor Lock-in**: Procedural SQL (MySQL PL/SQL, Oracle PL/SQL, SQL Server T-SQL) proprietary hoti hai aur ek database se dusre database par port nahi hoti.
+* **Advantages (Fayde)**:
+  1. **Reduced Network Overhead**: Consolidates multi-query interactions into a single network round-trip.
+  2. **Security & Data Abstraction**: Applications can be granted `EXECUTE` rights on procedures without direct table access.
+  3. **Centralized Business Rules**: Shared logic is maintained in one place across multiple client applications.
+* **Disadvantages (Nuksan)**:
+  1. **Database Server CPU Contention**: Intensive procedural computations consume database CPU, which is typically harder and more expensive to scale horizontally than stateless application servers.
+  2. **Version Control & CI/CD Complexity**: Managing database migration scripts, branching, and automated testing for stored routines is more difficult than standard application code.
+  3. **Vendor Lock-in**: Procedural dialects (MySQL PL/SQL, Oracle PL/SQL, SQL Server T-SQL) are proprietary and non-portable.
 
-### Q2: `IN`, `OUT`, aur `INOUT` parameters ke beech kya antar hota hai?
+### Q2: What is the difference between an `IN`, `OUT`, and `INOUT` parameter?
 **Answer**:
-* **`IN`**: Procedure ke andar data pass karta hai. Procedure is data ko read kar sakta hai lekin bahar caller ke variable ki original value ko overwrite nahi kar sakta.
-* **`OUT`**: Ek khali variable procedure ke andar bheja jata hai. Procedure calculation karta hai aur result is variable mein assign karke caller ko return karta hai.
-* **`INOUT`**: Ek initialized value procedure ke andar aati hai; procedure use read karta hai, modify karta hai, aur update ki gayi nayi value caller ko wapas return karta hai.
+* **`IN`**: Passes data into the procedure. The procedure can read it, but cannot overwrite the caller's original variable outside the procedure.
+* **`OUT`**: Passes an uninitialized variable into the procedure. The procedure computes a value and assigns it to the variable, making the result available to the caller after the procedure finishes.
+* **`INOUT`**: Passes an initialized variable into the procedure; the procedure reads the initial value, modifies it, and returns the updated value back to the caller.
 
-### Q3: Stored Procedure mein Variable Shadowing kya hoti hai aur isse kaise bacha jata hai?
-**Answer**: Variable Shadowing tab hoti hai jab kisi procedure parameter ya local variable ka naam kisi table ke column name ke bilkul identical hota hai (jaise `WHERE employee_id = employee_id`). MySQL parser ye distinguish nahi kar pata ki column kaun sa hai aur variable kaun sa hai, aur wo clause ko har row ke liye `true` (`WHERE 1 = 1`) evaluate kar deta hai. Iska natija ye hota hai ki specific user ke bajaye table ka saara data accidentally update ya expose ho jata hai.
-Isse bachne ka standard niyam ye hai ki sabhi parameters ke aage `p_` prefix (jaise `p_employee_id`) aur sabhi local variables ke aage `v_` prefix (jaise `v_salary`) lagana anivarya banaya jaye.
+### Q3: What is variable shadowing in MySQL stored procedures, and how do you prevent it?
+**Answer**: Variable shadowing occurs when a parameter or local variable shares the exact same identifier name as a column in a referenced table (e.g., `WHERE customer_id = customer_id`). The MySQL parser cannot distinguish between the column reference and the variable reference, typically resolving the clause to `true` for every row. This results in unintended updates or mass data exposure. 
+It is prevented by strictly adopting prefix naming conventions: prefixing all procedure parameters with `p_` (e.g., `p_customer_id`) and all local variables with `v_` (e.g., `v_customer_id`).
 
 ---
 
-## 12. Quick Revision (क्विक रिविजन)
+## 12. Quick Revision (Quick Revision)
 
-* Client terminal par early termination rokne ke liye procedure banate waqt **`DELIMITER //`** ka prayog karein.
-* **`IN`** data andar lata hai, **`OUT`** result wapas bhejta hai, aur **`INOUT`** dono kaam karta hai.
-* Sabhi **`DECLARE`** statements ko `BEGIN ... END` block ke bilkul top par likhein.
-* Variable shadowing aur data corruption se bachne ke liye parameters ke aage **`p_`** aur variables ke aage **`v_`** lagayein.
-* Runtime errors aane par transaction ko automatic rollback karne ke liye **`DECLARE EXIT HANDLER FOR SQLEXCEPTION`** ka use karein.
+* Use **`DELIMITER //`** when creating procedures to prevent early statement termination.
+* **`IN`** passes data in; **`OUT`** returns data to the caller; **`INOUT`** does both.
+* Place all **`DECLARE`** statements at the very beginning of the `BEGIN ... END` block.
+* Avoid name collisions by prefixing parameters with **`p_`** and local variables with **`v_`**.
+* Use **`DECLARE EXIT HANDLER FOR SQLEXCEPTION`** to automatically roll back transactions upon error.

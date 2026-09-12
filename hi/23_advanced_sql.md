@@ -1,18 +1,18 @@
-# Chapter 23 — Modern Analytics: Window Functions & JSON Manipulation | आधुनिक एनालिटिक्स: विंडो फ़ंक्शन्स और JSON मैनिपुलेशन
+# Chapter 23 — Modern Analytics: Window Functions & JSON Manipulation
 
 ---
 
-## 1. What is it? (विंडो फ़ंक्शन्स और JSON क्या हैं?)
+## 1. What is it?
 
-मॉडर्न SQL (जिसे ANSI SQL:2003 में स्टैंडर्डाइज़ किया गया और **MySQL 8.0** में पूरी तरह लागू किया गया) ने रिलेशनल डेटाबेस की क्षमताओं को दो बड़े और क्रांतिकारी फीचर्स के साथ कई गुना बढ़ा दिया:
-1. **Window Functions (एनालिटिक फ़ंक्शन्स)**: ये वर्तमान पंक्ति से संबंधित पंक्तियों के एक सेट पर गणितीय और रैंकिंग कैलकुलेशन करते हैं, लेकिन `GROUP BY` की तरह पंक्तियों को सिकोड़कर (collapse) एक सिंगल समरी पंक्ति में नहीं बदलते। हर एक व्यक्तिगत पंक्ति अपनी पहचान बनाए रखती है, और साथ ही उसे एग्रीगेट और कॉन्टेक्स्टुअल मैट्रिक्स का एक्सेस भी मिल जाता है।
-2. **Native JSON Document Processing**: यह रिलेशनल इंटीग्रिटी और NoSQL डॉक्यूमेंट स्टोरेज के बीच की दूरी को पाटता है। अब आप संरचित (structured) टेबल्स के अंदर ही सेमी-स्ट्रक्चर्ड JSON पेलोड्स को नेटिव रूप से स्टोर, क्वेरी, इंडेक्स और ट्रांसफ़ॉर्म कर सकते हैं।
+Modern SQL (jo ANSI SQL:2003 mein standardize hua aur **MySQL 8.0** mein poori tarah implement kiya gaya) relational database capabilities ko do revolutionary features ke sath next level par le gaya:
+1. **Window Functions (Analytic Functions)**: Ye current row se related table rows ke ek set par mathematical aur ranking calculations perform karte hain, bina rows ko single summary output mein collapse kiye (unlike `GROUP BY`). Har single row apni individual identity retain karti hai aur sath hi aggregate aur contextual metrics ka access bhi paati hai.
+2. **Native JSON Document Processing**: Ye relational integrity aur NoSQL document storage ke beech ka gap bridge karta hai, jisse structured tables ke andar semi-structured JSON payloads ko natively store, query, index, aur transform kiya ja sakta hai.
 
 ---
 
-## 2. Window Functions Architecture: The OVER() Clause (विंडो फ़ंक्शन्स आर्किटेक्चर: OVER() क्लॉज़)
+## 2. Window Functions Architecture: The `OVER()` Clause
 
-एक सामान्य `GROUP BY` क्वेरी (जो 10 पंक्तियों को सिकोड़कर केवल 1 समरी पंक्ति बना देती है) के विपरीत, एक Window Function **प्रत्येक व्यक्तिगत पंक्ति** के लिए एक कैलकुलेटेड वैल्यू उत्पन्न करता है। इसके लिए वह एक एनालिटिकल "विंडो" या फ़्रेम तय करता है जिस पर गणना की जाती है:
+Ek `GROUP BY` query ke opposite (jo 10 rows ko collapse karke 1 summary row bana deti hai), ek Window Function **har single row** ke liye ek calculated value generate karta hai. Iske liye wo ek analytical "window" ya frame define karta hai jiske upar function compute hota hai:
 
 ```mermaid
 flowchart TD
@@ -26,7 +26,7 @@ flowchart TD
     end
 ```
 
-एक विंडो फ़ंक्शन का व्यवहार **`OVER()`** क्लॉज़ द्वारा निर्धारित किया जाता है:
+Window function ka behavior **`OVER()`** clause ke through define hota hai:
 ```sql
 FUNCTION(...) OVER (
     [PARTITION BY partition_column]
@@ -35,35 +35,35 @@ FUNCTION(...) OVER (
 )
 ```
 
-1. **`PARTITION BY`**: पंक्तियों को अलग-अलग प्रोसेसिंग ग्रुप्स में विभाजित करता है (बिल्कुल `GROUP BY` की तरह, लेकिन बिना पंक्तियों को कोलैप्स किए)।
-2. **`ORDER BY`**: प्रत्येक पार्टीशन के अंदर पंक्तियों के सॉर्टिंग क्रम (sequence) को तय करता है।
-3. **Window Frame (`ROWS BETWEEN ...`)**: यह मूल्यांकित की जाने वाली पड़ोसी पंक्तियों की स्लाइडिंग विंडो को परिभाषित करता है (उदाहरण के लिए, रोलिंग 7-डे मूविंग एवरेज या क्युमुलेटिव रनिंग टोटल की गणना के लिए)।
+1. **`PARTITION BY`**: Rows ko distinct processing groups mein divide karta hai (bilkul `GROUP BY` ki tarah, lekin bina unhe collapse kiye).
+2. **`ORDER BY`**: Har partition ke andar sorting sequence dictate karta hai.
+3. **Window Frame (`ROWS BETWEEN ...`)**: Neighboring rows ki sliding window define karta hai jise evaluate kiya jata hai (for example, rolling 7-day moving averages ya cumulative running totals ke liye).
 
 ---
 
-## 3. Comprehensive Window Function Taxonomy (विंडो फ़ंक्शन्स का वर्गीकरण)
+## 3. Comprehensive Window Function Taxonomy
 
-### 3.1. Ranking Functions (रैंकिंग फ़ंक्शन्स)
+### 3.1. Ranking Functions
 
-| फ़ंक्शन (Function) | टाई हैंडलिंग व्यवहार (Tie Handling) | नंबरिंग सीक्वेंस का उदाहरण | सामान्य उपयोग (Use Case) |
+| Function | Tie Handling Behavior | Numbering Sequence Example | Typical Use Case |
 | :--- | :--- | :--- | :--- |
-| **`ROW_NUMBER()`** | कभी टाई नहीं करता। सख्त क्रमिक पूर्णांक (sequential integers) असाइन करता है। | $1, 2, 3, 4, 5$ | पेजिनेशन, डुप्लिकेट हटाना, ग्रुप में से Top-1 निकालना। |
-| **`RANK()`** | टाई होने पर समान रैंक देता है; बाद की रैंक्स को छोड़ (skip) देता है। | $1, 2, 2, 4, 5$ | ओलंपिक लीडरबोर्ड, प्रतियोगी रैंकिंग। |
-| **`DENSE_RANK()`** | टाई होने पर समान रैंक देता है; रैंक्स को **स्किप नहीं** करता। | $1, 2, 2, 3, 4$ | डिपार्टमेंट सैलरी रैंकिंग, टॉप कॉम्पेन्सेशन टियर्स। |
-| **`NTILE(N)`** | पार्टीशन को $N$ बराबर आकार की बाल्टियों (buckets) में बाँटता है। | Bucket $1, 1, 2, 2, 3, 3$ | क्वार्टाइल / डेसाइल कस्टमर सेगमेंटेशन। |
+| **`ROW_NUMBER()`** | Kabhi tie nahi hota. Strict sequential integers assign karta hai. | $1, 2, 3, 4, 5$ | Pagination, deduplication, har group se Top-1 record fetch karna. |
+| **`RANK()`** | Ties ko same rank milti hai; subsequent ranks skip ho jaate hain. | $1, 2, 2, 4, 5$ | Olympic leaderboards, competitive standings. |
+| **`DENSE_RANK()`** | Ties ko same rank milti hai; ranks skip **nahi** hote. | $1, 2, 2, 3, 4$ | Department salary rankings, top compensation tiers. |
+| **`NTILE(N)`** | Partition ko $N$ equal-sized buckets mein divide karta hai. | Bucket $1, 1, 2, 2, 3, 3$ | Quartile/Decile customer segmentation. |
 
-### 3.2. Value Navigation Functions (वैल्यू नेविगेशन फ़ंक्शन्स)
+### 3.2. Value Navigation Functions
 
-| फ़ंक्शन (Function) | सिंटैक्स (Syntax) | विवरण (Description) |
+| Function | Syntax | Description |
 | :--- | :--- | :--- |
-| **`LAG()`** | `LAG(col, offset, default)` | बिना किसी सेल्फ-जॉइन के पिछली पंक्ति का डेटा एक्सेस करता है (महीने-दर-महीने ग्रोथ के लिए बेस्ट)। |
-| **`LEAD()`** | `LEAD(col, offset, default)` | अगली पंक्ति का डेटा एक्सेस करता है (चर्न कैलकुलेशन या अगले इवेंट तक की अवधि के लिए बेस्ट)। |
-| **`FIRST_VALUE()`** | `FIRST_VALUE(col)` | विंडो फ़्रेम की सबसे पहली पंक्ति की वैल्यू लौटाता है। |
-| **`LAST_VALUE()`** | `LAST_VALUE(col)` | विंडो फ़्रेम की सबसे अंतिम पंक्ति की वैल्यू लौटाता है। |
+| **`LAG()`** | `LAG(col, offset, default)` | Bina kisi self-join ke preceding (pichli) row ka data access karta hai (Month-over-Month growth ke liye ideal). |
+| **`LEAD()`** | `LEAD(col, offset, default)` | Subsequent (aage aane wali) row ka data access karta hai (churn ya next event tak ka time calculate karne ke liye ideal). |
+| **`FIRST_VALUE()`** | `FIRST_VALUE(col)` | Window frame ki pehli row ki value return karta hai. |
+| **`LAST_VALUE()`** | `LAST_VALUE(col)` | Window frame ki aakhiri row ki value return karta hai. |
 
 ---
 
-## 4. Syntax: Window Functions & Native JSON (सिंटैक्स: विंडो फ़ंक्शन्स और नेटिव JSON)
+## 4. Syntax: Window Functions & Native JSON
 
 ### Window Function Calculations
 ```sql
@@ -111,9 +111,9 @@ WHERE id = 1;
 
 ---
 
-## 5. Basic Example (बेसिक प्रैक्टिकल उदाहरण)
+## 5. Basic Example
 
-यहाँ `ROW_NUMBER()` और `LAG()` का बेसिक उपयोग प्रदर्शित किया गया है:
+Aaiye `ROW_NUMBER()` aur `LAG()` ka use dekhte hain:
 
 ```sql
 USE sql_mastery;
@@ -138,12 +138,12 @@ FROM orders;
 
 ---
 
-## 6. Real-World Example: Enterprise Sales Analytics & JSON Ingestion (वास्तविक बिज़नेस उदाहरण: सेल्स एनालिटिक्स और JSON इंजेक्शन)
+## 6. Real-World Example: Enterprise Sales Analytics & JSON Ingestion
 
-हमारे `sql_mastery` डेटाबेस में, बिज़नेस इंटेलिजेंस (BI) टीम को तीन प्रमुख रिपोर्ट्स चाहिए:
-1. **रनिंग सेल्स टोटल और मूविंग एवरेज**: 2023 के ऑर्डर्स के लिए एक क्युमुलेटिव रेवेन्यू टोटल और 3-ऑर्डर मूविंग एवरेज कैलकुलेट करना।
-2. **Top-N प्रति कैटेगरी**: `DENSE_RANK()` का उपयोग करके प्रत्येक डिपार्टमेंट में सबसे अधिक वेतन पाने वाले शीर्ष 2 कर्मचारियों की पहचान करना।
-3. **सेमी-स्ट्रक्चर्ड कस्टमर टेलीमेट्री**: JSON फ़ॉर्मेट में स्टोर कस्टमर टेलीमेट्री डेटा को क्वेरी करना, नेस्टेड कीज़ निकालना, और एक इंडेक्स्ड वर्चुअल जनरेटेड कॉलम बनाना।
+Hamare `sql_mastery` database mein Business Intelligence group ko teen cheezon ki zaroorat hai:
+1. **Running Sales Total & Moving Average**: 2023 orders ke liye running cumulative revenue total calculate karna, sath hi ek 3-order moving average nikalna.
+2. **Top-N per Category**: Har department mein top 2 highest-earning employees ko `DENSE_RANK()` ka use karke identify karna.
+3. **Semi-Structured Customer Metadata**: JSON format mein stored customer telemetry ko query karna, nested keys extract karna, aur ek indexed virtual generated column build karna.
 
 ```sql
 USE sql_mastery;
@@ -211,25 +211,25 @@ DROP TABLE customer_sessions;
 
 ---
 
-## 7. Step-by-Step Explanation (स्टेप-बाय-स्टेप व्याख्या)
+## 7. Step-by-Step Explanation
 
 1. `SUM(total_amount) OVER (ORDER BY order_date ...)`:
-   * क्वेरी नॉन-कैंसिल्ड ऑर्डर्स को `order_date` के अनुसार सॉर्ट करती है।
-   * प्रत्येक पंक्ति के लिए, विंडो फ़्रेम `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` इंजन को निर्देश देता है कि वह पहली पंक्ति से लेकर वर्तमान पंक्ति तक के सभी मानों का योग निकाले, जिससे एक सटीक रनिंग टोटल बनता है।
+   * Query non-cancelled orders ko `order_date` ke according sort karti hai.
+   * Har row ke liye, window frame `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` engine ko instruct karti hai ki wo shuru se lekar current row tak ki saari pichli rows ka sum kare, jisse exact running total calculate hota hai.
 2. `AVG(...) OVER (... ROWS BETWEEN 2 PRECEDING AND CURRENT ROW)`:
-   * यह डायनामिक रूप से 3-पंक्तियों की एक स्लाइडिंग विंडो (पिछली 2 पंक्तियाँ + वर्तमान पंक्ति) बनाता है, जो एक स्मूथ मूविंग एवरेज कैलकुलेट करती है।
+   * Dynamically ek 3-row sliding window frame define karti hai (2 pichli rows plus current row), jisse sales spikes ko smooth out karne wala moving average nikal aata hai.
 3. `DENSE_RANK() OVER (PARTITION BY department_id ORDER BY salary DESC)`:
-   * प्रत्येक विभाग का स्वतंत्र रूप से मूल्यांकन करता है। समान वेतन वाले कर्मचारियों को बिना किसी संख्या को छोड़े समान रैंक मिलती है।
-   * इसे एक CTE (`DepartmentRankedSalaries`) में लपेटने से बाहरी `WHERE salary_rank <= 2` क्लॉज़ को स्वच्छ तरीके से फ़िल्टर करने की सुविधा मिलती है (याद रखें: विंडो फ़ंक्शन्स को सीधे `WHERE` में नहीं लिखा जा सकता!)।
+   * Har department ko independently evaluate karti hai. Same salary wale employees ko identical rank numbers milte hain bina kisi subsequent integer ko skip kiye.
+   * Ise ek CTE (`DepartmentRankedSalaries`) ke andar wrap karne se outer `WHERE salary_rank <= 2` clause ranked results ko cleanly filter kar sakti hai (dhyan rahe: window functions ko direct `WHERE` clause mein nahi likha ja sakta!).
 4. `device_os VARCHAR(30) AS (session_payload->>'$.device.os') STORED`:
-   * MySQL एक वर्चुअल कॉलम बनाता है जो JSON डॉक्यूमेंट से `device.os` पाथ निकालता है।
-   * `STORED` कीवर्ड InnoDB को इसे फिजिकली डिस्क पर स्टोर करने और उस पर स्टैंडर्ड B+ Tree इंडेक्स (`idx_device_os`) बनाने का निर्देश देता है, जिससे JSON एट्रिब्यूट्स पर $O(\log N)$ स्पीड में बिजली जैसी तेज़ खोज संभव होती है।
+   * MySQL ek virtual column create karta hai jo JSON document se `device.os` path dynamically extract karke populate hota hai.
+   * `STORED` keyword InnoDB ko ye string physically disk par store karne aur standard B+ Tree index (`idx_device_os`) build karne ke liye bolta hai, jisse JSON attributes par ultra-fast $O(\log N)$ seeks enable ho jaate hain.
 
 ---
 
-## 8. Expected Result (अपेक्षित आउटपुट)
+## 8. Expected Result
 
-Part 1 (Running Totals and Moving Averages) का आउटपुट:
+Part 1 ka output (Running Totals and Moving Averages):
 
 ```
 +----------+------------+--------------+--------------------+---------------------+
@@ -248,7 +248,7 @@ Part 1 (Running Totals and Moving Averages) का आउटपुट:
 9 rows in set (0.00 sec)
 ```
 
-Part 2 (Top 2 Earners per Department) का आउटपुट:
+Part 2 ka output (Top 2 Earners per Department):
 
 ```
 +--------------------+-------------+---------------+-----------+
@@ -268,9 +268,9 @@ Part 2 (Top 2 Earners per Department) का आउटपुट:
 
 ---
 
-## 9. Common Mistakes (सामान्य गलतियाँ और Pitfalls)
+## 9. Common Mistakes
 
-1. **`WHERE` क्लॉज़ में विंडो फ़ंक्शन्स को फ़िल्टर करने की कोशिश करना**:
+1. **Attempting to Filter Window Functions in `WHERE`**:
    * *The Mistake*:
      ```sql
      SELECT employee_id, ROW_NUMBER() OVER (ORDER BY salary DESC) AS rnk
@@ -278,21 +278,21 @@ Part 2 (Top 2 Earners per Department) का आउटपुट:
      WHERE rnk <= 3; -- SYNTAX ERROR!
      ```
    * *Error*: `ERROR 3593 (HY000): You cannot use the window function 'row_number' in this context`
-   * *Why?*: [Chapter 10 — GROUP BY & HAVING](/hi/10_group_by_and_having) में बताए गए लॉजिकल एग्जीक्यूशन ऑर्डर के अनुसार, `WHERE` स्टेप 2 पर चलता है, जबकि विंडो फ़ंक्शन्स `SELECT` फ़ेज़ (स्टेप 5) में एग्जीक्यूट होते हैं। जब `WHERE` चलता है, तब रैंक अस्तित्व में ही नहीं होती!
-   * *Fix*: हमेशा विंडो फ़ंक्शन्स को एक **CTE** या डिराइव्ड टेबल सबक्वेरी में लपेटें, और बाहरी क्वेरी में एलियास पर फ़िल्टर लगाएँ।
-2. **`RANK()` और `DENSE_RANK()` में भ्रम**:
-   * यदि दो कर्मचारी 1st रैंक पर टाई करते हैं:
-     * `RANK()` का परिणाम होगा: $1, 1, 3$ (रैंक 2 छूट जाती है)।
-     * `DENSE_RANK()` का परिणाम होगा: $1, 1, 2$ (कोई भी रैंक नहीं छूटती)।
-3. **रनिंग टोटल्स में विंडो फ़्रेम छोड़ देना**:
-   * यदि आप केवल `SUM(total) OVER (ORDER BY order_date)` लिखते हैं और कई पंक्तियों की **`order_date` बिल्कुल समान** है, तो MySQL डिफ़ॉल्ट रूप से `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` का उपयोग करता है, जो समान तारीख वाली सभी पंक्तियों को एक साथ जोड़ देता है! पंक्ति-दर-पंक्ति सटीक क्युमुलेटिव सम के लिए हमेशा स्पष्ट रूप से `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` निर्दिष्ट करें।
+   * *Why?*: Chapter 10 ke Logical Execution Order ko recall karein—`WHERE` Step 2 par execute hota hai, jabki Window Functions Step 5 par `SELECT` phase ke dauran evaluate hote hain. Jab `WHERE` evaluate hota hai, tab tak rank exist hi nahi karti!
+   * *Fix*: Hamesha window functions ko ek **CTE** ya derived table subquery ke andar wrap karein, aur calculated alias par outer query mein filter lagayein.
+2. **Confusing `RANK()` and `DENSE_RANK()`**:
+   * Agar do employees 1st place ke liye tie karte hain:
+     * `RANK()` dega: $1, 1, 3$ (rank 2 skip ho jati hai).
+     * `DENSE_RANK()` dega: $1, 1, 2$ (koi bhi number skip nahi hota).
+3. **Omitting the Window Frame in Running Totals**:
+   * Agar aap `SUM(total) OVER (ORDER BY order_date)` likhte hain aur multiple rows ka **exact same `order_date`** hota hai, toh MySQL window frame ko default karke `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` bana deta hai. Ye same date wali saari tied rows ko row-by-row add karne ke bajaye ek sath add kar deta hai! True row-by-row cumulative sum ke liye hamesha explicitly `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` specify karein.
 
 ---
 
-## 10. Best Practices (सर्वोत्तम तरीके और टिप्स)
+## 10. Best Practices
 
-1. **समान फ़्रेम शेयर करने वाले फ़ंक्शन्स के लिए Named Windows का उपयोग करें**:
-   * क्वेरी को साफ़ और मेंटेन रखने के लिए `WINDOW` क्लॉज़ का उपयोग करें:
+1. **Use Named Windows When Multiple Functions Share the Same Frame**:
+   * Queries ko concise aur readable rakhne ke liye `WINDOW` clause ke sath named window define karein:
      ```sql
      SELECT 
          order_id,
@@ -301,57 +301,56 @@ Part 2 (Top 2 Earners per Department) का आउटपुट:
      FROM orders
      WINDOW w AS (PARTITION BY customer_id ORDER BY order_date);
      ```
-2. **Partition और Order कॉलम्स को इंडेक्स करें**:
-   * विंडो फ़ंक्शन्स की एग्जीक्यूशन स्पीड को अधिकतम करने के लिए `(partition_col, order_col)` पर कंपोजिट इंडेक्स बनाएँ। इससे इंजन को बिना महंगे इन-मेमोरी Filesort के प्री-सॉर्टेड रिकॉर्ड्स मिल जाते हैं।
-3. **नेस्टेड JSON को इंडेक्स करने के लिए Stored Generated Columns का उपयोग करें**:
-   * गहरे JSON पाथ्स को बार-बार `->>` से पार्स करने के बजाय, बार-बार फ़िल्टर की जाने वाली प्रॉपर्टीज़ को जनरेटेड कॉलम्स में निकालें और उन पर इंडेक्स बनाएँ।
+2. **Index Partition and Order Columns**:
+   * Window functions ki execution speed maximize karne ke liye `(partition_col, order_col)` matching composite indexes banayein. Isse engine expensive in-memory Filesort ke bina pre-sorted records ko directly stream kar sakta hai.
+3. **Use Virtual Generated Columns to Index Nested JSON**:
+   * Baar-baar `->>` se deep JSON paths parse mat karein. Frequently filtered JSON properties ko generated columns mein extract karein aur un par indexes banayein.
 
 ---
 
-## 11. Practice Questions (अभ्यास के लिए प्रश्न)
+## 11. Practice Questions
 
 ### Easy
-1. `GROUP BY` और Window Function में मूलभूत अंतर क्या है?
-2. कौन सा विंडो फ़ंक्शन बिना किसी गैप या टाई के सख्त क्रमिक नंबर ($1, 2, 3, \dots$) असाइन करता है?
-3. MySQL में `->` और `->>` JSON एक्सट्रैक्शन ऑपरेटर्स में क्या अंतर होता है?
+1. `GROUP BY` aur Window Function ke beech fundamental difference kya hota hai?
+2. Kaun sa window function bina kisi gap ya tie ke strict sequential numbers ($1, 2, 3, \dots$) assign karta hai?
+3. MySQL mein `->` aur `->>` JSON extraction operators ke beech kya difference hai?
 
 ### Medium
-4. `orders` टेबल पर `LAG()` का उपयोग करके एक क्वेरी लिखें जो प्रत्येक कस्टमर के वर्तमान ऑर्डर और पिछले ऑर्डर के बीच बीते हुए दिनों की संख्या निकाले।
-5. `NTILE(4)` का उपयोग करके कर्मचारियों को 4 सैलरी क्वार्टाइल्स (quartiles) में बाँटने वाली क्वेरी लिखें।
-6. `products` टेबल पर `DENSE_RANK()` का उपयोग करके कुल मिलाकर शीर्ष 3 सबसे महंगे प्रोडक्ट्स ढूँढने वाली क्वेरी लिखें, जिसमें टाई भी ठीक से हैंडल हो।
+4. `orders` table par `LAG()` ka use karke ek query likhiye jo har customer ke current order aur unke pichle order ke beech ka number of elapsed days calculate kare.
+5. Ek aisi query likhiye jo `NTILE(4)` ka use karke employees ko 4 salary quartiles mein divide kare.
+6. `products` table par `DENSE_RANK()` ka use karte hue overall top 3 most expensive products find karne ke liye query likhiye, jisme ties cleanly handle hon.
 
 ### Difficult
-7. प्रोडक्ट प्राइसिंग के लिए 3-पीरियड सेंटर्ड मूविंग एवरेज (पिछली पंक्ति, वर्तमान पंक्ति, और अगली पंक्ति का औसत) निकालने वाली क्वेरी लिखें। सटीक विंडो फ़्रेम सिंटैक्स स्पष्ट करें।
-8. मान लीजिए कि एक टेबल में बिना इंडेक्स वाला `JSON` कॉलम है जिसमें टैग ऑब्जेक्ट्स की एक एरे है: `[{"tag": "sql"}, {"tag": "mysql"}]`। `JSON_CONTAINS()` या `JSON_SEARCH()` का उपयोग करके उन रिकॉर्ड्स को ढूँढने वाली क्वेरी लिखें जो `"mysql"` से मैच करते हों।
+7. Product pricing ke liye ek 3-period centered moving average compute karne wali query likhiye (jo immediately preceding row, current row, aur immediately following row ka average nikale). Exact window frame syntax specify karein.
+8. Ek aisi table jisme un-indexed `JSON` column hai jisme tag objects ka array `[{"tag": "sql"}, {"tag": "mysql"}]` store hai, usme `JSON_CONTAINS()` ya `JSON_SEARCH()` ka use karke `"mysql"` match karne wale records query karke dikhayein.
 
 ---
 
-## 12. Interview Questions (इंटरव्यू सवाल और जवाब)
+## 12. Interview Questions
 
-### Q1: `ROW_NUMBER()`, `RANK()`, और `DENSE_RANK()` में क्या अंतर होता है?
-**उत्तर**:
-* **`ROW_NUMBER()`**: पार्टीशन के अंदर प्रत्येक पंक्ति को एक अनूठा, वृद्धिशील पूर्णांक ($1, 2, 3, 4, \dots$) देता है। इसमें कभी टाई नहीं होता; यदि दो पंक्तियों की वैल्यू समान हो, तब भी एक को मनमाने ढंग से पहले रैंक किया जाता है।
-* **`RANK()`**: समान वैल्यू वाली पंक्तियों को समान रैंक देता है (टाई)। लेकिन यह टाई हुई पंक्तियों की संख्या के बराबर बाद के नंबर छोड़ (skip) देता है (जैसे $1, 2, 2, 4, 5$)।
-* **`DENSE_RANK()`**: यह भी टाई होने पर समान रैंक देता है, लेकिन सीक्वेंस में कोई भी नंबर **नहीं छोड़ता** (जैसे $1, 2, 2, 3, 4$)।
+### Q1: What is the difference between `ROW_NUMBER()`, `RANK()`, and `DENSE_RANK()`?
+**Answer**:
+* **`ROW_NUMBER()`**: Ek partition ke andar har row ko unique, incremental integer ($1, 2, 3, 4, \dots$) assign karta hai. Isme kabhi tie nahi hota; agar do rows ki sorting value identical bhi ho, tab bhi ek row arbitrarily doosri se pehle rank ho jati hai.
+* **`RANK()`**: Same sorting values wali rows ko identical rank assign karta hai (ties). Lekin ye tied rows ke count ke barabar sequence mein gaps chhod deta hai (for example, $1, 2, 2, 4, 5$).
+* **`DENSE_RANK()`**: Ye bhi tied rows ko same rank deta hai, lekin sequence mein kisi bhi number ko skip **nahi** karta (for example, $1, 2, 2, 3, 4$).
 
-### Q2: विंडो फ़ंक्शन का उपयोग `WHERE` या `HAVING` क्लॉज़ में क्यों नहीं किया जा सकता?
-**उत्तर**: SQL लॉजिकल क्वेरी प्रोसेसिंग लाइफसाइकिल में क्लॉज़ेस का एग्जीक्यूशन क्रम इस प्रकार होता है:
-`FROM` $\rightarrow$ `WHERE` $\rightarrow$ `GROUP BY` $\rightarrow$ `HAVING` $\rightarrow$ **`SELECT` (Window Functions)** $\rightarrow$ `DISTINCT` $\rightarrow$ `ORDER BY` $\rightarrow$ `LIMIT`।
-चूँकि विंडो फ़ंक्शन्स का मूल्यांकन `SELECT` फ़ेज़ के दौरान होता है (जब पंक्तियाँ पहले ही `WHERE` द्वारा फ़िल्टर और `GROUP BY` द्वारा समूहीकृत हो चुकी होती हैं), इसलिए `WHERE` फ़ेज़ के दौरान उनका कोई अस्तित्व नहीं होता। विंडो मेट्रिक्स पर फ़िल्टर करने के लिए, फ़ंक्शन को CTE या सबक्वेरी में लपेटना और बाहरी क्वेरी में फ़िल्टर लगाना अनिवार्य है।
+### Q2: Why can you not use a window function in a `WHERE` or `HAVING` clause?
+**Answer**: SQL ke logical query processing lifecycle mein clauses is sequence mein evaluate hote hain:
+`FROM` $\rightarrow$ `WHERE` $\rightarrow$ `GROUP BY` $\rightarrow$ `HAVING` $\rightarrow$ **`SELECT` (Window Functions)** $\rightarrow$ `DISTINCT` $\rightarrow$ `ORDER BY` $\rightarrow$ `LIMIT`.
+Window functions `SELECT` phase ke dauran evaluate hote hain, jab rows already `WHERE` dwara filter aur `GROUP BY` / `HAVING` dwara group ki ja chuki hoti hain. Kyunki `WHERE` ya `HAVING` phase ke waqt window calculations exist hi nahi karti, isliye engine un par filter nahi laga sakta. Window metric par filter lagane ke liye aapko window function ko ek Common Table Expression (CTE) ya subquery ke andar encapsulate karna padta hai, aur filter outer query mein lagana hota hai.
 
-### Q3: विंडो फ़्रेम विनिर्देश में `ROWS` और `RANGE` में क्या अंतर होता है?
-**उत्तर**:
-* **`ROWS`**: विंडो फ़्रेम को फिजिकल रो काउंट (पंक्तियों की वास्तविक संख्या) के आधार पर परिभाषित करता है (जैसे `ROWS BETWEEN 2 PRECEDING AND CURRENT ROW` उनके मानों की परवाह किए बिना ठीक 2 पिछली पंक्तियाँ गिनता है)।
-* **`RANGE`**: विंडो फ़्रेम को लॉजिकल मानों (value offsets) के आधार पर परिभाषित करता है। यदि कई पंक्तियों की सॉर्टिंग वैल्यू समान है, तो `RANGE` उन सभी को एक समूह मानता है। `ORDER BY` के साथ फ़्रेम न लिखने पर डिफ़ॉल्ट रूप से `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` लागू होता है, जो समान वैल्यू वाली सभी पंक्तियों को एक साथ एग्रीगेट कर देता है।
+### Q3: What is the difference between `ROWS` and `RANGE` in a window frame specification?
+**Answer**:
+* **`ROWS`**: Window frame ko physical row counts ke terms mein define karta hai (for example, `ROWS BETWEEN 2 PRECEDING AND CURRENT ROW` strictly 2 physical preceding row records ko count karta hai, chahe unki values kuch bhi hon).
+* **`RANGE`**: Window frame ko logically value offsets ke terms mein define karta hai. Agar multiple rows identical sorting values share karti hain, toh `RANGE` un sabhi tied rows ko ek single collective set ki tarah treat karta hai. `ORDER BY` ke sath jab frame omit kar diya jata hai, toh ye default hokar `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` ban jata hai, jo saari tied rows ko incrementally row-by-row add karne ke bajaye ek sath aggregate kar deta hai.
 
 ---
 
-## 13. Quick Revision (त्वरित सारांश / क्विक रिविजन)
+## 13. Quick Revision
 
-* **Window Functions** प्रत्येक पंक्ति की **व्यक्तिगत पहचान बनाए रखते हुए** गणना करते हैं।
-* **`PARTITION BY`** ग्रुप्स बनाता है; **`ORDER BY`** विंडो के अंदर सॉर्टिंग क्रम तय करता है।
-* **`ROW_NUMBER()`** में टाई नहीं होता; **`RANK()`** में टाई होने पर गैप आता है; **`DENSE_RANK()`** में टाई होने पर गैप नहीं आता।
-* बिना सेल्फ-जॉइन के पड़ोसी पंक्तियों को देखने के लिए **`LAG()`** और **`LEAD()`** का उपयोग करें।
-* विंडो फ़ंक्शन्स को `WHERE` में फ़िल्टर करने के लिए हमेशा उन्हें **CTE** में लपेटें।
-* बिना कोट्स वाली JSON वैल्यूज निकालने के लिए **`->>`** का उपयोग करें और परफ़ॉर्मेंस के लिए **Stored Generated Columns** पर इंडेक्स बनाएँ।
-* आगे के अध्ययन के लिए अगले मॉड्यूल [Chapter 24 — Performance Tuning: MySQL Query Optimization & Execution Plans](/hi/24_query_optimization) पर बढ़ें।
+* **Window Functions** saari rows ke across calculations perform karte hain jabki **har individual row ko preserve** rakhte hain.
+* **`PARTITION BY`** groups define karta hai; **`ORDER BY`** window sorting sequence define karta hai.
+* **`ROW_NUMBER()`** mein ties nahi hote; **`RANK()`** gaps ke sath tie karta hai; **`DENSE_RANK()`** bina gaps ke tie karta hai.
+* Bina self-joins ke adjacent rows access karne ke liye **`LAG()`** aur **`LEAD()`** use karein.
+* Agar window function ke results par `WHERE` clause lagana ho, toh use hamesha **CTE** mein wrap karein.
+* Unquoted JSON values extract karne ke liye **`->>`** use karein, aur unhe **Stored Generated Columns** ke zariye index karein.

@@ -1,28 +1,28 @@
-# Chapter 26 — Hands-On Engineering: 5 Progressive Real-World SQL Projects | प्रैक्टिकल इंजीनियरिंग: 5 प्रोग्रेसिव रियल-वर्ल्ड SQL प्रोजेक्ट्स
+# Chapter 26 — Hands-On Engineering: 5 Progressive Real-World SQL Projects
 
-यह चैप्टर पाँच एंड-टू-एंड, प्रोडक्शन-ग्रेड रिलेशनल डेटाबेस प्रोजेक्ट्स प्रदान करता है, जिन्हें आपके स्किल्स को बेसिक स्कीमा डिज़ाइन से लेकर जटिल एनालिटिकल डेटा वेयरहाउसिंग तक चरणबद्ध (progressively) रूप से विकसित करने के लिए तैयार किया गया है।
+Ye chapter paanch end-to-end, production-grade relational database projects deliver karta hai jise foundational schema design se lekar complex analytical data warehousing tak aapke skills ko progressively build karne ke liye design kiya gaya hai.
 
-प्रत्येक प्रोजेक्ट में शामिल हैं:
-* **Business Requirements & Scope (व्यावसायिक आवश्यकताएँ और कार्यक्षेत्र)**
-* **Entity-Relationship (ER) Architecture (एंटिटी-रिलेशनशिप आर्किटेक्चर)**
-* **Complete DDL Specification (पूर्ण DDL: टेबल्स, कीज़, और कंस्ट्रेंट्स)**
-* **Realistic Seed Data (यथार्थवादी टेस्ट डेटा)**
-* **Operational Business Queries (ऑपरेशनल बिज़नेस क्वेरीज़)**
-* **Advanced Analytical Queries (उन्नत विश्लेषणात्मक क्वेरीज़)**
-* **Engineering Challenge Tasks (इंजीनियरिंग चुनौतियाँ)**
+Har project mein shamil hain:
+* **Business Requirements & Scope**
+* **Entity-Relationship (ER) Architecture**
+* **Complete DDL Specification (Tables, Keys, Constraints)**
+* **Realistic Seed Data**
+* **Operational Business Queries**
+* **Advanced Analytical Queries**
+* **Engineering Challenge Tasks**
 
 ---
 
-# Project 1: Student & Academic Management System (Beginner) | प्रोजेक्ट 1: स्टूडेंट और एकेडेमिक मैनेजमेंट सिस्टम (शुरुआती स्तर)
+# Project 1: Student & Academic Management System (Beginner)
 
-### 1. Requirements & Scope (आवश्यकताएँ और कार्यक्षेत्र)
-एक शैक्षणिक अकादमी को अपने शैक्षणिक कार्यक्रमों को प्रबंधित करने के लिए एक ऑपरेशनल डेटाबेस की आवश्यकता है:
-* छात्रों (students) और फैकल्टी प्रशिक्षकों (faculty instructors) के प्रोफाइल स्टोर करना।
-* विभिन्न शैक्षणिक विभागों में प्रस्तुत किए जाने वाले कोर्सेस को ट्रैक करना।
-* छात्रों के कोर्स नामांकन (enrollments), लेटर ग्रेड्स, और अटेंडेंस रेट्स को प्रबंधित करना।
-* ग्रेड पॉइंट एवरेज (GPA) की गणना करना और क्लास रोस्टर्स तैयार करना।
+### 1. Requirements & Scope
+Ek educational academy ko apne academic programs manage karne ke liye ek operational database ki zaroorat hai:
+* Student profiles aur faculty instructors ko store karna.
+* Academic departments ke across offer kiye jaane wale courses ko track karna.
+* Student course enrollments, letter grades, aur attendance rates manage karna.
+* Grade Point Averages (GPA) calculate karna aur class rosters generate karna.
 
-### 2. ER Diagram & Architecture (ER डायग्राम और आर्किटेक्चर)
+### 2. ER Diagram & Architecture
 ```mermaid
 erDiagram
     INSTRUCTORS ||--o{ COURSES : teaches
@@ -59,7 +59,7 @@ erDiagram
     }
 ```
 
-### 3. DDL & Seed Data Script (DDL और सीड डेटा स्क्रिप्ट)
+### 3. DDL & Seed Data Script
 ```sql
 CREATE DATABASE IF NOT EXISTS school_db CHARACTER SET utf8mb4;
 USE school_db;
@@ -127,7 +127,7 @@ INSERT INTO enrollments (student_id, course_id, numeric_grade, letter_grade, att
 (3, 2, 81.50, 'B', 90.00);
 ```
 
-### 4. Key Business & Analytical Queries (प्रमुख व्यावसायिक और विश्लेषणात्मक क्वेरीज़)
+### 4. Key Business & Analytical Queries
 ```sql
 -- Query 1: Course Rosters with Instructor & Student Names
 SELECT 
@@ -161,16 +161,16 @@ GROUP BY s.student_id, s.first_name, s.last_name;
 
 ---
 
-# Project 2: Employee & Payroll Management System (Beginner-Intermediate) | प्रोजेक्ट 2: एम्प्लॉई और पेरोल मैनेजमेंट सिस्टम (शुरुआती-मध्यम स्तर)
+# Project 2: Employee & Payroll Management System (Beginner-Intermediate)
 
-### 1. Requirements & Scope (आवश्यकताएँ और कार्यक्षेत्र)
-एक कॉर्पोरेट एंटरप्राइज को मानव संसाधन (HR) और कॉम्पेन्सेशन ट्रैकिंग डेटाबेस की आवश्यकता है:
-* क्षेत्रीय विभागों में कर्मचारियों को व्यवस्थित करना।
-* कर्मचारियों का वेतन (base salary), हायरिंग डेट, और मैनेजर हायरार्की ट्रैक करना।
-* सवेतन अवकाश (PTO / leave requests) की स्थिति की निगरानी करना।
-* वार्षिक परफ़ॉर्मेंस रिव्यूज (performance reviews) संचालित करना और मेरिट बोनस की गणना करना।
+### 1. Requirements & Scope
+Ek corporate enterprise ko apne HR aur compensation tracking ke liye database ki zaroorat hai:
+* Regional departments ke across workforce organize karna.
+* Employee compensation, hire dates, aur manager hierarchies track karna.
+* Status tracking ke sath paid time off (PTO) / leave requests manage karna.
+* Annual performance evaluations conduct karna aur merit bonuses calculate karna.
 
-### 2. ER Diagram & Architecture (ER डायग्राम और आर्किटेक्चर)
+### 2. ER Diagram & Architecture
 ```mermaid
 erDiagram
     HR_DEPARTMENTS ||--o{ HR_EMPLOYEES : houses
@@ -206,7 +206,7 @@ erDiagram
     }
 ```
 
-### 3. DDL & Seed Data Script (DDL और सीड डेटा स्क्रिप्ट)
+### 3. DDL & Seed Data Script
 ```sql
 CREATE DATABASE IF NOT EXISTS corporate_hr_db CHARACTER SET utf8mb4;
 USE corporate_hr_db;
@@ -282,7 +282,7 @@ INSERT INTO performance_reviews (emp_id, review_year, rating, bonus_awarded) VAL
 (5, 2023, 4, 8000.00);
 ```
 
-### 4. Key Business & Analytical Queries (प्रमुख व्यावसायिक और विश्लेषणात्मक क्वेरीज़)
+### 4. Key Business & Analytical Queries
 ```sql
 -- Query 1: Total Compensation Analysis (Salary + Bonus) by Department
 SELECT 
@@ -319,16 +319,16 @@ HAVING total_vacation_days_taken = 0;
 
 ---
 
-# Project 3: Multi-Warehouse Inventory & Supply Chain Database (Intermediate) | प्रोजेक्ट 3: मल्टी-वेयरहाउस इन्वेंटरी और सप्लाई चेन डेटाबेस (मध्यम स्तर)
+# Project 3: Multi-Warehouse Inventory & Supply Chain Database (Intermediate)
 
-### 1. Requirements & Scope (आवश्यकताएँ और कार्यक्षेत्र)
-एक क्षेत्रीय डिस्ट्रीब्यूटर को लॉजिस्टिक्स और इन्वेंटरी डेटाबेस की आवश्यकता है:
-* विभिन्न भौगोलिक शहरों में कई फिजिकल स्टोरेज वेयरहाउस प्रबंधित करना।
-* मैन्युफैक्चरिंग लॉट नंबर्स (lot numbers) और समाप्ति तिथियों (expiration dates) के आधार पर बैच की गई प्रोडक्ट इन्वेंटरी ट्रैक करना।
-* इंटर-वेयरहाउस स्टॉक ट्रांसफर ऑर्डर्स (stock transfer orders) का समन्वय करना।
-* जब वेयरहाउस में कुल स्टॉक न्यूनतम सुरक्षा सीमा से कम हो जाए, तो पुनःपूर्ति अलर्ट (replenishment alerts) ट्रिगर करना।
+### 1. Requirements & Scope
+Ek regional distributor ko apne logistics ke liye database ki zaroorat hai:
+* Geographical cities ke across multiple physical storage warehouses manage karna.
+* Product inventory ko manufacturing lot numbers aur expiration dates ke base par batch mein track karna.
+* Inter-warehouse stock transfer orders coordinate karna.
+* Jab total warehouse stock minimum safety threshold se neeche chala jaye, toh replenishment alerts trigger karna.
 
-### 2. ER Diagram & Architecture (ER डायग्राम और आर्किटेक्चर)
+### 2. ER Diagram & Architecture
 ```mermaid
 erDiagram
     WAREHOUSES ||--o{ STOCK_BATCHES : stores
@@ -366,7 +366,7 @@ erDiagram
     }
 ```
 
-### 3. DDL & Seed Data Script (DDL और सीड डेटा स्क्रिप्ट)
+### 3. DDL & Seed Data Script
 ```sql
 CREATE DATABASE IF NOT EXISTS supply_chain_db CHARACTER SET utf8mb4;
 USE supply_chain_db;
@@ -443,7 +443,7 @@ INSERT INTO stock_transfers (product_id, from_warehouse_id, to_warehouse_id, qua
 (2, 3, 1, 15, '2023-08-15', 'In Transit');
 ```
 
-### 4. Key Business & Analytical Queries (प्रमुख व्यावसायिक और विश्लेषणात्मक क्वेरीज़)
+### 4. Key Business & Analytical Queries
 ```sql
 -- Query 1: Network-Wide Inventory Valuation & Critical Deficit Alert
 SELECT 
@@ -480,17 +480,17 @@ ORDER BY t.transfer_date DESC;
 
 ---
 
-# Project 4: Enterprise E-Commerce Platform (Advanced) | प्रोजेक्ट 4: एंटरप्राइज ई-कॉमर्स प्लेटफॉर्म (उन्नत स्तर)
+# Project 4: Enterprise E-Commerce Platform (Advanced)
 
-### 1. Requirements & Scope (आवश्यकताएँ और कार्यक्षेत्र)
-एक उच्च-थ्रूपुट (high-throughput) इलेक्ट्रॉनिक रिटेल एंटरप्राइज प्लेटफॉर्म:
-* कस्टमर रजिस्ट्रेशन, टियर्ड लॉयल्टी पॉइंट्स, और प्रोफ़ाइल एड्रेसेस।
-* पदानुक्रमित प्रोडक्ट वर्गीकरण (Hierarchical Category Taxonomy: Categories और Sub-categories)।
-* शॉपिंग कार्ट्स, ऑर्डर्स, लाइन आइटम्स, और प्रोमोशनल कूपन डिस्काउंट्स।
-* पेमेंट प्रोसेसिंग लॉग्स (पार्शियल पेमेंट्स और पेमेंट फेलियर्स को हैंडल करना)।
-* डिलीवरी के बाद कस्टमर प्रोडक्ट रेटिंग्स और रिव्यूज (एंटी-फ्रॉड वेरिफिकेशन के साथ)।
+### 1. Requirements & Scope
+Ek high-throughput electronic retail enterprise platform:
+* Customer registration, tiered loyalty balances, aur profile addresses.
+* Hierarchical product taxonomy (Categories aur Sub-categories).
+* Shopping carts, orders, line items, aur promotional coupon discounts.
+* Payment processing logs (partial payments aur payment failures handle karna).
+* Delivery ke baad customer product ratings aur reviews with anti-fraud verification.
 
-### 2. ER Diagram & Architecture (ER डायग्राम और आर्किटेक्चर)
+### 2. ER Diagram & Architecture
 ```mermaid
 erDiagram
     ECOMM_CUSTOMERS ||--o{ ECOMM_ORDERS : places
@@ -538,7 +538,7 @@ erDiagram
     }
 ```
 
-### 3. DDL & Seed Data Script (DDL और सीड डेटा स्क्रिप्ट)
+### 3. DDL & Seed Data Script
 ```sql
 CREATE DATABASE IF NOT EXISTS ecommerce_enterprise_db CHARACTER SET utf8mb4;
 USE ecommerce_enterprise_db;
@@ -654,7 +654,7 @@ INSERT INTO product_reviews (product_id, customer_id, rating, review_text) VALUE
 (3, 2, 4, 'Very clean audio output, excellent dynamic range.');
 ```
 
-### 4. Key Analytical Queries (प्रमुख विश्लेषणात्मक क्वेरीज़)
+### 4. Key Analytical Queries
 ```sql
 -- Advanced Query: Customer Lifetime Value (LTV) & Churn Risk Segmentation
 WITH CustomerOrderStats AS (
@@ -686,16 +686,16 @@ ORDER BY lifetime_revenue DESC;
 
 ---
 
-# Project 5: Enterprise Sales Analytics Data Mart (Master / OLAP) | प्रोजेक्ट 5: एंटरप्राइज सेल्स एनालिटिक्स डेटा मार्ट (मास्टर / OLAP)
+# Project 5: Enterprise Sales Analytics Data Mart (Master / OLAP)
 
-### 1. Requirements & Scope (आवश्यकताएँ और कार्यक्षेत्र)
-एग्जीक्यूटिव डेटा प्लेटफॉर्म को **Star Schema** के रूप में मॉडल किए गए एक **OLAP Data Mart** की आवश्यकता है:
-* लाखों ऐतिहासिक बिक्री लेन-देन में उच्च-थ्रूपुट विश्लेषणात्मक रीड्स (analytical reads) को ऑप्टिमाइज़ करना।
-* आयामी तालिकाओं (dimensional tables) के लिए प्री-जॉइन्ड सरोगेट फ़ॉरेन कीज़ के साथ एक केंद्रीय **Fact Table (`fact_sales`)** डिज़ाइन करना।
-* **Dimension Tables** डिज़ाइन करना: `dim_customer`, `dim_product`, `dim_store`, और `dim_date`।
-* जटिल विश्लेषणात्मक KPI की गणना करना: साल-दर-साल (YoY) रेवेन्यू ग्रोथ, कोहॉर्ट रिटेंशन (cohort retention), और क्षेत्रीय रेवेन्यू शेयर।
+### 1. Requirements & Scope
+Executive Data Platform ko ek **Star Schema** ke roop mein modeled **OLAP Data Mart** ki zaroorat hai:
+* Millions of historical sales transactions ke across high-throughput analytical reads ko optimize karna.
+* Dimensional tables ke sath pre-joined surrogate foreign keys ke sath ek central **Fact Table (`fact_sales`)** design karna.
+* **Dimension Tables** design karna: `dim_customer`, `dim_product`, `dim_store`, aur `dim_date`.
+* Complex analytical Key Performance Indicators (KPIs) compute karna: Year-over-Year (YoY) revenue growth, cohort retention, aur regional revenue shares.
 
-### 2. Star Schema Dimensional Architecture (स्टार स्कीमा डायमेंशनल आर्किटेक्चर)
+### 2. Star Schema Dimensional Architecture
 ```mermaid
 erDiagram
     DIM_DATE ||--o{ FACT_SALES : date_key
@@ -738,7 +738,7 @@ erDiagram
     }
 ```
 
-### 3. DDL & Seed Data Script (DDL और सीड डेटा स्क्रिप्ट)
+### 3. DDL & Seed Data Script
 ```sql
 CREATE DATABASE IF NOT EXISTS sales_analytics_dw CHARACTER SET utf8mb4;
 USE sales_analytics_dw;
@@ -814,7 +814,7 @@ INSERT INTO fact_sales (date_key, product_key, store_key, units_sold, gross_reve
 (20230915, 3, 3, 8, 3992.00, 100.00, 3892.00, 2000.00, 1892.00);
 ```
 
-### 4. Master Analytical OLAP Queries (मास्टर एनालिटिकल OLAP क्वेरीज़)
+### 4. Master Analytical OLAP Queries
 ```sql
 -- OLAP Analytical Query: Multi-Dimensional Revenue Contribution Matrix
 SELECT 
@@ -838,16 +838,12 @@ ORDER BY d.year_num, d.month_num, total_net_revenue DESC;
 
 ---
 
-## 5. Summary of Projects Progression (प्रोजेक्ट्स की प्रगति का सारांश)
+## 5. Summary of Projects Progression
 
-| प्रोजेक्ट | लक्षित कौशल (Target Skillset) | कवर किए गए मुख्य कॉन्सेप्ट्स |
+| Project | Target Skillset | Primary Concepts Covered |
 | :--- | :--- | :--- |
-| **1. Student Academy** | Relational Basics | 1:N & N:M मॉडलिंग, PK/FK, कंपोजिट कीज़, बेसिक एग्रीगेट फ़ंक्शन्स। |
-| **2. Corporate HR & Payroll** | Business Workflows | सेल्फ-जॉइन्स (मैनेजर हायरार्की), मल्टी-टेबल जॉइन्स, CHECK कंस्ट्रेंट्स, डेट कैलकुलेशन। |
-| **3. Multi-Warehouse Inventory** | Logistics & Triggers | मल्टी-लोकेशन स्टॉक सामंजस्य, बैच ट्रैकिंग, ट्रांसफर ऑडिटिंग। |
-| **4. Enterprise E-Commerce** | High-Throughput OLTP | कस्टमर LTV कैलकुलेशन, विंडो फ़ंक्शन सेगमेंटेशन, ट्रांजैक्शन चेकआउट लॉजिक। |
-| **5. Business Sales Data Mart** | Enterprise Analytics (OLAP) | Star Schema मॉडलिंग, Fact/Dimension आर्किटेक्चर, मल्टी-डायमेंशनल विंडो KPIs। |
-
----
-
-अभ्यास जारी रखने के लिए [300 Practice Exercises](/hi/27_exercises) पर बढ़ें या संपूर्ण पाठ्यक्रम के लिए [Master Table of Contents](/hi/00_master_table_of_contents) देखें।
+| **1. Student Academy** | Relational Basics | 1:N & N:M modeling, PK/FK, composite keys, basic aggregate functions. |
+| **2. Corporate HR & Payroll** | Business Workflows | Self-joins (manager trees), multi-table joins, CHECK constraints, date math. |
+| **3. Multi-Warehouse Inventory** | Logistics & Triggers | Multi-location stock reconciliation, batch tracking, transfer auditing. |
+| **4. Enterprise E-Commerce** | High-Throughput OLTP | LTV calculation, window function segmentation, transaction checkout logic. |
+| **5. Business Sales Data Mart** | Enterprise Analytics (OLAP) | Star Schema modeling, Fact/Dimension architecture, multi-dimensional window KPIs. |

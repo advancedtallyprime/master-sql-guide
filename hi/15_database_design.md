@@ -1,25 +1,25 @@
-# Chapter 15 — Database Design & Entity Relationship Modeling (डेटाबेस डिज़ाइन और एंटिटी रिलेशनशिप मॉडलिंग)
+# Chapter 15 — Database Design & Entity Relationship Modeling (Database Design Aur ER Modeling)
 
 ---
 
-## 1. What is it? (यह क्या है?)
+## 1. What is it? (Ye Kya Hai?)
 
 **Database Design** ek structured aur disciplined engineering process hai jisme enterprise business requirements ko samajhkar ek aisa data model banaya jata hai jo high data integrity, top-notch query performance, aur long-term scalability guarantee karta hai.
 
 Bina proper planning aur architecture ke database banana waise hi hai jaise bina blueprint ke multi-storey building khadi karna—shuru me sab theek lagega, lekin jaise hi data badhega, pura system crash aur slow ho jayega!
 
-Database design ko teen progressive architectural phases mein divide kiya jata hai:
-1. **Conceptual Design**: Business domain ko high level par samajhna. Isme core business entities (jaise *Customer*, *Order*, *Product*) aur unke aapsi business relationships ko bina kisi technology ya software ke identify kiya jata hai.
-2. **Logical Design**: Conceptual model ko actual relational tables mein translate karna. Har entity ke attributes (columns) define karna, primary keys aur foreign keys decide karna, exact cardinality (1:1, 1:N, N:M) establish karna, aur data anomalies ko eliminate karne ke liye schema ko normalize karna (1NF to 3NF/BCNF).
+Database design ko teen progressive architectural phases me divide kiya jata hai:
+1. **Conceptual Design**: Business domain ko high level par samajhna. Isme core business entities (jaise *Customer*, *Order*, *Product*) aur unke aapsi business relationships ko bina kisi specific technology ya software ki chinta kiye identify kiya jata hai.
+2. **Logical Design**: Conceptual model ko actual relational tables me translate karna. Har entity ke attributes (columns) define karna, primary keys aur foreign keys decide karna, exact cardinality (1:1, 1:N, N:M) establish karna, aur data anomalies ko eliminate karne ke liye schema ko normalize karna (1NF se 3NF/BCNF).
 3. **Physical Design**: Logical structure ko kisi specific RDBMS engine (jaise MySQL InnoDB) ke physical storage architecture par map karna. Isme exact data types (`INT UNSIGNED`, `VARCHAR(100)`, `DECIMAL(10,2)`), character collations (`utf8mb4_0900_ai_ci`), B+ Tree primary/secondary indexes, foreign key actions, aur table partitioning strategies plan ki jaati hain.
 
 Data modeling ka sabse mukhya visual tool **Entity-Relationship Diagram (ERD)** hota hai, jo industry-standard **Crow's Foot Notation** ka use karke entities, attributes aur relationships ko visualize karta hai.
 
 ---
 
-## 2. Why do we use it? (हम इसका उपयोग क्यों करते हैं? — क्रोज़ फुट नोटेशन और मॉडलिंग)
+## 2. Why do we use it? (Hum Iska Use Kyun Karte Hain?)
 
-Ek poorly designed database me update anomalies, data loss, aur massive performance bottlenecks aate hain. Crow's Foot notation ke zariye hum entities ke beech minimum aur maximum cardinality ko visual clarity ke sath represent karte hain taaki developers aur architects bina kisi confusion ke schema implement kar sakein:
+Ek poorly designed database me update anomalies, data redundancy, aur massive performance bottlenecks aate hain. Crow's Foot notation ke zariye hum entities ke beech minimum aur maximum cardinality ko visual clarity ke sath represent karte hain taaki developers aur architects bina kisi confusion ke schema implement kar sakein:
 
 | Symbol / End | Meaning | Cardinality Description |
 | :--- | :--- | :--- |
@@ -39,14 +39,14 @@ erDiagram
 
 ---
 
-## 3. Syntax & Design Rules (सिंटैक्स और डिज़ाइन नियम)
+## 3. Syntax (Syntax Aur Design Rules)
 
 Database architecture design karte waqt in fundamental golden rules ka hamesha paalan karein:
 
-1. **Rule of Atomicity (परमाणुता का नियम)**: Table ke har column mein sirf ek single, indivisible scalar value honi chahiye. Ek column mein comma-separated values store karna (jaise `phone_numbers = '9876543210, 9123456780'`) First Normal Form (1NF) ka ghor ulanghan hai, indexing ko block karta hai aur queries ko slow bana deta hai.
-2. **Rule of Single Responsibility (एकल जिम्मेदारी)**: Ek table ko sirf ek real-world business entity represent karni chahiye. Kabhi bhi customer profile data aur order shipping details ko ek hi table mein khichdi mat banaiye.
-3. **Rule of Key Immutability (कीज की अपरिवर्तनीयता)**: Primary key ki value aisi honi chahiye jo kabhi na badle. Aise natural attributes (jaise mobile number ya email) ko primary key na banayein jo future me update ho sakte hain; hamesha synthetic surrogate keys (`INT AUTO_INCREMENT` ya `BIGINT`) use karein.
-4. **Naming Conventions (नामकरण परंपराएँ)**:
+1. **Rule of Atomicity**: Table ke har column me sirf ek single, indivisible scalar value honi chahiye. Ek column me comma-separated values store karna (jaise `phone_numbers = '9876543210, 9123456780'`) First Normal Form (1NF) ka violation hai, indexing ko block karta hai aur queries ko slow bana deta hai.
+2. **Rule of Single Responsibility**: Ek table ko sirf ek real-world business entity represent karni chahiye. Kabhi bhi customer profile data aur order shipping details ko ek hi table me mix mat kijiye.
+3. **Rule of Key Immutability**: Primary key ki value aisi honi chahiye jo kabhi na badle. Aise natural attributes (jaise mobile number ya email) ko primary key na banayein jo future me update ho sakte hain; hamesha synthetic surrogate keys (`INT AUTO_INCREMENT` ya `BIGINT`) use karein.
+4. **Naming Conventions**:
    * Tables: Lowercase plural (`customers`, `orders`, `products`, `departments`).
    * Columns: Lowercase singular with snake_case (`customer_id`, `unit_price`, `hire_date`).
    * Junction Tables: Hyphenated ya combined entity names (`order_items`, `student_courses`).
@@ -54,7 +54,7 @@ Database architecture design karte waqt in fundamental golden rules ka hamesha p
 
 ---
 
-## 4. Basic Example (बेसिक उदाहरण)
+## 4. Basic Example (Basic Example)
 
 Chaliye ek complete blogging platform ka robust relational schema design karte hain jisme Authors, Posts, Tags aur Many-to-Many tagging relationship shamil hain:
 
@@ -112,7 +112,7 @@ DROP TABLE blog_authors;
 
 ---
 
-## 5. Real-World Example (रियल-वर्ल्ड उदाहरण — केस स्टडी: `sql_mastery`)
+## 5. Real-World Example (Real-World Example)
 
 Hamare enterprise database schema `sql_mastery` ke relational architecture aur critical design decisions ka deep-dive:
 
@@ -149,17 +149,17 @@ classDiagram
     Product "1" --> "0..*" OrderItem : ordered_in
 ```
 
-### Mukhya Design Decisions ki Vyakhya:
+### Mukhya Design Decisions Ki Explanation:
 1. **Historical Price Capture in `order_items`**:
-   * Dhyan se dekhiye: `products` table mein pehle se hi `unit_price` column maujood hai, fir bhi humne `order_items` mein alag se `unit_price` column kyu banaya?
-   * *Why?*: Product catalog ke prices waqt ke sath badalte rehte hain. Agar ek laptop aaj ₹50,000 ka hai aur agle mahine inflation ya new stock ki wajah se ₹55,000 ka ho jata hai, toh purane orders ka financial total nahi badalna chahiye! Agar hum `order_items` me price store na karein aur query me direct `products.unit_price` se join karein, toh agle mahine pichle saal ke sabhi orders ke bills galat dikhayenge! Is snapshot ko store karna **point-in-time financial truth** kehlata hai.
+   * Dhyan se dekhiye: `products` table me pehle se hi `unit_price` column maujood hai, fir bhi humne `order_items` me alag se `unit_price` column kyun banaya?
+   * *Why?*: Product catalog ke prices waqt ke sath badalte rehte hain. Agar ek laptop aaj $1,299 ka hai aur agle mahine inflation ya new stock ki wajah se $1,499 ka ho jata hai, toh purane orders ka financial total nahi badalna chahiye! Agar hum `order_items` me price store na karein aur query me direct `products.unit_price` se join karein, toh agle mahine pichle saal ke sabhi orders ke bills galat dikhayenge! Is snapshot ko store karna **point-in-time financial truth** kehlata hai.
 2. **Decoupled Order and Payment Entities**:
    * Order table me payment information ko mix karne ke bajaye alag `payments` table banayi gayi hai.
-   * *Why?*: Real life me ek order ke multiple payment attempts ho sakte hain (jaise pehla card fail ho gaya, doosra pass hua), split payments ho sakti hain (adhe paise wallet se, adhe UPI se), ya fir partial refunds ho sakte hain. Alag `payments` table cleanly 1:N payment attempts ko support karti hai.
+   * *Why?*: Real life me ek order ke multiple payment attempts ho sakte hain (jaise pehla card fail ho gaya, doosra pass hua), split payments ho sakti hain (aadhe paise wallet se, aadhe credit card se), ya fir partial refunds ho sakte hain. Alag `payments` table cleanly 1:N payment attempts ko support karti hai.
 
 ---
 
-## 6. Step-by-Step Explanation (स्टेप-बाय-स्टेप व्याख्या और वर्कफ्लो)
+## 6. Step-by-Step Explanation (Step-by-Step Explanation)
 
 Jab bhi aapko scratch se kisi naye project ke liye enterprise relational database design karna ho, toh is 5-step workflow ko follow karein:
 
@@ -172,14 +172,14 @@ flowchart TD
 ```
 
 * **Step 1 (Domain Discovery)**: Stakeholders aur business requirements documents se Nouns (jo Entities banenge jaise User, Invoice, Item) aur Verbs (jo Relationships banenge jaise Places, Contains, Issues) identify kijiye.
-* **Step 2 (Define Keys)**: Har entity ke liye immutable synthetic primary key chunein (`AUTO_INCREMENT`) aur alternate keys (jaise email, GSTIN) par `UNIQUE` constraints mark karein.
+* **Step 2 (Define Keys & Uniqueness)**: Har entity ke liye immutable synthetic primary key chunein (`AUTO_INCREMENT`) aur alternate keys (jaise email, tax identification) par `UNIQUE` constraints mark karein.
 * **Step 3 (Establish Cardinality)**: Business rules ke hisab se 1:1, 1:N decide karein aur jahan bhi N:M relationship ho, wahan intermediate Junction Table design karein.
 * **Step 4 (Normalization)**: Redundant data aur anomalies ko rokne ke liye tables ko 3NF tak decompose karein.
-* **Step 5 (Physical Mapping)**: MySQL engine specific data types, character sets (`utf8mb4`), indexes, aur constraints define karke actual SQL scripts taiyar karein.
+* **Step 5 (Physical Schema Mapping)**: MySQL engine specific data types, character sets (`utf8mb4`), indexes, aur constraints define karke actual SQL scripts taiyar karein.
 
 ---
 
-## 7. Expected Result (अपेक्षित परिणाम और स्कीमा वेरिफिकेशन)
+## 7. Expected Result (Expected Result)
 
 Jab aap upar diye gaye DDL statements run karte hain, toh MySQL table schema aur indexes ko verify karta hai:
 
@@ -212,54 +212,54 @@ Notice karein ki `post_tags` me `(post_id, tag_id)` par composite `PRI` key succ
 
 ---
 
-## 8. Common Mistakes (सामान्य गलतियाँ और डिज़ाइन एंटी-पैटर्न्स)
+## 8. Common Mistakes (Common Mistakes)
 
 1. **The Comma-Separated List Anti-Pattern (Jaywalking)**:
-   * *Anti-pattern*: Ek text column mein multiple IDs ghusa dena: `products.category_ids = '1, 4, 7'`.
+   * *Anti-pattern*: Ek text column me multiple IDs store kar dena: `products.category_ids = '1, 4, 7'`.
    * *Problems*: Kisi category ko search karne ke liye `LIKE '%4%'` jaisa slow full-table scan karna padta hai, categories ke sath standard relational JOIN lagana impossible ho jata hai, foreign key integrity enforce nahi ho sakti, aur category update karne ke liye string manipulation karni padti hai.
    * *Fix*: Hamesha proper junction table banayein: `product_categories(product_id, category_id)`.
 2. **Entity-Attribute-Value (EAV) Overuse**:
    * *Anti-pattern*: Dynamic attributes store karne ke liye teen generic columns wali single table bana dena: `(entity_id, attribute_name, attribute_value)`.
-   * *Problems*: Ek simple product details query fetch karne ke liye 10 self-joins lagane padte hain, basic data types (integers, dates, booleans) sab string ban jate hain, data validation khatam ho jati hai, aur query performance bohot kharab ho jati hai.
-   * *Fix*: MySQL 8.0+ mein common fixed attributes ke liye strongly typed columns use karein aur highly dynamic attributes ke liye structured `JSON` column use karein.
+   * *Problems*: Ek simple product details query fetch karne ke liye 10 self-joins lagane padte hain, basic data types (integers, dates, booleans) sab string ban jaate hain, data validation khatam ho jaati hai, aur query performance bohot tezi se degrade hoti hai.
+   * *Fix*: MySQL 8.0+ me common fixed attributes ke liye strongly typed columns use karein aur highly dynamic attributes ke liye structured `JSON` column use karein.
 3. **Multipurpose Column Anti-Pattern**:
-   * Order ship ho gaya toh tracking number daal diya, cancel hua toh cancellation reason daal diya—sab ek hi `status_note` column mein! Isse data domain pollute hota hai aur report nikaalne ke liye complex `CASE` statements likhne padte hain. Har business concept ke liye dedicated column banayein.
+   * Order ship ho gaya toh tracking number daal diya, cancel hua toh cancellation reason daal diya—sab ek hi `status_note` column me! Isse data domain pollute hota hai aur report nikaalne ke liye complex `CASE` statements likhne padte hain. Har business concept ke liye dedicated column banayein.
 
 ---
 
-## 9. Best Practices (बेस्ट प्रैक्टिसेज)
+## 9. Best Practices (Best Practices)
 
-1. **Primary Key ke liye Synthetic Auto-Increment Keys chunein**:
-   * `INT UNSIGNED AUTO_INCREMENT` ya `BIGINT UNSIGNED AUTO_INCREMENT` use karein. Ye compact hote hain (4 ya 8 bytes), monotonically badhte hain, aur InnoDB ke B+ Tree clustered index mein random page splits ko rok kar blazing-fast insert performance dete hain.
-2. **Historical Immutability Enforce karein**:
-   * Transactional records mein snapshot data (jaise us samay ka unit price, shipping address, tax rate) transaction table mein hi copy karein. Customer profile table par depend na rahein kyunki customer kal apna address badal sakta hai!
-3. **Soft Deletes ka use karein (`is_active` ya `deleted_at`)**:
-   * Production systems mein financial ya critical records (customers, orders, bank accounts) ko physically `DELETE` na karein. Table mein `is_active BOOLEAN DEFAULT TRUE` ya `deleted_at TIMESTAMP NULL` add karein taaki audit trail aur historical data hamesha surakshit rahe.
+1. **Always Use Synthetic Auto-Increment Keys for Primary Keys**:
+   * `INT UNSIGNED AUTO_INCREMENT` ya `BIGINT UNSIGNED AUTO_INCREMENT` use karein. Ye compact hote hain (4 ya 8 bytes), monotonically badhte hain, aur InnoDB ke B+ Tree clustered index me random page splits ko rok kar blazing-fast insert performance dete hain.
+2. **Enforce Historical Immutability**:
+   * Transactional records me snapshot data (jaise us samay ka unit price, shipping address, tax rate) transaction table me hi copy karein. Customer profile table par depend na rahein kyunki customer kal apna address badal sakta hai!
+3. **Soft Deletes with `is_active` or `deleted_at`**:
+   * Production systems me financial ya critical records (customers, orders, bank accounts) ko physically `DELETE` na karein. Table me `is_active BOOLEAN DEFAULT TRUE` ya `deleted_at TIMESTAMP NULL` add karein taaki audit trail aur historical data hamesha preserved rahe.
 
 ---
 
-## 10. Practice Questions (अभ्यास प्रश्न)
+## 10. Practice Questions (Practice Questions)
 
-### Easy (सरल)
+### Easy
 1. Database design ke teen pramukh phases kaun se hain aur unme kya antar hai?
-2. Crow's Foot notation mein circle (`o`) ke sath crow's foot (`}`) ka nishan kya darshata hai?
-3. Ek relational table ke andar kisi column mein comma-separated values kyun nahi store karni chahiye?
+2. Crow's Foot notation me circle (`o`) ke sath crow's foot (`}`) ka nishan kya darshata hai?
+3. Ek relational table ke andar kisi column me comma-separated values kyun nahi store karni chahiye?
 
-### Medium (मध्यम)
+### Medium
 4. Ek Hospital Clinic ke liye ER schema design kijiye jisme `doctors`, `patients`, aur `appointments` entities shamil hon. Har table ki primary keys, foreign keys aur cardinalities specify kijiye.
-5. Hamare `sql_mastery` schema mein `unit_price` column `products` aur `order_items` dono tables mein kyu rakha gaya hai? Agar ye sirf `products` mein hota toh production billing mein kya bug aata?
+5. Hamare `sql_mastery` schema me `unit_price` column `products` aur `order_items` dono tables me kyun rakha gaya hai? Agar ye sirf `products` me hota toh production billing me kya bug aata?
 6. Kab ek database architect ko 1:1 relationship ko ek hi table me rakhne ke bajaye do alag tables me divide karna chahiye?
 
-### Difficult (कठिन)
+### Difficult
 7. Airline Reservation System ke liye ek complete database schema design kijiye:
    * Isme `flights`, `airports`, `airplanes`, `passengers`, aur `seat_reservations` tables hon.
    * Ensure kijiye ki ek passenger ek hi flight par same seat do baar book na kar sake (composite uniqueness).
-   * Flight table mein `origin_airport` aur `destination_airport` dono columns ek hi `airports` table ko reference karein (Multiple foreign keys to same parent).
-8. MySQL InnoDB mein auto-increment integers ke mukable UUIDs ko primary key banane ke pros aur cons kya hain? MySQL 8.0 ka `UUID_TO_BIN(uuid, 1)` function clustered index page fragmentation ko kaise kam karta hai?
+   * Flight table me `origin_airport` aur `destination_airport` dono columns ek hi `airports` table ko reference karein (Multiple foreign keys to same parent).
+8. MySQL InnoDB me auto-increment integers ke mukable UUIDs ko primary key banane ke pros aur cons kya hain? MySQL 8.0 ka `UUID_TO_BIN(uuid, 1)` function clustered index page fragmentation ko kaise kam karta hai?
 
 ---
 
-## 11. Interview Questions (इंटरव्यू सवाल और जवाब)
+## 11. Interview Questions (Interview Questions)
 
 ### Q1: Conceptual, Logical, aur Physical database design ke beech kya antar hai?
 **Answer**:
@@ -267,23 +267,23 @@ Notice karein ki `post_tags` me `(post_id, tag_id)` par composite `PRI` key succ
 * **Logical Design**: Technology-independent relational modeling jisme tables, primary keys, foreign keys, constraints aur 3NF normalization apply kiya jata hai.
 * **Physical Design**: Engine-specific implementation jisme target database (jaise MySQL InnoDB) ke mutabik specific data types, B+ Tree indexes, storage parameters, collations aur partitioning strategy decide ki jaati hai.
 
-### Q2: Database design mein "Jaywalking" anti-pattern kya hota hai aur isse kya nuksan hain?
-**Answer**: Jaywalking anti-pattern tab hota hai jab ek developer Many-to-Many junction table banane ke aalas mein ek hi column mein multiple IDs ko comma-separated string (jaise `'10,24,35'`) ke roop mein store kar deta hai.
+### Q2: Database design me "Jaywalking" anti-pattern kya hota hai aur isse kya nuksan hain?
+**Answer**: Jaywalking anti-pattern tab hota hai jab ek developer Many-to-Many junction table banane ke aalas me ek hi column me multiple IDs ko comma-separated string (jaise `'10,24,35'`) ke roop me store kar deta hai.
 Iske mukhya nuksan:
 1. Referential integrity enforce nahi ho sakti (foreign key comma-separated string ke andar ke individual IDs ko validate nahi kar sakti).
 2. Data search karne ke liye `LIKE '%24%'` ya `FIND_IN_SET()` use karna padta hai jo index use nahi kar sakte aur slow full table scans karte hain.
 3. Simple aggregations (`COUNT`, `AVG`) nikalne ke liye complex string manipulation karni padti hai.
 4. Concurrency bugs: ID add ya remove karne ke liye poori string ko read karke replace karna padta hai jisse race conditions create hoti hain.
 
-### Q3: E-commerce database design mein point-in-time historical data preservation kyu critical hota hai?
-**Answer**: Enterprise systems mein master catalog ka data samay ke sath badalta rehta hai—products ke prices update hote hain, discounts change hote hain, aur customers apne addresses modify karte hain. Agar ek order line item `products.unit_price` ko dynamically join karega aur checkout ke waqt ka actual price `order_items.unit_price` mein copy nahi karega, toh bhavishya mein hone wala koi bhi price change pichle sabhi saalon ke orders ke financial totals ko badal dega. Isse company ki accounting, tax audit reports, aur customer purchase history poori tarah corrupt ho jayegi.
+### Q3: E-commerce database design me point-in-time historical data preservation kyun critical hota hai?
+**Answer**: Enterprise systems me master catalog ka data samay ke sath badalta rehta hai—products ke prices update hote hain, discounts change hote hain, aur customers apne addresses modify karte hain. Agar ek order line item `products.unit_price` ko dynamically join karega aur checkout ke waqt ka actual price `order_items.unit_price` me copy nahi karega, toh bhavishya me hone wala koi bhi price change pichle sabhi saalon ke orders ke financial totals ko badal dega. Isse company ki accounting, tax audit reports, aur customer purchase history poori tarah corrupt ho jayegi.
 
 ---
 
-## 12. Quick Revision (क्विक रिविजन)
+## 12. Quick Revision (Quick Revision)
 
 * Accha database design **Conceptual**, **Logical**, aur **Physical** phases se hokar guzarta hai.
 * Minimum aur maximum relationships ko accurately model karne ke liye **Crow's Foot notation** ka prayog karein.
 * **Rule of Atomicity** ka kadi se paalan karein: har column me single scalar value honi chahiye; comma-separated lists kabhi na use karein.
-* Transaction tables mein **point-in-time historical values** (jaise unit price, checkout addresses) ko snapshot ke roop mein store karein.
+* Transaction tables me **point-in-time historical values** (jaise unit price, checkout addresses) ko snapshot ke roop me store karein.
 * Primary key ke liye hamesha compact **synthetic surrogate keys** (`INT AUTO_INCREMENT`) use karein taaki InnoDB clustered index par best performance mile.

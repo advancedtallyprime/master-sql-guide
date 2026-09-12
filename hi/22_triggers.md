@@ -1,42 +1,42 @@
-# Chapter 22 — Event-Driven Architecture: MySQL Triggers | इवेंट-ड्रिवन आर्किटेक्चर: MySQL ट्रिगर्स
+# Chapter 22 — Event-Driven Architecture: MySQL Triggers
 
 ---
 
-## 1. What is it? (ट्रिगर्स क्या हैं?)
+## 1. What is it?
 
-MySQL में एक **Trigger** एक ऐसा स्पेशलाइज्ड स्टोर्ड प्रोग्राम होता है जो किसी खास बेस टेबल पर होने वाले विशिष्ट **Data Manipulation Language (DML)** इवेंट (`INSERT`, `UPDATE`, या `DELETE`) के रिस्पॉन्स में अपने आप (automatically) "फायर" (execute) हो जाता है।
+MySQL mein ek **Trigger** ek aisa specialized stored program hota hai jo kisi specific base table par hone wale specific **Data Manipulation Language (DML)** event (`INSERT`, `UPDATE`, ya `DELETE`) ke response mein automatically execute ("fire") ho jata hai.
 
-Stored Procedures (जिन्हें एप्लिकेशन या डेवलपर को खुद `CALL` करके चलाना पड़ता है) के विपरीत, ट्रिगर्स को कभी भी सीधे कॉल नहीं किया जा सकता। ये बैकग्राउंड में स्टोरेज इंजन द्वारा मैनेज किए जाने वाले **इम्प्लिसिट इवेंट हैंडलर्स (implicit event handlers)** की तरह काम करते हैं।
+Stored Procedures ke opposite (jinhe application ya developer ko khud explicitly `CALL` karke execute karna padta hai), triggers ko kabhi directly call nahi kiya ja sakta. Ye storage engine dwara manage kiye jaane wale **implicit event handlers** ki tarah background mein silently kaam karte hain.
 
-एक ट्रिगर मुख्य रूप से दो बातों पर निर्भर करता है:
-1. **एक्टिवेशन टाइमिंग (Activation Timing)**:
-   * **`BEFORE`**: यह रो मॉडिफिकेशन के स्टोरेज इंजन के डेटा पेजों पर लिखे जाने से *पहले* चलता है। इसका मुख्य उपयोग डेटा वैलिडेशन, डेटा सैनिटाइजेशन (जैसे व्हाइटस्पेस ट्रिम करना या इनपुट क्लीन करना), और डिस्क पर राइट होने से पहले वैल्यूज को मॉडिफाई करने के लिए किया जाता है।
-   * **`AFTER`**: यह रो मॉडिफिकेशन के टेबल पर लिखे जाने के *बाद* चलता है। इसका उपयोग मुख्य रूप से ऑडिट लॉगिंग (immutable audit logs), दूसरी टेबल्स के साथ डेटा सिंक्रोनाइज़ेशन, और इवेंट नोटिफिकेशन्स के लिए किया जाता है।
-2. **एक्टिवेशन इवेंट (Activation Event)**: `INSERT`, `UPDATE`, या `DELETE`।
+Ek trigger fundamental roop se do axes par define hota hai:
+1. **Activation Timing**:
+   * **`BEFORE`**: Row modification ke storage engine ke data pages par write hone se *pehle* fire hota hai. Iska use mostly data validation, data sanitization (jaise whitespace trim karna ya passwords hash karna), aur disk par write hone se pehle incoming values modify karne ke liye hota hai.
+   * **`AFTER`**: Row modification ke table par write hone ke *baad* fire hota hai. Iska use primarily immutable audit logging, cross-table synchronization, aur event notifications ke liye kiya jata hai.
+2. **Activation Event**: `INSERT`, `UPDATE`, ya `DELETE`.
 
-चूँकि MySQL में रो-लेवल ट्रिगर्स (`FOR EACH ROW`) होते हैं, इसलिए अगर कोई सिंगल `UPDATE` स्टेटमेंट 50 पंक्तियों को मॉडिफाई करता है, तो ट्रिगर कोड ठीक 50 बार (हर प्रभावित रो के लिए एक बार) रन होगा।
+Kyunki MySQL row-level triggers (`FOR EACH ROW`) use karta hai, isliye agar koi single `UPDATE` statement 50 rows modify karta hai, toh trigger code exactly 50 times (har affected row ke liye ek baar) execute hoga.
 
 ---
 
-## 2. Row Pseudo-Records: NEW vs OLD (स्यूडो-रिकॉर्ड्स: NEW बनाम OLD)
+## 2. Row Pseudo-Records: `NEW` vs `OLD`
 
-ट्रिगर बॉडी के अंदर, MySQL दो वर्चुअल स्यूडो-रिकॉर्ड्स (pseudo-records) उपलब्ध कराता है जो डेटा रो का प्रतिनिधित्व करते हैं:
-* **`NEW`**: यह इंसर्ट या अपडेट किए जा रहे नए रिकॉर्ड को दर्शाता है।
-  * यह उपलब्ध होता है: **`INSERT`** और **`UPDATE`** में।
-  * `BEFORE` ट्रिगर्स में आप आने वाली वैल्यूज को ओवरराइट कर सकते हैं: `SET NEW.email = LOWER(NEW.email);`।
-* **`OLD`**: यह मॉडिफिकेशन या डिलीशन से ठीक पहले के मौजूदा पुराने रिकॉर्ड को दर्शाता है।
-  * यह उपलब्ध होता है: **`UPDATE`** और **`DELETE`** में।
-  * यह पूरी तरह से रीड-ओनली (read-only) होता है; इसे बदला नहीं जा सकता।
+Trigger body ke andar, MySQL do virtual pseudo-records provide karta hai jo data row ko represent karte hain:
+* **`NEW`**: Ye insert ya update hone wale naye record ko represent karta hai.
+  * Available hota hai: **`INSERT`** aur **`UPDATE`** mein.
+  * `BEFORE` triggers mein aap incoming values ko overwrite kar sakte hain: `SET NEW.email = LOWER(NEW.email);`.
+* **`OLD`**: Ye modification ya deletion se pehle ke existing record ko represent karta hai.
+  * Available hota hai: **`UPDATE`** aur **`DELETE`** mein.
+  * Ye strictly read-only hota hai.
 
-| ट्रिगर इवेंट | `OLD.column` उपलब्ध है? | `NEW.column` उपलब्ध है? | क्या `NEW.column` को मॉडिफाई कर सकते हैं? |
+| Trigger Event | `OLD.column` Available? | `NEW.column` Available? | Can Modify `NEW.column`? |
 | :--- | :--- | :--- | :--- |
-| `INSERT` | नहीं | **हाँ** (इंसर्ट होने वाली वैल्यूज) | **हाँ** (केवल `BEFORE INSERT` में) |
-| `UPDATE` | **हाँ** (अपडेट से पहले की वैल्यूज) | **हाँ** (अपडेट के बाद की वैल्यूज) | **हाँ** (केवल `BEFORE UPDATE` में) |
-| `DELETE` | **हाँ** (डिलीट होने वाली वैल्यूज) | नहीं | नहीं |
+| `INSERT` | No | **Yes** (values to be inserted) | **Yes** (in `BEFORE INSERT` only) |
+| `UPDATE` | **Yes** (pre-update values) | **Yes** (post-update values) | **Yes** (in `BEFORE UPDATE` only) |
+| `DELETE` | **Yes** (values being removed) | No | No |
 
 ---
 
-## 3. Syntax (सिंटैक्स और स्ट्रक्चर)
+## 3. Syntax
 
 ```sql
 DELIMITER //
@@ -57,8 +57,8 @@ SHOW TRIGGERS FROM database_name;
 DROP TRIGGER IF EXISTS trigger_name;
 ```
 
-### `SIGNAL SQLSTATE` से ऑपरेशन्स को अबॉर्ट करना (Aborting Operations)
-अगर ट्रिगर के अंदर कोई बिज़नेस रूल टूटता है और आप ऑपरेशन को रिजेक्ट करके पूरे ट्रांजैक्शन को रोलबैक करना चाहते हैं, तो `SIGNAL SQLSTATE '45000'` का उपयोग करके एक कस्टम डेटाबेस एक्सेप्शन रेज़ करें:
+### Aborting Operations with `SIGNAL SQLSTATE`
+Kisi illegal operation ko reject karne aur trigger ke andar se enclosing transaction ko rollback karne ke liye, `SIGNAL SQLSTATE '45000'` ka use karke custom database exception raise karein:
 
 ```sql
 IF NEW.salary <= 0 THEN
@@ -69,9 +69,9 @@ END IF;
 
 ---
 
-## 4. Basic Example (बेसिक प्रैक्टिकल उदाहरण)
+## 4. Basic Example
 
-यहाँ हम एक `BEFORE INSERT` ट्रिगर बना रहे हैं जो नए कस्टमर डेटा को ऑटोमैटिकली क्लीन और नॉर्मलाइज़ करता है:
+User data ko automatically normalize karne ke liye ek `BEFORE INSERT` trigger banate hain:
 
 ```sql
 USE sql_mastery;
@@ -99,11 +99,11 @@ DROP TRIGGER trg_customers_before_insert;
 
 ---
 
-## 5. Real-World Business Example: Enterprise Audit Logging & Price Validation (वास्तविक बिज़नेस उदाहरण: ऑडिट लॉगिंग और प्राइस वैलिडेशन)
+## 5. Real-World Example: Enterprise Audit Logging & Price Validation
 
-मान लीजिए कि हमारे `sql_mastery` डेटाबेस में, कंप्लायंस और ऑडिट टीम दो ऑटोमैटिक सुरक्षा नियम लागू करना चाहती है:
-1. **वैलिडेशन (`BEFORE UPDATE` on `products`)**: किसी भी प्रोडक्ट की कीमत में एक बार में 50% से अधिक की गिरावट को रोकना, ताकि गलती से कोई भारी नुकसान न हो। नियम टूटने पर ट्रांजैक्शन तुरंत रिजेक्ट (abort) हो जाए।
-2. **ऑडिट ट्रेल (`AFTER UPDATE` on `products`)**: जब भी किसी प्रोडक्ट का `unit_price` या `stock_quantity` बदला जाए, तो बदलाव को एक अपरिवर्तनीय (immutable) ऑडिट टेबल में लॉग करना—जिसमें प्रोडक्ट ID, पुरानी वैल्यूज, नई वैल्यूज, बदलाव करने वाला यूज़र, और टाइमस्टैम्प दर्ज हो।
+Hamare `sql_mastery` database mein executive compliance committee ko do automated safeguards ki zaroorat hai:
+1. **Validation (`BEFORE UPDATE` on `products`)**: Kisi single update mein product price mein 50% se zyada ki reduction ko prevent karna taaki accidental catastrophic price drop na ho sake, aur agar violation ho toh transaction abort kar dena.
+2. **Audit Trail (`AFTER UPDATE` on `products`)**: Jab bhi kisi product ka `unit_price` ya `stock_quantity` modify ho, us change ko ek immutable audit table mein log karna—product ID, purani values, nayi values, update run karne wala user, aur timestamp capture karte hue.
 
 ```sql
 USE sql_mastery;
@@ -167,9 +167,9 @@ DELIMITER ;
 
 ---
 
-## 6. Step-by-Step Explanation & Execution (स्टेप-बाय-स्टेप व्याख्या और टेस्टिंग)
+## 6. Step-by-Step Explanation & Execution
 
-आइए दोनों ट्रिगर्स को चलाकर टेस्ट करते हैं:
+Aaiye dono triggers ko step-by-step test karke dekhte hain:
 
 ```sql
 USE sql_mastery;
@@ -200,9 +200,9 @@ DROP TABLE product_audit_log;
 
 ---
 
-## 7. Expected Result (अपेक्षित आउटपुट)
+## 7. Expected Result
 
-टर्मिनल आउटपुट जो ट्रिगर्स के सफल एग्जीक्यूशन की पुष्टि करता है:
+Triggers ke execution ko confirm karne wala terminal output:
 
 ```
 mysql> UPDATE products SET unit_price = 500.00 WHERE product_id = 1;
@@ -228,9 +228,9 @@ action_type: PRICE_STOCK_UPDATE
 
 ---
 
-## 8. Common Mistakes (सामान्य गलतियाँ और Pitfalls)
+## 8. Common Mistakes
 
-1. **ट्रिगर वाली टेबल को ही ट्रिगर के अंदर मॉडिफाई करना (Error 1442)**:
+1. **Mutating the Triggering Table Inside the Trigger (Error 1442)**:
    * *The Critical Mistake*:
      ```sql
      CREATE TRIGGER trg_bad AFTER INSERT ON orders
@@ -241,74 +241,73 @@ action_type: PRICE_STOCK_UPDATE
      ```
    * *Error*:
      `ERROR 1442 (HY000): Can't update table 'orders' in stored function/trigger because it is already being used by statement which invoked this stored function/trigger.`
-   * *Rule*: एक ट्रिगर उस टेबल पर DML (`INSERT`, `UPDATE`, `DELETE`) नहीं चला सकता जिस पर वह खुद लगा हुआ है! अगर आपको उसी टेबल की आने वाली वैल्यूज बदलनी हैं, तो हमेशा `BEFORE INSERT` या `BEFORE UPDATE` ट्रिगर का इस्तेमाल करें और सीधे असाइन करें: `SET NEW.total_amount = 100;`।
-2. **हिडन बिज़नेस लॉजिक और डीबगिंग की मुसीबतें (Debugging Nightmares)**:
-   * ट्रिगर्स के अंदर जटिल बिज़नेस लॉजिक छिपाने से एप्लिकेशन का व्यवहार अस्पष्ट हो जाता है। जब कोई API डेवलपर सामान्य `UPDATE` चलाता है और वह अचानक फेल हो जाता है या 20 दूसरी टेबल्स में बदलाव कर देता है, तो बिना डॉक्यूमेंटेशन के इस बग को ढूँढना बहुत मुश्किल हो जाता है।
-3. **बल्क DML ऑपरेशन्स पर भारी परफ़ॉर्मेंस पेनाल्टी**:
-   * रो-लेवल ट्रिगर्स **हर एक पंक्ति** के लिए चलते हैं। अगर कोई एप्लिकेशन बल्क `INSERT` में 1,000,000 पंक्तियाँ लोड कर रहा है, तो `AFTER INSERT` ट्रिगर 10 लाख बार चलेगा, जिससे 2 सेकंड में होने वाला इंसर्ट 15 मिनट की भारी रुकावट बन सकता है।
+   * *Rule*: Ek trigger jis table par attached hota hai, usi table par directly DML (`INSERT`, `UPDATE`, `DELETE`) execute nahi kar sakta! Agar aapko usi table par incoming values modify karni hain, toh `BEFORE INSERT/UPDATE` trigger use karein aur direct values assign karein: `SET NEW.total_amount = 100;`.
+2. **Hidden Business Logic & Debugging Nightmares**:
+   * Complex business logic ko triggers ke andar daalne se application behavior chhup jata hai. Jab koi backend API developer `UPDATE` run karta hai jo unexpectedly fail ho jata hai ya 20 secondary changes trigger kar deta hai, toh bina documentation ke issue track down karna bahut mushkil ho jata hai.
+3. **Severe Bulk DML Performance Penalties**:
+   * Row-level triggers **har single row** ke liye execute hote hain. Agar koi application bulk `INSERT` ke zariye 1,000,000 rows load karti hai, toh ek `AFTER INSERT` trigger 1,000,000 baar execute hoga, jo ek 2-second bulk insert ko 15-minute ke bottleneck mein badal dega.
 
 ---
 
-## 9. Best Practices (सर्वोत्तम तरीके और टिप्स)
+## 9. Best Practices
 
-1. **ट्रिगर्स को छोटा, तेज़ और गैर-दखलंदाज़ी वाला रखें**:
-   * ट्रिगर्स कॉलर के एक्टिव ट्रांजैक्शन के अंदर चलते हैं। भारी कैलकुलेशन वाले ट्रिगर्स रो लॉक्स को लंबे समय तक रोके रखते हैं, जिससे लॉक वेट टाइमआउट और डेडलॉक्स का खतरा बढ़ जाता है।
-2. **ट्रिगर्स को केवल ऑडिटिंग, डेटा नॉर्मलाइजेशन, और सख्त इनवेरिएंट्स तक सीमित रखें**:
-   * बेहतरीन उपयोग: ऑडिट लॉग्स मेंटेन करना, डेटा ट्रिम करना/हैश बनाना, और क्रॉस-फ़ील्ड स्कीमा रूल्स लागू करना।
-   * खराब उपयोग: एक्सटर्नल वेबहुक्स कॉल करना, ईमेल्स भेजना, या मल्टी-टेबल बिज़नेस वर्कफ़्लो चलाना।
-3. **स्पष्ट नेमिंग कन्वेंशन का पालन करें**:
-   * फ़ॉर्मेट: `trg_<tablename>_<timing>_<event>`
-   * उदाहरण: `trg_products_before_update`, `trg_orders_after_insert`।
-4. **ऑडिट इंसर्ट्स को हमेशा चेंज डिटेक्शन से सुरक्षित करें**:
-   * हमेशा `IF (OLD.col != NEW.col)` चेक करें ताकि ऑडिट टेबल में केवल तभी एंट्री हो जब डेटा वास्तव में बदला हो, जिससे ऑडिट टेबल बेकार के डेटा से न भरे।
+1. **Keep Triggers Small, Fast, and Non-Intrusive**:
+   * Triggers caller ke active transaction ke context mein execute hote hain. Heavy trigger computations lock hold time ko badha deti hain, jisse lock wait timeouts aur deadlocks ka risk exponentially badh jata hai.
+2. **Restrict Triggers to Auditing, Data Normalization, and Strict Invariants**:
+   * Excellent use cases: audit logs maintain karna, hash checksums calculate karna, aur strict cross-field schema rules enforce karna.
+   * Poor use cases: external webhooks call karna, emails send karna, ya multi-table business workflows execute karna.
+3. **Use Meaningful Trigger Naming Conventions**:
+   * Format: `trg_<tablename>_<timing>_<event>`
+   * Examples: `trg_products_before_update`, `trg_orders_after_insert`.
+4. **Always Guard Audit Inserts with Change Detection**:
+   * Hamesha `IF (OLD.col != NEW.col)` check karein taaki aap sirf tabhi audit log records write karein jab values sach mein change hui hon, jisse unnecessary audit table bloat se bacha ja sake.
 
 ---
 
-## 10. Practice Questions (अभ्यास के लिए प्रश्न)
+## 10. Practice Questions
 
 ### Easy
-1. `BEFORE` ट्रिगर और `AFTER` ट्रिगर के एक्टिवेशन टाइमिंग में क्या अंतर होता है?
-2. `DELETE` ट्रिगर के अंदर कौन सा स्यूडो-रिकॉर्ड (`NEW` या `OLD`) उपलब्ध होता है?
-3. `INSERT` ट्रिगर के अंदर कौन सा स्यूडो-रिकॉर्ड उपलब्ध होता है?
+1. `BEFORE` trigger aur `AFTER` trigger ke activation timing mein kya difference hota hai?
+2. `DELETE` trigger ke andar kaun sa pseudo-record (`NEW` ya `OLD`) available hota hai?
+3. `INSERT` trigger ke andar kaun sa pseudo-record available hota hai?
 
 ### Medium
-4. `employees` टेबल पर एक `BEFORE INSERT` ट्रिगर लिखें जो यह सुनिश्चित करे कि यदि नए कर्मचारी की `hire_date` को `NULL` दिया गया हो, तो वह अपने आप `CURDATE()` पर सेट हो जाए।
-5. `employees` टेबल पर एक `BEFORE UPDATE` ट्रिगर लिखें जो किसी कर्मचारी की `salary` कम करने पर रोक लगाए। यदि कोई अपडेट `NEW.salary < OLD.salary` करने की कोशिश करे, तो एरर स्टेट `'45000'` और मैसेज `'Salaries cannot be reduced.'` रेज़ करें।
-6. `sql_mastery` डेटाबेस में वर्तमान में मौजूद सभी ट्रिगर्स की सूची देखने के लिए SQL कमांड लिखें।
+4. `employees` table par ek `BEFORE INSERT` trigger likhiye jo ye ensure kare ki agar newly inserted employee ki `hire_date` `NULL` supply ki gayi ho, toh use `CURDATE()` par set kar diya jaye.
+5. `employees` par ek `BEFORE UPDATE` trigger likhiye jo employee ki `salary` reduce karna forbid kare. Agar koi update `NEW.salary < OLD.salary` karne ki koshish kare, toh error state `'45000'` ke sath message raise karein: `'Salaries cannot be reduced.'`.
+6. `sql_mastery` database mein filhal defined saare triggers ko list karne ke liye query likhiye.
 
 ### Difficult
-7. एक ऑटोमैटिक स्टॉक सिंक्रोनाइज़ेशन ट्रिगर डिज़ाइन करें: जब `order_items` में कोई नया आइटम इंसर्ट हो, तो `AFTER INSERT` ट्रिगर अपने आप `products` टेबल में संबंधित प्रोडक्ट की `stock_quantity` घटा दे। यह आर्किटेक्चर किस प्रकार के कंकरेंसी या डेडलॉक जोखिम पैदा कर सकता है?
-8. समझाइए कि यदि टेबल `T` पर लगा ट्रिगर उसी टेबल `T` पर `UPDATE` चलाता है, तो MySQL `ERROR 1442` क्यों फेंकता है? उसी टेबल के डेटा में सुरक्षित म्यूटेशन कैसे किया जाता है?
+7. Ek automatic stock synchronization trigger design karein: Jab `order_items` mein nayi line item add ho, toh ek `AFTER INSERT` trigger automatically `products` table mein corresponding product ki `stock_quantity` ko decrement kar de. Is design se kaun se concurrency ya deadlock risks paida hote hain?
+8. Explain karein ki MySQL `ERROR 1442` kyu throw karta hai agar table `T` par laga trigger usi table `T` par `UPDATE` execute kare. Same-table mutation safely kaise achieve kiya ja sakta hai?
 
 ---
 
-## 11. Interview Questions (इंटरव्यू सवाल और जवाब)
+## 11. Interview Questions
 
-### Q1: MySQL ट्रिगर्स में `NEW` और `OLD` स्यूडो-रिकॉर्ड्स में क्या अंतर होता है?
-**उत्तर**:
-* **`NEW`**: यह आने वाले नए रो स्टेट का प्रतिनिधित्व करता है। यह `INSERT` और `UPDATE` ट्रिगर्स में उपलब्ध होता है। `BEFORE INSERT` और `BEFORE UPDATE` ट्रिगर्स में, डिस्क पर डेटा लिखे जाने से पहले `NEW` के कॉलम्स को मॉडिफाई किया जा सकता है (`SET NEW.col = value`)।
-* **`OLD`**: यह बदलाव या डिलीट होने से ठीक पहले के मौजूदा रो स्टेट का प्रतिनिधित्व करता है। यह `UPDATE` और `DELETE` ट्रिगर्स में उपलब्ध होता है और पूरी तरह से रीड-ओनली होता है।
-`UPDATE` ट्रिगर में `OLD` (अपडेट से पहले) और `NEW` (अपडेट के बाद) दोनों एक साथ उपलब्ध होते हैं, जिससे दोनों वैल्यूज की तुलना (delta comparison) की जा सकती है।
+### Q1: What is the difference between the `NEW` and `OLD` pseudo-records in MySQL triggers?
+**Answer**:
+* **`NEW`** row ke aane wale naye state ko represent karta hai. Ye `INSERT` aur `UPDATE` triggers mein available hota hai. `BEFORE INSERT` aur `BEFORE UPDATE` triggers mein `NEW` ke columns ko modify kiya ja sakta hai (`SET NEW.col = value`) taaki data disk par physically write hone se pehle sanitize ya transform ho sake.
+* **`OLD`** modification se pehle ke purane row state ko represent karta hai. Ye `UPDATE` aur `DELETE` triggers mein available hota hai, aur strictly read-only hota hai.
+Ek `UPDATE` trigger mein `OLD` (pre-update state) aur `NEW` (post-update state) dono ek sath accessible hote hain, jisse field-level delta comparisons aasani se kiye ja sakte hain.
 
-### Q2: MySQL किसी ट्रिगर को उसी टेबल को मॉडिफाई करने से क्यों रोकता है जिस पर वह लगा हुआ है?
-**उत्तर**: यदि ट्रिगर उसी टेबल को मॉडिफाई करने की अनुमति दे दे, तो **इनफिनिट रिकर्शन (अनंत लूप)** का भारी खतरा पैदा हो जाता है। उदाहरण के लिए, यदि `orders` टेबल पर लगा `AFTER UPDATE` ट्रिगर फिर से `orders` टेबल पर एक `UPDATE` चला दे, तो वह अपडेट दोबारा ट्रिगर को फायर करेगा, और यह प्रक्रिया बार-बार दोहराई जाएगी जिससे सर्वर मेमोरी और स्टैक स्पेस क्रैश हो जाएगा। इसे रोकने के लिए MySQL सख्ती से Error 1442 लागू करता है।
+### Q2: Why does MySQL prohibit a trigger from modifying the table upon which it is defined?
+**Answer**: Triggering table ko usi ke trigger ke andar se modify karne se **infinite recursion** ka khatra paida ho jata hai. For example, agar `orders` table ka ek `AFTER UPDATE` trigger `orders` par hi ek aur `UPDATE` statement chala de, toh wo update usi trigger ko dobara fire karega, jo fir ek aur update chalayega. Is tarah ek endless loop ban jayega jo server memory aur stack space ko exhaust kar dega. Is problem ko prevent karne ke liye MySQL strictly Error 1442 enforce karta hai aur triggering table par kisi bhi direct DML operation ko forbid karta hai.
 
-### Q3: अवैध ट्रांजैक्शन को अबॉर्ट करने के लिए MySQL ट्रिगर के अंदर कस्टम रनटाइम एक्सेप्शन कैसे रेज़ किया जाता है?
-**उत्तर**: कस्टम एक्सेप्शन रेज़ करने के लिए **`SIGNAL`** स्टेटमेंट और SQLState `'45000'` (यूज़र-डिफाइंड अनहैंडल्ड एक्सेप्शन्स के लिए ANSI स्टैंडर्ड कोड) का उपयोग किया जाता है:
+### Q3: How do you raise a custom runtime exception inside a MySQL trigger to abort an illegal transaction?
+**Answer**: Custom exception raise karne ke liye **`SIGNAL`** statement ke sath SQLState `'45000'` (jo unhandled user-defined exceptions ke liye ANSI standard code hai) use kiya jata hai:
 ```sql
 SIGNAL SQLSTATE '45000'
     SET MESSAGE_TEXT = 'Validation Failed: Custom Error Description';
 ```
-जब `SIGNAL` एग्जीक्यूट होता है, तो MySQL तुरंत एग्जीक्यूशन रोक देता है, एक्टिव स्टेटमेंट को अबॉर्ट कर देता है, ट्रांजैक्शन में हुए अनकमिटेड बदलावों को रोलबैक कर देता है, और कॉलिंग क्लाइंट को एरर कोड 1644 के साथ कस्टम एरर मैसेज लौटाता है।
+Jab `SIGNAL` execute hota hai, MySQL immediately execution halt karta hai, active statement ko abort kar deta hai, transaction ke uncommitted changes ko rollback kar deta hai, aur calling client ko custom error message aur error code 1644 return karta hai.
 
 ---
 
-## 12. Quick Revision (त्वरित सारांश / क्विक रिविजन)
+## 12. Quick Revision
 
-* **Triggers** ऑटोमेटेड इवेंट हैंडलर्स होते हैं जो `INSERT`, `UPDATE`, या `DELETE` पर रन होते हैं।
-* **`BEFORE`** ट्रिगर्स डिस्क राइट्स से पहले चलते हैं (वैलिडेशन और `NEW` को मॉडिफाई करने के लिए बेस्ट); **`AFTER`** ट्रिगर्स डिस्क राइट्स के बाद चलते हैं (ऑडिट लॉगिंग के लिए बेस्ट)।
-* **`NEW`** में आने वाली नई रो वैल्यूज होती हैं; **`OLD`** में बदलाव से पहले की पुरानी वैल्यूज होती हैं।
-* इनवैलिड ट्रांजैक्शन्स को रिजेक्ट करने के लिए **`SIGNAL SQLSTATE '45000'`** का इस्तेमाल करें।
-* ट्रिगर्स **उसी टेबल को मॉडिफाई नहीं कर सकते जिस पर वे लगे हैं** (Error 1442)।
-* हाई-थ्रूपुट टेबल्स पर ट्रांजैक्शन लॉक कंटेन्शन से बचने के लिए ट्रिगर्स को हल्का और तेज़ रखें।
-* आगे के अध्ययन के लिए अगले मॉड्यूल [Chapter 23 — Modern Analytics: Window Functions & JSON Manipulation](/hi/23_advanced_sql) पर बढ़ें।
+* **Triggers** automated event handlers hote hain jo `INSERT`, `UPDATE`, ya `DELETE` par execute hote hain.
+* **`BEFORE`** triggers write operations se pehle chalte hain (validation aur `NEW` modify karne ke liye best); **`AFTER`** triggers writes ke baad chalte hain (audit logging ke liye best).
+* **`NEW`** mein incoming row values hoti hain; **`OLD`** mein pre-modification values hoti hain.
+* Invalid transactions ko reject karne ke liye **`SIGNAL SQLSTATE '45000'`** use karein.
+* Triggers **usi table ko modify nahi kar sakte jis par wo defined hote hain** (Error 1442).
+* High-throughput tables par transaction lock contention se bachne ke liye triggers ko hamesha lightweight rakhein.

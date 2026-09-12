@@ -1,24 +1,24 @@
-# Chapter 25 — Enterprise Security: Access Control, Roles & SQL Injection Defense | एंटरप्राइज सिक्योरिटी: एक्सेस कंट्रोल, रोल्स और SQL इंजेक्शन सुरक्षा
+# Chapter 25 — Enterprise Security: Access Control, Roles & SQL Injection Defense
 
 ---
 
-## 1. What is it? (डेटाबेस सिक्योरिटी क्या है?)
+## 1. What is it?
 
-**Database Security** नियंत्रणों (controls), प्रशासनिक प्रक्रियाओं और प्रोग्रामिंग तकनीकों का वह संपूर्ण सेट है जिसे अनधिकृत पहुंच, डेटा उल्लंघनों (data breaches), डेटा करप्शन और दुर्भावनापूर्ण हमलों से डेटाबेस संपत्तियों की गोपनीयता (Confidentiality), अखंडता (Integrity), और उपलब्धता (Availability) की रक्षा के लिए डिज़ाइन किया गया है।
+**Database Security** controls, administrative procedures, aur programming practices ka ek collective set hota hai jiska purpose database assets ki confidentiality, integrity, aur availability ko unauthorized access, data breaches, corruption, aur malicious exploitation se protect karna hota hai.
 
-एंटरप्राइज MySQL सिक्योरिटी तीन महत्वपूर्ण परतों (layers) पर आधारित होती है:
-1. **Authentication & Identity (प्रमाणीकरण और पहचान)**: यह पहचानना कि कौन कनेक्ट हो रहा है। MySQL में, किसी यूज़र की पहचान केवल यूज़रनेम से नहीं, बल्कि यूज़रनेम और होस्ट के संयोजन से बंधी होती है: `'username'@'host_specification'` (जैसे `'app_user'@'10.0.0.%'`)।
-2. **Authorization & Access Control (प्राधिकरण और एक्सेस कंट्रोल)**: **Principle of Least Privilege (PoLP)** को लागू करना। यानी उपयोगकर्ताओं और एप्लिकेशन्स को केवल न्यूनतम आवश्यक अनुमतियाँ (`SELECT`, `INSERT`, `EXECUTE`) बहुत ही सटीक दायरे (global, database, table, या column-level) में देना। MySQL 8.0 टीमों के बीच अनुमतियों को आसानी से प्रबंधित करने के लिए **Role-Based Access Control (RBAC)** पेश करता है।
-3. **Application Defense against SQL Injection (SQLi)**: ऐसी कमज़ोरियों से बचाव करना जहाँ अविश्वसनीय उपयोगकर्ता इनपुट (untrusted user input) किसी SQL क्वेरी के लॉजिकल सिंटैक्स को बदल देता है।
+Enterprise MySQL security primarily teen critical layers encompass karti hai:
+1. **Authentication & Identity**: Identify karna ki kaun connect kar raha hai. MySQL mein user identity strictly username aur host dono se bound hoti hai: `'username'@'host_specification'` (for example, `'app_user'@'10.0.0.%'`).
+2. **Authorization & Access Control**: **Principle of Least Privilege (PoLP)** enforce karna. Users aur applications ko granular scopes (global, database, table, ya column-level) par sirf minimum zaroori permissions (`SELECT`, `INSERT`, `EXECUTE`) dena. MySQL 8.0 teams ke across permission management streamline karne ke liye **Role-Based Access Control (RBAC)** introduce karta hai.
+3. **Application Defense against SQL Injection (SQLi)**: Aisi vulnerabilities se defend karna jahan untrusted user input SQL query ke logical syntax ko alter kar deta hai.
 
 ---
 
-## 2. User & Host Identity Architecture in MySQL (MySQL में यूज़र और होस्ट पहचान आर्किटेक्चर)
+## 2. User & Host Identity Architecture in MySQL
 
-MySQL में कोई भी अकाउंट सिर्फ एक यूज़रनेम नहीं होता; यह **Username + Client Host** का एक कंपोजिट रूप होता है:
-* `'app_service'@'localhost'`: उसी फिजिकल सर्वर पर केवल एक लोकल UNIX सॉकेट या लूपबैक IP (`127.0.0.1`) के ज़रिए ही कनेक्ट हो सकता है।
-* `'analyst'@'192.168.1.%'`: केवल प्राइवेट सबनेट `192.168.1.0/24` की क्लाइंट मशीनों से ही कनेक्ट हो सकता है।
-* `'admin'@'%'`: वाइल्डकार्ड `%` किसी भी IP एड्रेस से कनेक्शन की अनुमति देता है (विशेषाधिकार प्राप्त एडमिन अकाउंट्स के लिए यह बेहद खतरनाक है!)।
+MySQL mein ek account sirf ek username nahi hota; ye **Username + Client Host** ka composite hota hai:
+* `'app_service'@'localhost'`: Ye *sirf* usi physical server par local UNIX socket ya loopback IP (`127.0.0.1`) ke zariye connect kar sakta hai.
+* `'analyst'@'192.168.1.%'`: Ye sirf private subnet `192.168.1.0/24` ke andar ke client machines se hi connect ho sakta hai.
+* `'admin'@'%'`: Wildcard `%` kisi bhi IP address se connection allow karta hai (privileged accounts ke liye ye extremely dangerous hai!).
 
 ```mermaid
 flowchart TD
@@ -33,7 +33,7 @@ flowchart TD
 
 ---
 
-## 3. Syntax (सिंटैक्स और एडमिनिस्ट्रेशन)
+## 3. Syntax
 
 ### User Account Administration
 ```sql
@@ -73,7 +73,7 @@ REVOKE UPDATE ON sql_mastery.customers FROM 'app_backend'@'10.0.0.%';
 ```
 
 ### Role-Based Access Control (RBAC in MySQL 8.0)
-50 अलग-अलग उपयोगकर्ताओं को अलग-अलग अनुमतियाँ देने के बजाय, **Roles** बनाएँ, रोल को अनुमतियाँ दें, और उपयोगकर्ताओं को वह रोल असाइन करें:
+50 alag-alag users ko individually privileges grant karne ke bajaye, pehle **Roles** define karein, role ko permissions grant karein, aur fir users ko role assign kar dein:
 
 ```sql
 -- 1. Create Roles
@@ -92,10 +92,10 @@ SET DEFAULT ROLE ALL TO 'sarah_chen'@'localhost';
 
 ---
 
-## 4. SQL Injection (SQLi): Anatomy & Prepared Statement Defense (SQL इंजेक्शन की संरचना और सुरक्षा)
+## 4. SQL Injection (SQLi): Anatomy & Prepared Statement Defense
 
-### 4.1. The Vulnerability: Dynamic String Concatenation (कमज़ोरी का कारण)
-एक असुरक्षित वेब लॉगिन स्क्रिप्ट पर विचार करें जो उपयोगकर्ता के इनपुट को सीधे SQL स्ट्रिंग में जोड़ती है:
+### 4.1. The Vulnerability: Dynamic String Concatenation
+Maan lo hamare paas ek insecure web login script hai jo user input ko directly SQL string ke sath concatenate karta hai:
 
 ```python
 # FATAL INSECURE CODE: DO NOT USE!
@@ -106,18 +106,18 @@ query = f"SELECT * FROM users WHERE username = '{username_input}' AND password =
 cursor.execute(query)
 ```
 
-यदि कोई हमलावर यूज़रनेम फ़ील्ड में यह स्ट्रिंग दर्ज करता है:
+Agar koi attacker username field mein ye string enter karta hai:
 ```
 admin' --
 ```
-तो MySQL द्वारा निष्पादित होने वाला SQL बन जाता है:
+Toh MySQL dwara execute hone wali resulting SQL ban jayegi:
 ```sql
 SELECT * FROM users WHERE username = 'admin' --' AND password = '...';
 ```
-चूँकि `-- ` SQL में कमेंट मार्कर होता है, इसलिए इंजन पासवर्ड की जाँच को पूरी तरह छोड़ देता है! हमलावर पासवर्ड जाने बिना ही एडमिनिस्ट्रेटर के रूप में लॉगिन कर लेता है।
+Kyunki `-- ` SQL mein comment marker hota hai, isliye database engine password check ko poori tarah ignore kar deta hai! Attacker bina password jane administrator account se login ho jata hai.
 
-### 4.2. The Solution: Parameterized Queries (Prepared Statements) (समाधान: पैरामीटरयुक्त क्वेरीज़)
-Prepared statements क्वेरी कोड को उपयोगकर्ता के डेटा से पूरी तरह अलग कर देते हैं:
+### 4.2. The Solution: Parameterized Queries (Prepared Statements)
+Prepared statements query code aur user data ko strictly alag-alag rakhte hain:
 
 ```mermaid
 flowchart LR
@@ -138,9 +138,9 @@ cursor.execute(query, (username_input,))
 
 ---
 
-## 5. Basic Example (बेसिक प्रैक्टिकल उदाहरण)
+## 5. Basic Example
 
-एक सुरक्षित और अलग (isolated) रीड-ओनली एनालिस्ट अकाउंट बनाना:
+Ek isolated read-only analyst account create karte hain:
 
 ```sql
 USE sql_mastery;
@@ -161,12 +161,12 @@ DROP USER 'bi_analyst'@'localhost';
 
 ---
 
-## 6. Real-World Business Example: Enterprise Privilege & RBAC Architecture (वास्तविक बिज़नेस उदाहरण: एंटरप्राइज प्रिविलेज और RBAC आर्किटेक्चर)
+## 6. Real-World Example: Enterprise Privilege & RBAC Architecture
 
-हमारे `sql_mastery` डेटाबेस में एक प्रोडक्शन-ग्रेड एंटरप्राइज सुरक्षा आर्किटेक्चर स्थापित करते हैं:
-1. `sql_mastery` पर DML अनुमतियों के साथ `role_ecommerce_app` बनाएँ।
-2. एक सीमित यूज़र `'app_ecommerce_service'@'10.0.2.%'` बनाएँ।
-3. केवल आवश्यक टेबल्स पर आवश्यक अनुमतियाँ असाइन करें।
+Hamare `sql_mastery` database ke liye ek production-grade enterprise security architecture establish karte hain:
+1. `sql_mastery` par DML permissions ke sath ek `role_ecommerce_app` create karein.
+2. Ek restricted user `'app_ecommerce_service'@'10.0.2.%'` banayein aur use ye role assign karein.
+3. Verify karein ki grants properly assign hue hain aur role activate ho chuka hai.
 
 ```sql
 USE sql_mastery;
@@ -198,21 +198,21 @@ DROP ROLE 'role_ecommerce_app';
 
 ---
 
-## 7. Step-by-Step Explanation (स्टेप-बाय-स्टेप व्याख्या)
+## 7. Step-by-Step Explanation
 
 1. `CREATE USER ... IDENTIFIED BY ...`:
-   * MySQL दिए गए पासवर्ड को डिफ़ॉल्ट `caching_sha2_password` एल्गोरिदम (सॉल्टेड SHA-256 इटरेशन्स) का उपयोग करके हैश करता है और हैश को `mysql.user` में स्टोर करता है।
-   * होस्ट को `'10.0.2.%'` तक सीमित करने से यह सुनिश्चित होता है कि क्रेडेंशियल्स लीक होने पर भी एप्लिकेशन सबनेट के बाहर से आने वाले किसी भी कनेक्शन को रिजेक्ट कर दिया जाएगा।
-2. `CREATE ROLE` और `GRANT ... TO 'role_ecommerce_app'`:
-   * यह अनुमतियों को एक लॉजिकल बंडल में अलग करता है। यदि भविष्य में अनुमतियाँ बदलनी हों, तो केवल रोल में बदलाव करने से उससे जुड़े सभी अकाउंट्स तुरंत अपडेट हो जाते हैं।
+   * MySQL supplied plaintext password ko default `caching_sha2_password` algorithm (salted SHA-256 iterations) ke zariye hash karta hai aur resulting hash ko `mysql.user` mein store karta hai.
+   * Host ko `'10.0.2.%'` par restrict karne se ye ensure hota hai ki agar credentials leak bhi ho jayein, tab bhi application server subnet ke bahar se aane wale connections reject ho jayenge.
+2. `CREATE ROLE` aur `GRANT ... TO 'role_ecommerce_app'`:
+   * Permissions ko ek logical bundle mein isolate karta hai. Agar future mein permissions update karne ki zaroorat pade, toh sirf role alter karne se sabhi assigned accounts instantly update ho jaate hain.
 3. `SET DEFAULT ROLE ...`:
-   * MySQL 8.0 में डिफ़ॉल्ट रूप से, जब कोई यूज़र पहली बार कनेक्ट होता है तो असाइन किए गए रोल्स इनएक्टिव रहते हैं। `SET DEFAULT ROLE ALL` यह सुनिश्चित करता है कि लॉगिन करते ही असाइन किए गए रोल्स तुरंत एक्टिव हो जाएँ, बिना किसी अलग `SET ROLE` कमांड के।
+   * MySQL 8.0 mein by default jab user pehli baar connect karta hai, toh assigned roles inactive hote hain. `SET DEFAULT ROLE ALL` ye ensure karta hai ki user ke login hote hi assigned roles immediately activate ho jayein bina kisi explicit `SET ROLE` command ke.
 
 ---
 
-## 8. Expected Result (अपेक्षित आउटपुट)
+## 8. Expected Result
 
-एप्लिकेशन सर्विस के लिए `SHOW GRANTS` आउटपुट की जाँच:
+Application service ke liye `SHOW GRANTS` output inspect karte hain:
 
 ```
 +-------------------------------------------------------------------------------------------------+
@@ -236,31 +236,31 @@ Output of SHOW GRANTS ... USING 'role_ecommerce_app':
 
 ---
 
-## 9. Common Mistakes (सामान्य गलतियाँ और Pitfalls)
+## 9. Common Mistakes
 
-1. **एप्लिकेशन्स को `ALL PRIVILEGES ON *.*` देना**:
-   * *Anti-pattern*: किसी वेब एप्लिकेशन यूज़र को `ALL PRIVILEGES` दे देना।
-   * *खतरा*: यदि वेब एप्लिकेशन में कोई SQL इंजेक्शन भेद्यता पाई जाती है, तो हमलावर पूरे डेटाबेस को ड्रॉप कर सकता है, एडमिनिस्ट्रेटिव बैकडोर अकाउंट्स बना सकता है, और `mysql.user` से पासवर्ड्स निकाल सकता है।
-   * *नियम*: केवल विशिष्ट टेबल्स पर आवश्यक DML अनुमतियाँ ही दें।
-2. **एप्लिकेशन कनेक्शन के लिए `root` यूज़र का उपयोग करना**:
-   * वेब एप्लिकेशन्स को कभी भी `root` के रूप में कनेक्ट करने के लिए कॉन्फ़िगर न करें। `root` को केवल स्थानीय CLI मेंटेनेंस तक सीमित रखें और उसके होस्ट को सख्ती से `localhost` पर बाइंड करें।
-3. **`FLUSH PRIVILEGES` के बारे में गलतफहमी**:
-   * *गलत धारणा*: प्रत्येक `GRANT` या `REVOKE` के बाद `FLUSH PRIVILEGES;` चलाना।
-   * *सच्चाई*: मानक DDL/DCL कमांड्स (`GRANT`, `REVOKE`, `CREATE USER`) MySQL की इन-मेमोरी ग्रांट टेबल्स को तुरंत अपडेट कर देते हैं। `FLUSH PRIVILEGES` की आवश्यकता केवल तब होती है जब आप सीधे DML (जैसे `UPDATE mysql.user SET ...;`) द्वारा ग्रांट टेबल्स को बदलते हैं, जो कि अनुशंसित नहीं है।
-4. **SQL इंजेक्शन से बचाव के लिए केवल क्लाइंट-साइड इनपुट फ़िल्टरिंग पर भरोसा करना**:
-   * कोट्स को हटाने या `SELECT`/`DROP` जैसे शब्दों को रेगेक्स से ब्लॉक करने की कोशिश करना बेकार साबित होता है; हमलावर हेक्स लिटरल्स या यूनिकोड ट्रिक्स से इन्हें आसानी से बायपास कर लेते हैं। **केवल Parameterized Queries ही एकमात्र विश्वसनीय सुरक्षा हैं**।
+1. **Granting `ALL PRIVILEGES ON *.*` to Applications**:
+   * *Anti-pattern*: Kisi application user ko `*.*` par `ALL PRIVILEGES` de dena.
+   * *Danger*: Agar web application SQL injection ke zariye compromise ho jaye, toh attacker poora database drop kar sakta hai, administrative backdoor accounts create kar sakta hai, aur `mysql.user` se passwords read kar sakta hai.
+   * *Rule*: Hamesha specific tables par required specific DML permissions hi grant karein.
+2. **Using the `root` User for Application Connections**:
+   * Web applications ko kabhi bhi `root` ke roop mein connect karne ke liye configure mat karein. `root` ko sirf local CLI maintenance ke liye restrict karein aur iska host strictly `localhost` par bind karein.
+3. **Misunderstanding `FLUSH PRIVILEGES`**:
+   * *Misconception*: Har `GRANT` ya `REVOKE` statement ke baad `FLUSH PRIVILEGES;` run karna.
+   * *Reality*: Standard DDL/DCL commands (`GRANT`, `REVOKE`, `CREATE USER`) MySQL ke internal in-memory grant tables ko immediately update karte hain. `FLUSH PRIVILEGES` ki zaroorat sirf tab padti hai jab aap underlying grant tables ko raw DML ke zariye directly modify karte hain (jaise `UPDATE mysql.user SET ...;`), jo ki discouraged practice hai.
+4. **Relying on Client-Side Input Filtering for SQL Injection Defense**:
+   * User input se quotes strip karke ya `SELECT` aur `DROP` jaise words ko regex se filter karke sanitize karne ki koshish karna. Attackers alternative encodings, hex literals, ya unicode tricks se in filters ko aasani se bypass kar lete hain. **Parameterized queries hi SQL injection ka ekmatra reliable defense hain**.
 
 ---
 
-## 10. Best Practices (सर्वोत्तम तरीके और टिप्स)
+## 10. Best Practices
 
-1. **Principle of Least Privilege (PoLP) लागू करें**:
-   * खातों को ज़िम्मेदारी के अनुसार अलग करें:
-     * केवल पढ़ने वाले रिपोर्टिंग खाते (`GRANT SELECT`)
-     * एप्लिकेशन सर्विसेज़ (`GRANT SELECT, INSERT, UPDATE`)
-     * माइग्रेशन / डिप्लॉयमेंट स्क्रिप्ट्स (`GRANT CREATE, ALTER, DROP`)
-2. **एंटरप्राइज बैकअप प्रथाओं का पालन करें (`mysqldump`)**:
-   * सक्रिय InnoDB डेटाबेस का बैकअप लेते समय, बिना टेबल्स को लॉक किए एक ऑनलाइन, कंसिस्टेंट बैकअप लेने के लिए हमेशा `--single-transaction` का उपयोग करें:
+1. **Enforce the Principle of Least Privilege (PoLP)**:
+   * Responsibility ke according accounts ko separate karein:
+     * Read-only reporting accounts (`GRANT SELECT`)
+     * Application services (`GRANT SELECT, INSERT, UPDATE`)
+     * Migration/deployment scripts (`GRANT CREATE, ALTER, DROP`)
+2. **Use Enterprise Backup Practices (`mysqldump`)**:
+   * Active InnoDB databases ka `mysqldump` ke sath backup lete waqt hamesha `--single-transaction` use karein, taaki tables ko lock kiye bina ek consistent online backup liya ja sake:
      ```bash
      mysqldump -u root -p \
        --single-transaction \
@@ -269,62 +269,61 @@ Output of SHOW GRANTS ... USING 'role_ecommerce_app':
        --triggers \
        sql_mastery > sql_mastery_backup.sql
      ```
-3. **नेटवर्क कनेक्शन के लिए TLS/SSL अनिवार्य करें**:
-   * सभी रिमोट उपयोगकर्ताओं के लिए एन्क्रिप्टेड TLS कनेक्शन अनिवार्य करने के लिए MySQL को कॉन्फ़िगर करें:
+3. **Enforce TLS/SSL for Network Connections**:
+   * Saare remote users ke liye encrypted TLS connections require karne ke liye MySQL ko configure karein:
      ```sql
      ALTER USER 'app_backend'@'10.0.0.%' REQUIRE SSL;
      ```
-4. **सोर्स कंट्रोल (Git) में कभी भी डेटाबेस क्रेडेंशियल्स कमिट न करें**:
-   * पासवर्ड्स को हमेशा एनवायरनमेंट वेरिएबल्स या सीक्रेट मैनेजर्स (जैसे AWS Secrets Manager, HashiCorp Vault) में सुरक्षित रखें।
+4. **Never Commit Database Credentials to Source Control**:
+   * Database passwords ko environment variables ya cloud secret managers (jaise AWS Secrets Manager, HashiCorp Vault) mein securely store karein.
 
 ---
 
-## 11. Practice Questions (अभ्यास के लिए प्रश्न)
+## 11. Practice Questions
 
 ### Easy
-1. पासवर्ड `'Audit_2026_Secure!'` के साथ `'auditor'@'localhost'` यूज़र बनाने के लिए SQL कमांड लिखें।
-2. `'auditor'@'localhost'` को `employees` टेबल पर `SELECT` विशेषाधिकार देने के लिए स्टेटमेंट लिखें।
-3. `'auditor'@'localhost'` के सभी विशेषाधिकार रद्द करने और उसे ड्रॉप करने के लिए कमांड लिखें।
+1. Password `'Audit_2026_Secure!'` ke sath ek user `'auditor'@'localhost'` create karne ke liye SQL command likhiye.
+2. `'auditor'@'localhost'` ko `employees` table par `SELECT` privileges grant karne ke liye statement likhiye.
+3. Saare privileges revoke karne aur `'auditor'@'localhost'` ko drop karne ke liye command likhiye.
 
 ### Medium
-4. `'app_writer'` नाम से एक रोल बनाने, उस रोल को `sql_mastery` की सभी टेबल्स पर `SELECT`, `INSERT`, और `UPDATE` देने, और उस रोल को यूज़र `'web_api'@'localhost'` को असाइन करने के कमांड लिखें।
-5. स्ट्रिंग कॉनकेटनेशन से लिखी गई क्वेरी जैसे `f"SELECT * FROM items WHERE id = {user_input}"` एप्लिकेशन को SQL इंजेक्शन के जोखिम में क्यों डालती है?
-6. प्रश्न 5 की क्वेरी को SQL सिंटैक्स (`PREPARE` और `EXECUTE`) में एक सुरक्षित पैरामीटरयुक्त प्रिपेयर्ड स्टेटमेंट के रूप में दोबारा लिखें।
+4. Ek role `'app_writer'` banayein, `sql_mastery` ki saari tables par use `SELECT`, `INSERT`, aur `UPDATE` grant karein, aur ye role user `'web_api'@'localhost'` ko assign karein.
+5. String concatenation jaise `f"SELECT * FROM items WHERE id = {user_input}"` ka use karke likhi gayi query application ko SQL injection ke samne kyu expose karti hai?
+6. Question 5 ki query ko SQL syntax (`PREPARE` aur `EXECUTE`) mein ek secure parameterized prepared statement ke roop mein rewrite karke dikhayein.
 
 ### Difficult
-7. एक सुरक्षित MySQL DCL स्क्रिप्ट लिखें जो एक ऐसा यूज़र बनाए जिसे `customers` टेबल को क्वेरी करने की अनुमति हो, लेकिन वह `phone` और `email` कॉलम्स देखने से पूरी तरह प्रतिबंधित हो। (संकेत: कॉलम-लेवल `GRANT` सिंटैक्स या सिक्योरिटी `VIEW` का उपयोग करें)।
-8. `mysqldump --single-transaction` से InnoDB बैकअप लेने बनाम Percona XtraBackup जैसे टूल्स से फिजिकल बाइनरी बैकअप लेने के यांत्रिक अंतरों को समझाएँ। परफ़ॉर्मेंस और रिकवरी स्पीड में क्या ट्रेड-ऑफ़ हैं?
+7. Ek secure MySQL DCL script likhiye jo ek aisa user banaye jise `customers` table query karne ki permission ho, lekin use `phone` aur `email` columns dekhne se strictly restrict kiya gaya ho. (Hint: Column-level `GRANT` syntax ya security `VIEW` use karein).
+8. `mysqldump --single-transaction` ke sath InnoDB backup lene aur Percona XtraBackup jaise tools ka use karke physical binary backup lene ke internal mechanical differences ko explain karein. Dono ke beech performance aur recovery speed tradeoffs kya hain?
 
 ---
 
-## 12. Interview Questions (इंटरव्यू सवाल और जवाब)
+## 12. Interview Questions
 
-### Q1: SQL Injection (SQLi) क्या है, और Prepared Statements (Parameterized Queries) इससे बचाव का अचूक समाधान क्यों हैं?
-**उत्तर**: SQL Injection एक गंभीर सुरक्षा भेद्यता है जो तब उत्पन्न होती है जब अविश्वसनीय उपयोगकर्ता इनपुट को बिना अलग किए सीधे SQL क्वेरी स्ट्रिंग में जोड़ दिया जाता है। एक हमलावर इनपुट में SQL कीवर्ड्स और कंट्रोल कैरेक्टर्स (जैसे कोट्स, `-- `, या `OR 1=1`) डालकर डेटाबेस पार्सर द्वारा समझे जाने वाले सिंटैक्स ट्री को बदल देता है, जिससे अनधिकृत कमांड्स निष्पादित हो जाते हैं।
-Prepared statements अचूक समाधान हैं क्योंकि वे क्वेरी लॉजिक और डेटा को दो अलग-अलग चरणों में विभाजित कर देते हैं:
-1. **कंपाइलेशन चरण (Compilation Phase)**: डेटाबेस इंजन प्लेसहोल्डर्स (`?`) वाले क्वेरी टेम्पलेट को पहले ही कंपाइल और पार्स करके एक स्थिर Abstract Syntax Tree (AST) बना लेता है।
-2. **एग्जीक्यूशन चरण (Execution Phase)**: डेटाबेस इंजन यूजर डेटा पैरामीटर्स को सीधे कंपाइल किए गए AST नोड्स में बाइंड करता है। चूँकि क्वेरी का सिंटैक्स ट्री पहले ही तय हो चुका है, इसलिए इनपुट डेटा को सख्ती से केवल लिटरल डेटा वैल्यू माना जाता है और वह कभी भी निष्पादन योग्य SQL निर्देश नहीं बन सकता, जिससे इंजेक्शन हमला पूरी तरह बेअसर हो जाता है।
+### Q1: What is SQL Injection (SQLi), and why are Prepared Statements (Parameterized Queries) the definitive defense?
+**Answer**: SQL Injection ek aisi vulnerability hai jo tab occur hoti hai jab untrusted user input ko bina proper separation ke directly SQL query string mein concatenate kar diya jata hai. Attacker SQL keywords aur control characters (jaise quotes, `-- `, ya `OR 1=1`) craft karke input deta hai, jisse database parser dwara interpret kiya jaane wala syntax tree alter ho jata hai aur unauthorized commands execute ho jaate hain ya data leak ho jata hai.
+Prepared statements SQL injection ke definitive defense hain kyunki ye query logic aur data ko do distinct phases mein separate kar dete hain:
+1. **Compilation Phase**: Database engine query template ko placeholders (`?`) ke sath compile aur parse karta hai, jisse ek fixed Abstract Syntax Tree (AST) ban jata hai.
+2. **Execution Phase**: Database engine user data parameters ko directly compiled AST nodes mein bind karta hai. Kyunki query ka syntax tree pehle hi compile ho chuka hota hai, isliye incoming parameters strictly literal data values ki tarah treat hote hain aur **kabhi bhi** executable SQL instructions ke roop mein interpret nahi ho sakte, jo injection attacks ko poori tarah neutralize kar deta hai.
 
-### Q2: डेटाबेस एडमिनिस्ट्रेशन में Principle of Least Privilege (PoLP) क्या है?
-**उत्तर**: Principle of Least Privilege का नियम है कि प्रत्येक उपयोगकर्ता, सर्विस, एप्लिकेशन और प्रोसेस को अपने वैध व्यावसायिक कार्य को पूरा करने के लिए केवल न्यूनतम आवश्यक विशेषाधिकार ही दिए जाने चाहिए।
-व्यवहार में:
-* वेब एप्लिकेशन्स को कभी भी `root` या `admin` के रूप में कनेक्ट नहीं होना चाहिए।
-* केवल पढ़ने वाले रिपोर्टिंग डैशबोर्ड्स को केवल `SELECT` विशेषाधिकार मिलने चाहिए।
-* ऑनलाइन वेब सेवाओं को विशिष्ट टेबल्स पर `SELECT`, `INSERT`, `UPDATE`, और `DELETE` होना चाहिए, लेकिन उन्हें `DROP`, `ALTER`, या `TRUNCATE` की अनुमति कभी नहीं होनी चाहिए।
-* टेबल संरचना में बदलाव केवल अलग माइग्रेशन सर्विस अकाउंट्स द्वारा ही किए जाने चाहिए।
+### Q2: What is the Principle of Least Privilege (PoLP) in database administration?
+**Answer**: Principle of Least Privilege ye demand karta hai ki har user, service, application, aur process ko apni legitimate business function complete karne ke liye sirf wahi minimal set of privileges milna chahiye jo strictly necessary ho.
+Practice mein:
+* Web applications ko kabhi bhi `root` ya `admin` ke roop mein connect nahi karna chahiye.
+* Read-only reporting dashboards ko sirf `SELECT` privileges milne chahiye.
+* Online web services ko specific domain tables par `SELECT`, `INSERT`, `UPDATE`, aur `DELETE` hona chahiye, lekin unhe `DROP`, `ALTER`, ya `TRUNCATE` privileges bilkul nahi milne chahiye.
+* Table structure modifications exclusively isolated migration service accounts ke through hi execute hone chahiye.
 
-### Q3: MySQL 8.0 में `caching_sha2_password` ऑथेंटिकेशन प्लगइन पुराने `mysql_native_password` की तुलना में सुरक्षा को कैसे बेहतर बनाता है?
-**उत्तर**: `mysql_native_password` पुराने SHA-1 हैशिंग पर निर्भर करता है, जो कोलिशन अटैक्स और रेनबो टेबल क्रैकिंग के प्रति संवेदनशील है।
-`caching_sha2_password` सॉल्टेड SHA-256 इटरेशन्स का उपयोग करता है, जो ब्रूट-फ़ोर्स हमलों के खिलाफ बहुत मजबूत क्रिप्टोग्राफ़िक सुरक्षा प्रदान करता है। इसके अतिरिक्त, यह MySQL सर्वर पर ऑथेंटिकेशन टोकन्स की इन-मेमोरी कैशिंग लागू करता है, जिससे एक ही क्लाइंट से बार-बार होने वाले कनेक्शन बिना किसी भारी CPU हैशिंग ओवरहेड के आधुनिक एन्क्रिप्शन के साथ तेज़ी से प्रमाणित हो जाते हैं।
+### Q3: How does the `caching_sha2_password` authentication plugin in MySQL 8.0 improve security compared to legacy `mysql_native_password`?
+**Answer**: `mysql_native_password` purane SHA-1 hashing par depend karta tha, jo collision attacks aur rainbow-table cracking ke samne vulnerable hai.
+`caching_sha2_password` salted SHA-256 iterations use karta hai, jo brute-force attacks ke khilaf significantly stronger cryptographic resistance provide karta hai. Sath hi, ye MySQL server par authentication tokens ki in-memory caching implement karta hai, jisse same client se aane wale repeated connections modern encryption standards maintain karte hue minimal CPU hashing overhead ke sath rapidly authenticate ho jaate hain.
 
 ---
 
-## 13. Quick Revision (त्वरित सारांश / क्विक रिविजन)
+## 13. Quick Revision
 
-* MySQL यूज़र अकाउंट्स होस्ट-स्पेसिफिक होते हैं: **`'username'@'host'`**।
-* हमेशा **Principle of Least Privilege (PoLP)** का सख्ती से पालन करें।
-* टीमों में अनुमतियों को व्यवस्थित रूप से प्रबंधित करने के लिए MySQL 8.0 में **Roles (RBAC)** का उपयोग करें।
-* **SQL Injection** तब होता है जब अनट्रस्टेड स्ट्रिंग्स को क्वेरीज़ में जोड़ा जाता है; **Prepared Statements (Parameterized Queries)** ही एकमात्र वास्तविक बचाव हैं।
-* InnoDB टेबल्स के नॉन-ब्लॉकिंग ऑनलाइन लॉजिकल बैकअप के लिए **`mysqldump --single-transaction`** का उपयोग करें।
-* `root` अकाउंट को केवल `localhost` तक ही सीमित रखें।
-* आगे के अध्ययन के लिए हमारे अंतिम व्यावहारिक मॉड्यूल [Chapter 26 — Hands-On Engineering: 5 Progressive Real-World SQL Projects](/hi/26_real_world_projects) पर बढ़ें।
+* MySQL user accounts host-specific hote hain: **`'username'@'host'`**.
+* Hamesha **Principle of Least Privilege (PoLP)** enforce karein.
+* Teams ke across clean permission management ke liye MySQL 8.0 mein **Roles (RBAC)** use karein.
+* **SQL Injection** tab occur hota hai jab queries mein untrusted strings concatenate hoti hain; **Prepared Statements (Parameterized Queries)** iska ekmatra reliable defense hain.
+* InnoDB tables ke non-blocking online logical backup ke liye **`mysqldump --single-transaction`** use karein.
+* `root` account ko strictly **`localhost`** tak restrict rakhein.

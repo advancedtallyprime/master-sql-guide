@@ -1,23 +1,28 @@
-# Chapter 10 — Grouping & Aggregation: GROUP BY & HAVING (ग्रुपिंग और एग्रीगेशन)
+# Chapter 10 — Grouping & Aggregation: GROUP BY & HAVING (Grouping aur Aggregation)
 
 ---
 
-## 1. What is it? (यह क्या है?)
+## 1. What is it? (Ye Kya Hai?)
 
-Relational database queries mein aksar individual rows ke andar chote-chote transaction details hote hain, jabki business decisions lene ke liye humein higher-level summary metrics (jaise total sales per department, average order value, etc.) chahiye hote hain.
+Relational querying mein, aksar individual rows mein granular transaction details store hoti hain, jabki business decisions lene ke liye higher-level summaries ki zarurat padti hai.
 
-* **`GROUP BY`**: Yeh clause un sabhi rows ko jinme specified columns ki values same hoti hain, ek single summary "bucket" (group) mein collapse kar deta hai. Jab hum ise aggregate functions (`COUNT`, `SUM`, `AVG`, `MIN`, `MAX`) ke sath use karte hain, toh yeh har ek group ke liye ek calculated summary metric nikalta hai.
-* **`HAVING`**: Yeh ek dedicated filtering clause hai jo groups banne aur aggregation hone ke **baad** un aggregated summary buckets par filter lagata hai.
+* **`GROUP BY`**: Ye clause un sabhi rows ko distinct summary buckets mein collapse kar deta hai jo ek ya multiple grouping columns mein identical values share karti hain. Jab ise aggregate functions (`COUNT`, `SUM`, `AVG`, `MIN`, `MAX`) ke sath combine kiya jata hai, toh ye har ek group ke liye ek single calculated metric compute karta hai.
+* **`HAVING`**: Ye ek dedicated filtering clause hai jise specifically summary groups ko aggregation ke *baad* filter karne ke liye design kiya gaya hai.
 
-### The Fundamental Distinction: `WHERE` vs `HAVING` (मुख्य अंतर)
-* **`WHERE`** individual raw rows ko groups banne se **pehle** filter karta hai. Isliye `WHERE` ke andar aggregate functions use nahi ho sakte (jaise `WHERE AVG(salary) > 50000` likhna invalid SQL hai).
-* **`HAVING`** `GROUP BY` hone ke **baad** banne wale summary groups ko filter karta hai. Isme aap seedhe aggregate expressions par condition laga sakte hain (jaise `HAVING AVG(salary) > 50000`).
+### The Fundamental Distinction: `WHERE` vs `HAVING`
+* **`WHERE`** individual raw rows ko groups banne se **pehle** aur aggregate functions calculate hone se pehle filter karta hai. Ye aggregate expressions ko reference nahi kar sakta (jaise `WHERE AVG(salary) > 50000` invalid SQL hai).
+* **`HAVING`** aggregated summary buckets ko tab filter karta hai jab `GROUP BY` clause poore dataset ko process kar chuka hota hai. Ye directly aggregated expressions par operate karta hai (jaise `HAVING AVG(salary) > 50000`).
 
 ---
 
-## 2. Logical Query Execution Order (क्वेरी एग्जीक्यूशन का लॉजिकल क्रम)
+## 2. Why do we use it? (Hum Iska Use Kyun Karte Hain?)
 
-Complex SQL queries likhne aur unhe debug karne ke liye aapko database engine ka internal **Logical Query Processing Order** samajhna behad zaroori hai. Bhale hi hum query `SELECT` se likhna shuru karte hain, lekin engine use bilkul alag sequence mein process karta hai:
+1. **Business Intelligence & Reporting**: Raw transactional data ko high-level KPIs mein convert karna—jaise har department ka total payroll calculate karna, har country ke customer counts track karna, ya monthly sales revenue summarize karna.
+2. **Post-Aggregation Filtering**: Aise groups ko isolate karna jo specific aggregate thresholds ko meet karte hain (for example, *"Sirf un suppliers ko dikhao jo 5 se zyada products deliver karte hain"*).
+3. **Multi-Level Subtotals**: `WITH ROLLUP` ke zariye reporting hierarchy mein subtotals aur grand totals automatically generate karna.
+
+### Logical Query Execution Order (Query Execution Ka Internal Order)
+Complex SQL queries likhne aur debug karne ke liye engine ka internal **Logical Query Processing Order** samajhna bohot zaroori hai. SQL queries likhi bhale hi `SELECT` se shuru hoti hain, lekin database engine unhe bilkul alag order mein process karta hai:
 
 ```mermaid
 flowchart TD
@@ -30,11 +35,11 @@ flowchart TD
     S7 --> S8["8. LIMIT / OFFSET (Slice output page)"]
 ```
 
-Dhyan se dekhiye: `WHERE` Step 2 par execute hota hai (Step 3 par groups banne se pehle), isliye `WHERE` aggregates ko filter nahi kar sakta! Aur `HAVING` Step 4 par execute hota hai, isliye yeh Step 5 (SELECT) par final data display hone se pehle aggregated buckets ko filter karta hai.
+Kyunki `WHERE` Step 2 par execute hota hai (Step 3 par groups banne se pehle), isliye ye aggregates par filter nahi kar sakta! Aur kyunki `HAVING` Step 4 par execute hota hai, ye Step 5 ke final projection se pehle aggregated groups ko filter karta hai.
 
 ---
 
-## 3. Syntax (सिंटैक्स)
+## 3. Syntax
 
 ```sql
 SELECT 
@@ -53,7 +58,7 @@ GROUP BY
 ```
 
 ### Advanced MySQL Aggregation: `GROUP_CONCAT`
-MySQL ek behad powerful aggregate function provide karta hai jiska naam hai `GROUP_CONCAT()`. Yeh group ki sabhi non-null string values ko jodkar ek single formatted comma-separated string bana deta hai:
+MySQL provide karta hai powerful `GROUP_CONCAT()` aggregate function, jo har group ki non-null values ko ek single formatted string mein concatenate kar deta hai:
 
 ```sql
 GROUP_CONCAT([DISTINCT] column_name [ORDER BY col ASC] [SEPARATOR ', '])
@@ -61,9 +66,9 @@ GROUP_CONCAT([DISTINCT] column_name [ORDER BY col ASC] [SEPARATOR ', '])
 
 ---
 
-## 4. Basic Example (बुनियादी उदाहरण)
+## 4. Basic Example
 
-Basic grouping, aggregate metrics, aur group filtering:
+Basic grouping, aggregate metrics, aur group filtering ke examples:
 
 ```sql
 USE sql_mastery;
@@ -94,14 +99,14 @@ GROUP BY country;
 
 ---
 
-## 5. Real-World Example (वास्तविक दुनिया का उदाहरण)
+## 5. Real-World Example
 
-Company ke Chief Financial Officer (CFO) ko `employees` table se ek Departmental Payroll & Headcount Analysis report chahiye:
-1. Employees ko `department_id` ke hisab se group karein.
-2. Inactive employees ko `WHERE is_active = TRUE` se shuru mein hi filter out karein.
-3. Total headcount, total salary expenditure, average salary, aur min/max salary range calculate karein.
-4. `HAVING` ka use karke aise departments ko filter out karein jinme 2 se kam active employees hon ya average salary $80,000 se kam ho.
-5. `WITH ROLLUP` ka use karke report mein subtotals aur grand total summary rows add karein.
+Chief Financial Officer (CFO) ko `employees` table se Departmental Payroll & Headcount Analysis chahiye:
+1. Employees ko `department_id` ke hisab se group karo.
+2. Inactive employees ko `WHERE is_active = TRUE` use karke filter out karo.
+3. Total headcount, total salary expenditure, average salary, aur minimum/maximum salary range compute karo.
+4. `HAVING` use karke un departments ko filter out karo jinme 2 se kam active employees hain ya jinki average salary $80,000 se kam hai.
+5. `WITH ROLLUP` use karke subtotal aur grand total summary rows append karo.
 
 ```sql
 USE sql_mastery;
@@ -121,23 +126,23 @@ HAVING COUNT(*) >= 2 OR GROUPING(department_id) = 1;
 
 ---
 
-## 6. Step-by-Step Explanation (कदम-दर-कदम व्याख्या)
+## 6. Step-by-Step Explanation
 
 1. **`FROM employees WHERE is_active = TRUE`**:
-   * Storage engine `employees` table scan karta hai aur sabse pehle un employees ko discard kar deta hai jinka `is_active` status `FALSE` hai.
+   * Storage engine `employees` table ko scan karta hai aur aise sabhi employees ko turant discard kar deta hai jinka `is_active` status `FALSE` hai.
 2. **`GROUP BY department_id WITH ROLLUP`**:
-   * Rows ko `department_id` (Dept 1, Dept 2, Dept 3, Dept 4) ke hisab se sort aur partition karke distinct buckets banata hai.
-   * `WITH ROLLUP` modifier MySQL ko instruction deta hai ki woh sabhi departments ko milakar ek extra hierarchical summary row (grand total) bhi generate kare.
+   * Rows ko `department_id` ke basis par sort aur distinct buckets mein partition kiya jata hai (jaise Dept 1, Dept 2, Dept 3, Dept 4).
+   * `WITH ROLLUP` modifier MySQL ko ek extra hierarchical summary row generate karne ka instruction deta hai jo sabhi departments ka grand total represent karti hai.
 3. **`HAVING COUNT(*) >= 2 OR GROUPING(department_id) = 1`**:
-   * Engine har ek department bucket ke aggregate metrics ko evaluate karta hai.
-   * Jin departments mein 2 se kam active members hain, unhe filter out kar diya jata hai.
-   * `OR GROUPING(department_id) = 1` clause yeh ensure karta hai ki individual departments filter hone ke baad bhi grand-total rollup row result mein bani rahe.
+   * Engine har department bucket ke summary metrics evaluate karta hai.
+   * Single-member departments (jaise Dept 5) ko filter out kar diya jata hai.
+   * `OR GROUPING(department_id) = 1` clause ensure karta hai ki grand-total rollup row preserve rahe, chahe individual departments filter hue hon.
 4. **`SELECT ... GROUPING(...)`**:
-   * `GROUPING(department_id)` function rollup row ke liye `1` return karta hai aur normal department rows ke liye `0`. Iski madad se hum generic `NULL` ki jagah sundar label `'ALL DEPARTMENTS (GRAND TOTAL)'` print kar paate hain.
+   * `GROUPING(department_id)` function rollup row ke liye `1` return karta hai aur standard grouped rows ke liye `0` return karta hai. Iski madad se hum confusing `NULL` ki jagah clean `'ALL DEPARTMENTS (GRAND TOTAL)'` display kar pate hain.
 
 ---
 
-## 7. Expected Result (अपेक्षित परिणाम)
+## 7. Expected Result
 
 Departmental Payroll Analysis query ka output:
 
@@ -156,9 +161,9 @@ Departmental Payroll Analysis query ka output:
 
 ---
 
-## 8. Common Mistakes (आम गलतियाँ)
+## 8. Common Mistakes
 
-1. **The `ONLY_FULL_GROUP_BY` Error (MySQL 5.7+ / 8.0+) (बिना एग्रीगेट वाले कॉलम से एरर)**:
+1. **The `ONLY_FULL_GROUP_BY` Error (MySQL 5.7+ / 8.0+)**:
    * *The Broken Query*:
      ```sql
      SELECT department_id, first_name, AVG(salary)
@@ -167,13 +172,13 @@ Departmental Payroll Analysis query ka output:
      ```
    * *Fatal Error*:
      `ERROR 1055 (42000): 'sql_mastery.employees.first_name' isn't in GROUP BY clause and contains nonaggregated column... which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by`
-   * *Why? (ऐसा क्यों हुआ?)*: Soch kar dekhiye, agar Department 1 mein 3 employees hain (Alex, Sarah, Marcus), toh department average ke paas database kiska `first_name` dikhaye? Kisi ek ka random naam uthana galat aur non-deterministic hai.
-   * *Strict Rule*: Modern SQL mein **`SELECT` mein likha har ek column ya toh `GROUP BY` clause mein hona chahiye ya kisi aggregate function ke andar wrapped hona chahiye**.
-2. **Placing Aggregate Conditions in `WHERE` (`WHERE` में एग्रीगेट फंक्शन का इस्तेमाल)**:
+   * *Why?*: Agar Department 1 mein 3 employees hain (Alex, Sarah, Marcus), toh database department average ke bagal mein display karne ke liye kaun sa ek `first_name` pick karega? Randomly koi ek choose karne se data non-deterministic ho jata hai.
+   * *Strict Rule*: Modern SQL mein, **`SELECT` mein likha har column ya toh `GROUP BY` clause mein aana chahiye ya aggregate function ke andar wrapped hona chahiye**.
+2. **Placing Aggregate Conditions in `WHERE`**:
    * *Mistake*: `SELECT department_id FROM employees WHERE AVG(salary) > 80000 GROUP BY department_id;`
    * *Error*: `ERROR 1111 (HY000): Invalid use of group function`.
-   * *Correction*: Aggregate filter ko hamesha `HAVING` mein likhein: `HAVING AVG(salary) > 80000`.
-3. **Placing Non-Aggregate Filters in `HAVING` (`HAVING` में सामान्य फिल्टर लगाना)**:
+   * *Correction*: Aggregate filter ko `HAVING AVG(salary) > 80000` mein move karo.
+3. **Placing Non-Aggregate Filters in `HAVING`**:
    * *Sub-optimal Query*:
      ```sql
      SELECT department_id, AVG(salary)
@@ -181,61 +186,61 @@ Departmental Payroll Analysis query ka output:
      GROUP BY department_id
      HAVING department_id = 1; -- POOR PRACTICE!
      ```
-   * *Why it's bad*: Database engine pehle poori company ke har ek employee ko group karega aur uske baad Dept 1 ke alawa baaki sabhi ko fekega!
-   * *Correction*: Pehle hi `WHERE department_id = 1` lagayein taaki engine ko shuru se hi bahut kam rows process karni padein.
+   * *Why it's bad*: Database engine pehle poori company ke har employee ko group karega, aur uske baad baaki departments ko filter karega!
+   * *Correction*: Raw rows ko grouping se *pehle* `WHERE department_id = 1` ke zariye filter karo taki engine ko bohot kam records process karne padein.
 
 ---
 
-## 9. Best Practices (सर्वोत्तम प्रथाएं / Best Practices)
+## 9. Best Practices
 
-1. **Filter Early with `WHERE`, Filter Late with `HAVING` (फिल्टर सही जगह लगाएं)**:
-   * Jo rows summary ka hissa nahi ban sakti, unhe pehle hi `WHERE` mein eliminate kar dein. `HAVING` ko strictly sirf aggregate function ke results (`SUM`, `COUNT`, `AVG`) par condition lagane ke liye reserve rakhein.
-2. **Build Composite Indexes to Accelerate Grouping (ग्रुपिंग के लिए इंडेक्स बनाएं)**:
-   * Agar aap frequently `SELECT department_id, status, COUNT(*) FROM orders GROUP BY department_id, status` chalate hain, toh `(department_id, status)` par composite index banayein. Engine pre-sorted B+ Tree index se seedhe aggregates compute kar leta hai aur in-memory temporary table banane ki zaroorat nahi padti.
-3. **Use the `GROUPING()` Function with `ROLLUP` (`ROLLUP` के साथ `GROUPING` फंक्शन)**:
-   * `WITH ROLLUP` use karte waqt kabhi bhi `IFNULL(col, 'Total')` ka use na karein agar `col` ke andar real `NULL` values ho sakti hain. Hamesha standard ANSI SQL `GROUPING(col)` function ka prayog karein, jo 100% reliably batata hai ki yeh row engine-generated summary row hai ya nahi.
-
----
-
-## 10. Practice Questions (अभ्यास प्रश्न)
-
-### Easy (सरल)
-1. Har ek `category_id` mein total kitne products hain, yeh find karne ke liye query likhein.
-2. Har ek category ke liye average `unit_price` calculate karne ki query likhein.
-3. Har ek order `status` ke liye total orders ki sankhya count karne ki query likhein.
-
-### Medium (मध्यम)
-4. `orders` table se har customer ka total revenue (`SUM(total_amount)`) calculate karein, aur `HAVING` use karke sirf un customers ko show karein jinki total purchases $500.00 se zyada hon.
-5. Har `supplier_id` ke sath uske supply kiye jaane wale products ki sankhya nikalen, aur `GROUP_CONCAT` ka use karke product names ko `' | '` se separate karke display karein.
-6. Year 2023 ke har calendar month mein kitne orders place hue the, yeh calculate karne ki query likhein.
-
-### Difficult (कठिन)
-7. `order_items` table par ek multi-column aggregation query likhein jo `order_id` ke hisab se group kare aur total quantity, gross total, aur average discount calculate kare. `HAVING` clause ka use karke un orders ko filter karein jinme 1 se zyada distinct products hon aur jinka average discount 0% se zyada ho.
-8. `products` table par ek query banayein jo `category_id` aur `supplier_id` par `WITH ROLLUP` use kare, aur `GROUPING()` function ki madad se subtotals aur grand totals ke liye clean descriptive labels provide kare.
+1. **Filter Early with `WHERE`, Filter Late with `HAVING`**:
+   * Unwanted rows ko grouping engine mein enter hone se pehle hamesha `WHERE` mein eliminate karo. `HAVING` ko strictly aggregate function results (`SUM`, `COUNT`, `AVG`) evaluate karne ke liye reserve rakho.
+2. **Build Composite Indexes to Accelerate Grouping**:
+   * Agar aap frequently `SELECT department_id, status, COUNT(*) FROM orders GROUP BY department_id, status` run karte hain, toh `(department_id, status)` par composite index engine ko pre-sorted index tree traverse karke aggregates compute karne deta hai, jisse temporary tables completely avoid ho jati hain.
+3. **Use the `GROUPING()` Function with `ROLLUP`**:
+   * Jab aap `WITH ROLLUP` use karte hain, toh kabhi bhi `IFNULL(col, 'Total')` jaise string functions use mat karo agar `col` legitimately NULL values contain kar sakta hai. Engine-generated summary rows ko reliably detect karne ke liye standard ANSI SQL `GROUPING(col)` function use karo.
 
 ---
 
-## 11. Interview Questions (साक्षात्कार प्रश्न)
+## 10. Practice Questions
+
+### Easy
+1. Har ek `category_id` mein total number of products find karne ke liye query likho.
+2. Har category ke liye average `unit_price` calculate karne ke liye query likho.
+3. Har `status` ke liye total number of orders count karne ke liye query likho.
+
+### Medium
+4. `orders` table mein har customer ke liye total revenue (`SUM(total_amount)`) calculate karne ki query likho, jisme sirf un customers ko display kiya jaye jinki total purchases $500.00 se exceed karti hon.
+5. Har `supplier_id` ke sath unke supplied products ka count list karne ke liye query likho, aur `GROUP_CONCAT` use karke product names ko `' | '` se separate karke display karo.
+6. Year 2023 ke har calendar month mein place hue orders ka count determine karne ke liye query likho.
+
+### Difficult
+7. `order_items` table par multi-column aggregation query likho jo `order_id` ke according group kare aur total quantity of items, gross total, aur average discount calculate kare. Sath hi `HAVING` use karke un orders ko isolate kare jinme 1 se zyada distinct product line items hon aur unka average discount 0% se zyada ho.
+8. `products` table ke against aisi query construct karo jo `category_id` aur `supplier_id` ke according `WITH ROLLUP` use karke group kare, aur `GROUPING()` use karke subtotals aur grand totals ke liye clean descriptive labels provide kare.
+
+---
+
+## 11. Interview Questions
 
 ### Q1: What is the fundamental difference between `WHERE` and `HAVING` in SQL?
 **Answer**:
-* **Execution Phase**: Logical query processing pipeline mein `WHERE` clause `GROUP BY` se *pehle* execute hota hai aur individual raw table rows par filter lagata hai. Jabki `HAVING` clause rows ke aggregate buckets mein collapse hone ke *baad* execute hota hai.
-* **Expression Capability**: `WHERE` clause sirf raw column values aur scalar expressions par filter kar sakta hai; yeh aggregate functions ko evaluate nahi kar sakta kyunki us samay tak groups bane hi nahi hote. Iske viprit, `HAVING` seedhe aggregate metrics (`SUM`, `AVG`, `COUNT`) par condition evaluate karta hai.
+* **Phase of Execution**: Logical query processing pipeline mein, `WHERE` `GROUP BY` phase se *pehle* execute hota hai aur individual raw table rows par operate karta hai. `HAVING` rows ke aggregate buckets mein collapse hone ke *baad* execute hota hai.
+* **Expression Capability**: `WHERE` sirf raw column values aur scalar expressions ko reference kar sakta hai; ye aggregate functions contain nahi kar sakta kyunki `WHERE` evaluate hote waqt aggregates exist hi nahi karte. `HAVING` directly aggregate expressions (`SUM`, `AVG`, `COUNT`) par filter kar sakta hai aur poore groups across conditions evaluate karta hai.
 
 ### Q2: What is the purpose of `ONLY_FULL_GROUP_BY` in MySQL, and why should it never be disabled in production?
-**Answer**: `ONLY_FULL_GROUP_BY` MySQL ka ek strict SQL mode hai (jo MySQL 5.7 aur 8.0 se by default on rehta hai) aur standard ANSI SQL rules follow karta hai. Yeh aisi queries ko reject karta hai jahan `SELECT`, `HAVING`, ya `ORDER BY` mein aise non-aggregated columns likhe hote hain jo na toh `GROUP BY` clause ka hissa hain aur na hi unpar functionally dependent hain.
-Agar ise disable kar diya jaye, toh MySQL group ki kisi bhi random row se unpredictable value uthakar de deta hai. Isse silent data corruption hoti hai, alag-alag database replicas alag answer return karte hain, aur business reporting completely galat ho sakti hai.
+**Answer**: `ONLY_FULL_GROUP_BY` MySQL ka ek SQL mode hai (MySQL 5.7 aur 8.0 mein default enabled) jo ANSI SQL standard ko strictly follow karta hai. Ye aisi queries ko reject karta hai jahan `SELECT` list, `HAVING` condition, ya `ORDER BY` clause un non-aggregated columns ko reference karti hai jo na toh `GROUP BY` clause mein listed hain aur na hi un par functionally dependent hain.
+Ise disable karne par MySQL unaggregated columns ke liye grouped rows mein se koi bhi arbitrary, non-deterministic value return kar deta hai. Isse silent data integrity bugs aate hain, alag-alag replicas alag results return karte hain, aur relational consistency violate hoti hai.
 
 ### Q3: How does the `WITH ROLLUP` modifier work in MySQL, and how do you distinguish between real NULL values and rollup summary NULLs?
-**Answer**: `WITH ROLLUP` ek extension hai jo `GROUP BY` clause mein dimensions ko right-to-left roll up karke hierarchical subtotals aur grand total summary rows generate karta hai.
-Summary rows ke andar rolled-up columns ki value `NULL` ban jaati hai. Database mein already maujood original `NULL` aur engine dwara generate kiye gaye rollup summary `NULL` ke beech farq karne ke liye SQL mein `GROUPING(column_name)` function hota hai. `GROUPING()` tab `1` return karta hai jab `NULL` rollup ka summary marker hota hai, aur `0` return karta hai jab row table ka real data hoti hai.
+**Answer**: `WITH ROLLUP` `GROUP BY` clause ka ek extension hai jo dimensions ko right se left roll up karke hierarchical subtotals aur grand total row generate karta hai.
+Generated summary rows mein rolled-up grouping columns ko `NULL` set kiya jata hai. Ye distinguish karne ke liye ki `NULL` table row ka genuine `NULL` hai ya `ROLLUP` dwara generated summary marker, SQL `GROUPING(column_name)` function provide karta hai. `GROUPING()` `1` return karta hai jab `NULL` rollup aggregate marker ke roop mein generate hua ho, aur `0` return karta hai jab row genuine data value represent karti ho.
 
 ---
 
-## 12. Quick Revision (त्वरित सारांश)
+## 12. Quick Revision
 
-* **`GROUP BY`** same keys wali rows ko collapse karke aggregate summary buckets banata hai.
-* **`WHERE`** rows ko grouping se *pehle* filter karta hai; **`HAVING`** aggregated buckets ko grouping ke *baad* filter karta hai.
-* **`ONLY_FULL_GROUP_BY`** rule: `SELECT` ka har column ya toh `GROUP BY` mein hona chahiye ya aggregate function ke andar.
-* Ek group ki multiple string values ko single comma-separated row mein jodne ke liye **`GROUP_CONCAT()`** use karein.
-* Multi-level subtotals aur grand totals nikalne ke liye **`WITH ROLLUP`** ka prayog karein aur summary rows ko clean label dene ke liye **`GROUPING()`** function use karein.
+* **`GROUP BY`** matching keys wali rows ko aggregate summary buckets mein collapse karta hai.
+* **`WHERE`** grouping se *pehle* rows filter karta hai; **`HAVING`** grouping ke *baad* aggregated buckets filter karta hai.
+* **`ONLY_FULL_GROUP_BY`** require karta hai ki har selected column ya toh `GROUP BY` clause mein ho ya aggregate function ke andar wrapped ho.
+* Group ke andar string values ko single delimited row mein concatenate karne ke liye **`GROUP_CONCAT()`** use karo.
+* **`WITH ROLLUP`** multi-level subtotals aur grand totals compute karta hai; generated summary rows ko cleanly format karne ke liye **`GROUPING()`** use karo.

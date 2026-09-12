@@ -1,478 +1,479 @@
-# अध्याय 29 — टेक्निकल इंटरव्यू मास्टरी: 150 चुने हुए सवाल और जवाब (Technical Interview Mastery)
+# Chapter 29 — Technical Interview Mastery: 150 Curated Questions & Answers
 
-यह अध्याय तीन प्रोफेशनल दक्षता स्तरों (competency tiers) में संरचित **150 प्रोडक्शन-ग्रेड SQL और MySQL इंटरव्यू सवाल और जवाब** प्रदान करता है:
-* **Tier 1: बिगिनर सवाल (1–50)** — रिलेशनल फंडामेंटल्स, CRUD, बेसिक फिल्टरिंग, और कोर फंक्शन्स।
-* **Tier 2: इंटरमीडिएट सवाल (51–100)** — जॉइन्स, सबक्वेरीज, GROUP BY/HAVING, इंडेक्स, और नॉर्मलाइजेशन।
-* **Tier 3: एडवांस्ड सवाल (101–150)** — विंडो फंक्शन्स, CTEs, ट्रांजेक्शन्स, लॉकिंग, MVCC, और क्वेरी ऑप्टिमाइज़ेशन।
+Is chapter mein **150 production-grade SQL aur MySQL interview questions** provide kiye gaye hain, jo teen professional competency tiers mein structured hain:
 
----
-
-## Tier 1: बिगिनर SQL इंटरव्यू सवाल (1–50)
-
-### 1. रिलेशनल डेटाबेस मैनेजमेंट सिस्टम (RDBMS) क्या है?
-**उत्तर**: RDBMS एडगर एफ. कॉड (Edgar F. Codd) के रिलेशनल मॉडल पर आधारित एक डेटाबेस सिस्टम है। यह डेटा को पंक्तियों (tuples) और स्तंभों (attributes) से बनी गणितीय रूप से परिभाषित तालिकाओं (relations) में व्यवस्थित करता है। साझा कीज (shared keys) के माध्यम से डेटा संबंधों को लागू किया जाता है, और ऑपरेशन्स ACID गुणों का पालन करते हैं। उदाहरणों में MySQL, PostgreSQL और Oracle शामिल हैं।
-
-### 2. SQL और NoSQL डेटाबेस के बीच मुख्य अंतर क्या हैं?
-**उत्तर**: SQL डेटाबेस रिलेशनल होते हैं, टेबल-आधारित होते हैं, सख्त पूर्वनिर्धारित स्कीमा लागू करते हैं, वर्टिकली स्केल होते हैं, और ACID स्थिरता को प्राथमिकता देते हैं। NoSQL डेटाबेस नॉन-रिलेशनल होते हैं, डॉक्यूमेंट/की-वैल्यू/ग्राफ-आधारित होते हैं, डायनेमिक या स्कीमा-लेस होते हैं, क्लस्टर में हॉरिजॉन्टली स्केल होते हैं, और एवेंचुअल कंसिस्टेंसी (BASE मॉडल) को प्राथमिकता देते हैं।
-
-### 3. SQL की पाँच उप-भाषाएँ (sub-languages) कौन सी हैं?
-**उत्तर**:
-1. **DDL (Data Definition Language)**: `CREATE`, `ALTER`, `DROP`, `TRUNCATE`, `RENAME`।
-2. **DQL (Data Query Language)**: `SELECT`।
-3. **DML (Data Manipulation Language)**: `INSERT`, `UPDATE`, `DELETE`।
-4. **DCL (Data Control Language)**: `GRANT`, `REVOKE`।
-5. **TCL (Transaction Control Language)**: `COMMIT`, `ROLLBACK`, `SAVEPOINT`।
-
-### 4. `CHAR` और `VARCHAR` में क्या अंतर है?
-**उत्तर**: `CHAR(M)` फिक्स्ड-लेंथ होता है, जो लंबाई $M$ तक स्पेस के साथ मानों को राइट-पैड करता है। `VARCHAR(M)` वेरिएबल-लेंथ होता है, जो केवल वास्तविक कैरेक्टर्स के साथ 1- या 2-बाइट लंबाई उपसर्ग (length prefix) स्टोर करता है।
-
-### 5. SQL में `NULL` क्या दर्शाता है, और तुलना में इसका मूल्यांकन कैसे किया जाता है?
-**उत्तर**: `NULL` अनुपलब्ध (missing), अज्ञात (unknown) या अनुपयुक्त डेटा का प्रतिनिधित्व करता है। थ्री-वैल्यूड लॉजिक (3VL) में, `NULL` से किसी भी चीज़ की तुलना करने पर (जैसे `col = NULL` या `NULL = NULL`) परिणाम `UNKNOWN` आता है। नलेबिलिटी का परीक्षण हमेशा `IS NULL` या `IS NOT NULL` का उपयोग करके किया जाना चाहिए।
-
-### 6. प्राइमरी की (Primary Key) क्या है?
-**उत्तर**: एक कॉलम (या कॉलम्स का सेट) जो टेबल में प्रत्येक पंक्ति को विशिष्ट रूप से पहचानता है। एक प्राइमरी की अनिवार्य रूप से `UNIQUE` और `NOT NULL` दोनों कंस्ट्रेंट्स लागू करती है, और MySQL InnoDB में, टेबल के क्लस्टर्ड इंडेक्स को भौतिक रूप से व्यवस्थित करती है।
-
-### 7. क्या किसी टेबल में एकाधिक (multiple) प्राइमरी की हो सकती हैं?
-**उत्तर**: नहीं। किसी टेबल में केवल **एक** प्राइमरी की हो सकती है। हालाँकि, वह प्राइमरी की कई कॉलम्स से मिलकर बनी एक **कम्पोजिट प्राइमरी की (Composite Primary Key)** हो सकती है।
-
-### 8. प्राइमरी की और यूनिक की में क्या अंतर है?
-**उत्तर**: एक टेबल में केवल एक प्राइमरी की हो सकती है, जो `NULL` मानों को कड़ाई से प्रतिबंधित करती है। एक टेबल में कई यूनिक की हो सकती हैं, और MySQL में, यूनिक की एकाधिक `NULL` मानों की अनुमति देती है (जब तक कि इसे स्पष्ट रूप से `NOT NULL` चिह्नित न किया गया हो)।
-
-### 9. फॉरेन की (Foreign Key) क्या है?
-**उत्तर**: चाइल्ड टेबल का एक कॉलम जो पैरेंट टेबल की प्राइमरी की को संदर्भित करता है, एक रिलेशनल लिंक स्थापित करता है और रेफरेंशियल इंटीग्रिटी लागू करता है।
-
-### 10. `TRUNCATE` और `DELETE` में क्या अंतर है?
-**उत्तर**: `DELETE` एक DML कमांड है जो पंक्तियों को एक-एक करके हटाता है, प्रत्येक डिलीशन को ट्रांजैक्शन लॉग में दर्ज करता है, रो-लेवल ट्रिगर्स को फायर करता है, और इसे रोलबैक किया जा सकता है। `TRUNCATE` एक DDL कमांड है जो सीधे डेटा पेजेज को डीएलोकेट करता है, ऑटो-इन्क्रीमेंट काउंटरों को रीसेट करता है, ट्रिगर्स को बायपास करता है, और काफी तेजी से निष्पादित होता है।
-
-### 11. `DROP TABLE` और `TRUNCATE TABLE` में क्या अंतर है?
-**उत्तर**: `TRUNCATE TABLE` टेबल स्कीमा, कॉलम्स और कंस्ट्रेंट्स को संरक्षित रखते हुए टेबल से सभी डेटा पंक्तियों को मिटा देता है। `DROP TABLE` टेबल स्कीमा, कंस्ट्रेंट्स, इंडेक्स और भौतिक फ़ाइलों को स्थायी रूप से नष्ट कर देता है।
-
-### 12. MySQL में `AUTO_INCREMENT` विशेषता कैसे काम करती है?
-**उत्तर**: जब नए इंसर्ट किए गए रो में कॉलम मान छोड़ दिया जाता है या `NULL` पास किया जाता है, तो यह स्वचालित रूप से एक अद्वितीय, क्रमिक पूर्णांक पहचानकर्ता (sequential integer identifier) उत्पन्न करता है।
-
-### 13. `DEFAULT` कंस्ट्रेंट का क्या उद्देश्य है?
-**उत्तर**: यदि कोई `INSERT` स्टेटमेंट स्पष्ट रूप से कोई मान प्रदान नहीं करता है, तो यह कॉलम के लिए एक स्वचालित फ़ॉलबैक मान प्रदान करता है।
-
-### 14. MySQL 8.0 में `CHECK` कंस्ट्रेंट क्या करता है?
-**उत्तर**: यह इंसर्ट या अपडेट किए गए पंक्ति मानों पर एक बूलियन अभिव्यक्ति का मूल्यांकन करता है, यदि अभिव्यक्ति `FALSE` का मूल्यांकन करती है तो ट्रांजैक्शन को अस्वीकार कर देता है (उदा. `CHECK (salary > 0)` )।
-
-### 15. `COUNT(*)` और `COUNT(column)` में क्या अंतर है?
-**उत्तर**: `COUNT(*)` नलेबिलिटी की परवाह किए बिना परिणाम सेट की सभी भौतिक पंक्तियों की गणना करता है। `COUNT(column)` केवल उन्हीं पंक्तियों की गणना करता है जहाँ निर्दिष्ट कॉलम में नॉन-नल मान होता है।
-
-### 16. `AND` और `OR` ऑपरेटर्स लॉजिकल प्रेसिडेंस में कैसे भिन्न हैं?
-**उत्तर**: `AND` की प्राथमिकता `OR` से अधिक होती है। बिना कोष्ठक वाले एक्सप्रेशन `A OR B AND C` में, इंजन पहले `(B AND C)` का मूल्यांकन करता है।
-
-### 17. `DISTINCT` कीवर्ड का क्या उद्देश्य है?
-**उत्तर**: यह प्रोजेक्टेड रिजल्ट सेट से डुप्लिकेट पंक्तियों को हटाता है, केवल अद्वितीय मान संयोजनों को लौटाता है।
-
-### 18. `BETWEEN` ऑपरेटर बाउंड्री वैल्यूज के साथ कैसा व्यवहार करता है?
-**उत्तर**: SQL में, `BETWEEN val1 AND val2` दोनों सीमा मानों को सख्ती से **शामिल (inclusive)** करता है (`col >= val1 AND col <= val2` के समकक्ष)।
-
-### 19. `LIKE` ऑपरेटर द्वारा कौन से वाइल्डकार्ड समर्थित हैं?
-**उत्तर**: प्रतिशत चिह्न (`%`) शून्य या अधिक मनमाने कैरेक्टर्स से मेल खाता है; अंडरस्कोर (`_`) ठीक एक कैरेक्टर से मेल खाता है।
-
-### 20. `NOW()` और `CURDATE()` में क्या अंतर है?
-**उत्तर**: `NOW()` वर्तमान दिनांक और समय दोनों लौटाता है (`YYYY-MM-DD HH:MM:SS`)। `CURDATE()` केवल वर्तमान दिनांक लौटाता है (`YYYY-MM-DD`)।
-
-### 21. `COALESCE()` फंक्शन क्या करता है?
-**उत्तर**: यह बाएं से दाएं तर्कों की सूची का मूल्यांकन करता है और सबसे पहला गैर-नल (non-NULL) मान लौटाता है।
-
-### 22. `COALESCE()` और `IFNULL()` में क्या अंतर है?
-**उत्तर**: `IFNULL(a, b)` MySQL का मालिकाना (proprietary) फंक्शन है और केवल दो तर्क स्वीकार करता है। `COALESCE(...)` मानक ANSI SQL है और मनमाने ढंग से कई तर्क स्वीकार करता है।
-
-### 23. `CONCAT_WS()` `CONCAT()` से कैसे भिन्न है?
-**उत्तर**: यदि कोई तर्क `NULL` है तो `CONCAT()` पूरी स्ट्रिंग के लिए `NULL` लौटाता है। `CONCAT_WS()` (Concatenate With Separator) पहले तर्क को डेलिमिटर के रूप में उपयोग करता है और `NULL` मानों को छोड़ देता है।
-
-### 24. MySQL में `LENGTH()` और `CHAR_LENGTH()` में क्या अंतर है?
-**उत्तर**: `LENGTH()` **बाइट्स** में स्ट्रिंग आकार मापता है, जबकि `CHAR_LENGTH()` **कैरेक्टर्स** की संख्या मापता है (जो मल्टी-बाइट UTF-8 एन्कोडिंग के लिए महत्वपूर्ण है)।
-
-### 25. MySQL में `LIMIT` क्लॉज क्या करता है?
-**उत्तर**: यह क्वेरी द्वारा लौटाई गई पंक्तियों की अधिकतम संख्या को प्रतिबंधित करता है, जिसका उपयोग आमतौर पर पेजिनेशन के लिए किया जाता है (उदा. `LIMIT 10 OFFSET 20`)।
-
-### 26. आप परिणामों को अवरोही (descending) क्रम में कैसे सॉर्ट करते हैं?
-**उत्तर**: `ORDER BY` क्लॉज में कॉलम के साथ `DESC` कीवर्ड जोड़कर (उदा. `ORDER BY salary DESC`)।
-
-### 27. एलियास (Alias) क्या है, और कौन सा कीवर्ड इसे परिभाषित करता है?
-**उत्तर**: एलियास पठनीयता में सुधार के लिए किसी टेबल या कॉलम को सौंपा गया एक अस्थायी लेबल है, जिसे `AS` कीवर्ड का उपयोग करके परिभाषित किया जाता है (उदा. `SELECT salary AS base_pay`)।
-
-### 28. `USE` स्टेटमेंट का क्या उद्देश्य है?
-**उत्तर**: यह वर्तमान क्लाइंट कनेक्शन के लिए सक्रिय डेटाबेस स्कीमा संदर्भ स्थापित करता है।
-
-### 29. आप किसी मौजूदा टेबल में कॉलम कैसे जोड़ते हैं?
-**उत्तर**: `ALTER TABLE table_name ADD COLUMN column_name data_type;` का उपयोग करके।
-
-### 30. आप किसी कॉलम का नाम बदले बिना उसका डेटा प्रकार कैसे संशोधित करते हैं?
-**उत्तर**: `ALTER TABLE table_name MODIFY COLUMN column_name new_data_type;` का उपयोग करके।
-
-### 31. `ALTER TABLE ... MODIFY` और `ALTER TABLE ... CHANGE` में क्या अंतर है?
-**उत्तर**: `MODIFY` उसी स्थान पर विशेषताओं या डेटा प्रकार को बदलता है। `CHANGE` के लिए पुराना नाम और नया नाम दोनों प्रदान करने की आवश्यकता होती है, जिससे एक साथ कॉलम का नाम बदलने की सुविधा मिलती है।
-
-### 32. बिना `WHERE` क्लॉज के `UPDATE` निष्पादित करने का क्या परिणाम होता है?
-**उत्तर**: टेबल की प्रत्येक पंक्ति निर्दिष्ट मानों के साथ अपडेट हो जाती है।
-
-### 33. MySQL का `sql_safe_updates` मोड क्या है?
-**उत्तर**: एक सुरक्षा सेटिंग जो ऐसे `UPDATE` या `DELETE` स्टेटमेंट्स के निष्पादन को रोकती है जिनमें किसी की-कॉलम या स्पष्ट `LIMIT` का संदर्भ देने वाला `WHERE` क्लॉज नहीं होता है।
-
-### 34. `INSERT INTO ... SELECT` का क्या उद्देश्य है?
-**उत्तर**: यह एक ही स्टेटमेंट में एक टेबल से डेटा को सीधे दूसरी मौजूदा टेबल में कॉपी करता है।
-
-### 35. डुप्लिकेट कीज का सामना करने पर `INSERT IGNORE` कैसा व्यवहार करता है?
-**उत्तर**: यह कोई एरर उठाए बिना या बैच को रोके बिना उन पंक्तियों को छोड़ देता है जो प्राइमरी की या यूनिक कंस्ट्रेंट्स का उल्लंघन करती हैं।
-
-### 36. UPSERT क्या है, और इसे MySQL में कैसे लागू किया जाता है?
-**उत्तर**: एक ऑपरेशन जो नई पंक्ति होने पर उसे इन्सर्ट करता है, या डुप्लिकेट की पहले से मौजूद होने पर उसे अपडेट करता है, जिसे `INSERT ... ON DUPLICATE KEY UPDATE` के माध्यम से लागू किया जाता है।
-
-### 37. `UNION` और `UNION ALL` में क्या अंतर है?
-**उत्तर**: `UNION` क्वेरी परिणामों के बीच डुप्लिकेट पंक्तियों को समाप्त करता है (जिसमें सॉर्टिंग ओवरहेड शामिल होता है); `UNION ALL` डुप्लिकेट सहित सभी पंक्तियों को संरक्षित रखता है।
-
-### 38. `UNION` के माध्यम से संयोजित कॉलम्स पर कौन से नियम लागू होते हैं?
-**उत्तर**: भाग लेने वाली सभी क्वेरीज में संबंधित स्थानों पर संगत डेटा प्रकारों के साथ कॉलम्स की सटीक समान संख्या होनी चाहिए।
-
-### 39. स्केलर फंक्शन (Scalar Function) क्या है?
-**उत्तर**: एक ऐसा फंक्शन जो व्यक्तिगत पंक्ति इनपुट पर काम करता है और प्रति पंक्ति एक एकल स्केलर मान लौटाता है (उदा. `ROUND()`, `UPPER()`)।
-
-### 40. एग्रीगेट फंक्शन (Aggregate Function) क्या है?
-**उत्तर**: एक ऐसा फंक्शन जो कई पंक्तियों में काम करता है और एक एकल समेकित मान लौटाता है (उदा. `SUM()`, `AVG()`)।
-
-### 41. एग्रीगेट फंक्शन्स `NULL` मानों के साथ कैसा व्यवहार करते हैं?
-**उत्तर**: सभी एग्रीगेट फंक्शन्स (`SUM`, `AVG`, `MIN`, `MAX`, `COUNT(col)`) `NULL` मानों को अनदेखा करते हैं। एकमात्र अपवाद `COUNT(*)` है, जो भौतिक पंक्तियों की गिनती करता है।
-
-### 42. `GROUP BY` क्लॉज का क्या उद्देश्य है?
-**उत्तर**: यह एग्रीगेट मेट्रिक्स की गणना के लिए मिलान मानों वाली पंक्तियों को सारांश बकेट्स में समेटता है।
-
-### 43. `WHERE` और `HAVING` में क्या अंतर है?
-**उत्तर**: `WHERE` एग्रीगेशन से *पहले* रॉ पंक्तियों को फ़िल्टर करता है; `HAVING` एग्रीगेशन के *बाद* सारांश समूहों को फ़िल्टर करता है।
-
-### 44. क्या आप `SELECT` में परिभाषित कॉलम एलियास का उपयोग `WHERE` क्लॉज के अंदर कर सकते हैं?
-**उत्तर**: नहीं, क्योंकि SQL इंजन द्वारा `WHERE` का मूल्यांकन `SELECT` से पहले किया जाता है।
-
-### 45. `ORDER BY` का क्या उद्देश्य है?
-**उत्तर**: यह अंतिम परिणाम सेट को आरोही (`ASC`) या अवरोही (`DESC`) क्रम में नियतात्मक रूप से (deterministically) सॉर्ट करता है।
-
-### 46. `DATE`, `DATETIME`, और `TIMESTAMP` में क्या अंतर है?
-**उत्तर**: `DATE` केवल कैलेंडर तिथियों (3 बाइट्स) को संग्रहीत करता है। `DATETIME` टाइमज़ोन रूपांतरण (5 बाइट्स) के बिना दिनांक और समय को स्थिर रूप से संग्रहीत करता है। `TIMESTAMP` UTC में/से परिवर्तित दिनांक और समय को संग्रहीत करता है (4 बाइट्स, वर्ष 2038 में समाप्त होता है)।
-
-### 47. `DATEDIFF(date1, date2)` क्या लौटाता है?
-**उत्तर**: दिनों का अंतर, जिसकी गणना `date1 - date2` के रूप में की जाती है।
-
-### 48. `EXISTS` ऑपरेटर का क्या उद्देश्य है?
-**उत्तर**: यह सबक्वेरी में पंक्तियों के अस्तित्व का परीक्षण करता है, जैसे ही पहली मिलान पंक्ति मिलती है, `TRUE` लौटाता है।
-
-### 49. आप SQL में कोड को कैसे कमेंट करते हैं?
-**उत्तर**: सिंगल-लाइन टिप्पणियाँ `-- ` (स्पेस के साथ) या `#` का उपयोग करती हैं; मल्टी-लाइन टिप्पणियाँ `/* ... */` का उपयोग करती हैं।
-
-### 50. आप MySQL सर्वर पर मौजूदा डेटाबेस कैसे देखते हैं?
-**उत्तर**: `SHOW DATABASES;` कमांड का उपयोग करके।
+* **Tier 1: Beginner Questions (1–50)** — Relational Fundamentals, CRUD, Basic Filtering, aur Core Functions.
+* **Tier 2: Intermediate Questions (51–100)** — Joins, Subqueries, GROUP BY/HAVING, Indexes, aur Normalization.
+* **Tier 3: Advanced Questions (101–150)** — Window Functions, CTEs, Transactions, Locking, MVCC, aur Query Optimization.
 
 ---
 
-## Tier 2: इंटरमीडिएट SQL इंटरव्यू सवाल (51–100)
+## Tier 1: Beginner SQL Interview Questions (1–50)
 
-### 51. `INNER JOIN` और `LEFT JOIN` के बीच परिचालन अंतर स्पष्ट करें।
-**उत्तर**: `INNER JOIN` केवल उन्हीं पंक्तियों को लौटाता है जिनके दोनों टेबल्स में मिलान मान होते हैं। `LEFT JOIN` बाईं टेबल से सभी पंक्तियों को लौटाता है, साथ ही दाईं टेबल से मिलान की गई पंक्तियों को, और कोई मिलान न होने पर दाईं टेबल के कॉलम्स के लिए `NULL` भरता है।
+### 1. Relational Database Management System (RDBMS) kya hota hai?
+**Answer**: RDBMS ek aisa database system hai jo Edgar F. Codd ke relational model par based hota hai. Ye data ko mathematically defined tables (relations) mein organize karta hai jo rows (tuples) aur columns (attributes) se milkar banti hain. Data relationships shared keys ke through enforce hoti hain, aur database operations ACID properties ko adhere karte hain. Examples: MySQL, PostgreSQL, aur Oracle.
 
-### 52. `RIGHT JOIN` क्या है, और व्यवहार में इसका उपयोग शायद ही कभी क्यों किया जाता है?
-**उत्तर**: `RIGHT JOIN` दाईं टेबल से सभी पंक्तियों और बाईं टेबल से मिलान की गई पंक्तियों को लौटाता है। व्यवहार में इसका बहुत कम उपयोग किया जाता है क्योंकि किसी भी `RIGHT JOIN` को टेबल का क्रम बदलकर अधिक सहज रूप से `LEFT JOIN` के रूप में फिर से लिखा जा सकता है।
+### 2. SQL aur NoSQL databases ke beech primary differences kya hain?
+**Answer**: SQL databases relational aur table-based hote hain, strict predefined schemas enforce karte hain, vertically scale hote hain, aur ACID consistency ko prioritize karte hain. NoSQL databases non-relational hote hain (document, key-value, column-family, ya graph-based), dynamic ya schema-less hote hain, clusters par horizontally scale hote hain, aur eventual consistency (BASE model) prioritize karte hain.
 
-### 53. एंटी-जॉइन (Anti-Join) क्या है, और आप इसे कैसे लिखते हैं?
-**उत्तर**: एक एंटी-जॉइन एक टेबल में ऐसी पंक्तियों को ढूंढता है जिनका दूसरी टेबल में कोई संबंधित मिलान नहीं होता है, जिसे `LEFT JOIN ... WHERE right_table.key IS NULL` या `WHERE NOT EXISTS (...)` का उपयोग करके लिखा जाता है।
+### 3. SQL ki five sub-languages kaun-kaun si hain?
+**Answer**:
+1. **DDL (Data Definition Language)**: `CREATE`, `ALTER`, `DROP`, `TRUNCATE`, `RENAME`.
+2. **DQL (Data Query Language)**: `SELECT`.
+3. **DML (Data Manipulation Language)**: `INSERT`, `UPDATE`, `DELETE`.
+4. **DCL (Data Control Language)**: `GRANT`, `REVOKE`.
+5. **TCL (Transaction Control Language)**: `COMMIT`, `ROLLBACK`, `SAVEPOINT`.
 
-### 54. `CROSS JOIN` क्या है?
-**उत्तर**: एक जॉइन जो दो टेबल्स का कार्टेशियन उत्पाद उत्पन्न करता है, जो टेबल A की प्रत्येक पंक्ति को टेबल B की प्रत्येक पंक्ति के साथ जोड़ता है ($N \times M$ पंक्तियाँ)।
+### 4. `CHAR` aur `VARCHAR` ke beech kya difference hai?
+**Answer**: `CHAR(M)` fixed-length data type hai, jo values ko length $M$ tak spaces se right-pad karta hai. `VARCHAR(M)` variable-length data type hai, jo sirf actual characters aur unke saath ek 1- ya 2-byte length prefix store karta hai.
 
-### 55. Self JOIN क्या है, और इसकी आवश्यकता कब होती है?
-**उत्तर**: एक ऐसा जॉइन जहाँ किसी टेबल को दो अलग-अलग एलियास का उपयोग करके खुद से जोड़ा जाता है, जो हायरार्किकल या रिकर्सिव संबंधों के लिए आवश्यक होता है (उदा. कर्मचारियों को उनके प्रबंधकों से मिलाना)।
+### 5. SQL mein `NULL` kya represent karta hai, aur comparisons mein iski evaluation kaise hoti hai?
+**Answer**: `NULL` missing, unknown, ya inapplicable data ko represent karta hai. Three-Valued Logic (3VL) ke andar, `NULL` ke saath kisi bhi cheez ko compare karne par (jaise `col = NULL` ya `NULL = NULL`) hamesha `UNKNOWN` result aata hai. Nullability check karne ke liye `IS NULL` ya `IS NOT NULL` ka use kiya jaata hai.
 
-### 56. आप MySQL में `FULL OUTER JOIN` को कैसे एम्यूलेट करते हैं?
-**उत्तर**: `LEFT JOIN` और `RIGHT JOIN` को लेकर उन्हें `UNION` सेट ऑपरेटर के साथ मिलाकर।
+### 6. Primary Key kya hoti hai?
+**Answer**: Primary Key ek aisa column (ya columns ka set) hota hai jo table ke har ek row ko uniquely identify karta hai. Primary key implicitly `UNIQUE` aur `NOT NULL` constraints enforce karti hai, aur MySQL InnoDB mein physically table ke clustered index ko organize karti hai.
 
-### 57. कोरिलेटेड (Correlated) और नॉन-कोरिलेटेड सबक्वेरी में क्या अंतर है?
-**उत्तर**: एक नॉन-कोरिलेटेड सबक्वेरी स्वतंत्र होती है और केवल एक बार निष्पादित होती है। एक कोरिलेटेड सबक्वेरी बाहरी क्वेरी के कॉलम्स को संदर्भित करती है और सैद्धांतिक रूप से बाहरी क्वेरी द्वारा संसाधित प्रत्येक पंक्ति के लिए मूल्यांकन की जाती है।
+### 7. Kya ek table mein multiple Primary Keys ho sakti hain?
+**Answer**: Nahi. Ek table mein sirf **ek** Primary Key ho sakti hai. Lekin, wo primary key multiple columns se milkar ban sakti hai, jise **Composite Primary Key** kehte hain.
 
-### 58. सबक्वेरीज के साथ `NOT IN` की तुलना में `NOT EXISTS` अधिक सुरक्षित क्यों है?
-**उत्तर**: यदि कोई सबक्वेरी एक भी `NULL` लौटाती है, तो `NOT IN` सभी पंक्तियों के लिए `UNKNOWN` का मूल्यांकन करता है और एक खाली परिणाम सेट लौटाता है। `NOT EXISTS` पंक्ति के अस्तित्व की जाँच करता है और `NULL` मानों से प्रभावित नहीं होता है।
+### 8. Primary Key aur Unique Key ke beech kya difference hai?
+**Answer**: Ek table mein sirf ek hi Primary Key ho sakti hai, jo kabhi `NULL` allow nahi karti. Ek table mein multiple Unique Keys ho sakti hain, aur MySQL mein Unique Keys multiple `NULL` values allow karti hain (jab tak unpar explicitly `NOT NULL` na lagaya gaya ho).
 
-### 59. कॉमन टेबल एक्सप्रेशन (CTE) क्या है?
-**उत्तर**: `WITH` क्लॉज का उपयोग करके क्वेरी की शुरुआत में परिभाषित एक अस्थायी, नामित परिणाम सेट जो पठनीयता में सुधार करता है और जिसे कई बार संदर्भित किया जा सकता है।
+### 9. Foreign Key kya hoti hai?
+**Answer**: Child table ka ek aisa column jo parent table ki primary key ko reference karta hai, relational link establish karta hai aur referential integrity enforce karta hai.
 
-### 60. रिकर्सिव CTE (Recursive CTE) कैसे काम करता है?
-**उत्तर**: इसमें एक **एंकर मेंबर (Anchor Member)** (बेस क्वेरी), एक `UNION ALL`, और एक **रिकर्सिव मेंबर (Recursive Member)** होता है जो समाप्ति की शर्त पूरी होने तक CTE को ही संदर्भित करता है।
+### 10. `TRUNCATE` aur `DELETE` ke beech kya difference hai?
+**Answer**: `DELETE` ek DML command hai jo rows ko one-by-one delete karti hai, har deletion ko transaction log mein record karti hai, row-level triggers fire karti hai, aur rollback ho sakti hai. `TRUNCATE` ek DDL command hai jo data pages ko directly deallocate karti hai, auto-increment counter reset karti hai, triggers bypass karti hai, aur bohot fast execute hoti hai.
 
-### 61. `ONLY_FULL_GROUP_BY` SQL मोड क्या है?
-**उत्तर**: MySQL में एक मानक SQL प्रवर्तन मोड जो उन क्वेरीज को अस्वीकार करता है जहाँ `SELECT` में कॉलम्स न तो `GROUP BY` क्लॉज में मौजूद होते हैं और न ही एग्रीगेट फंक्शन्स में लिपटे होते हैं।
+### 11. `DROP TABLE` aur `TRUNCATE TABLE` ke beech kya difference hai?
+**Answer**: `TRUNCATE TABLE` table schema, columns, aur constraints ko preserve rakhte hue table ke saare data rows ko purge kar deta hai. `DROP TABLE` table schema, constraints, indexes, aur physical disk files ko permanently destroy kar deta hai.
 
-### 62. `GROUP BY` क्वेरी में `WITH ROLLUP` क्या करता है?
-**उत्तर**: यह दाएं से बाएं ग्रुपिंग डायमेंशन्स में हायरार्किकल सबटोटल और ग्रैंड टोटल उत्पन्न करता है।
+### 12. MySQL mein `AUTO_INCREMENT` attribute kaise kaam karta hai?
+**Answer**: Jab column value omit ki jaati hai ya `NULL` pass ki jaati hai, toh ye automatically newly inserted rows ke liye unique, sequential integer identifier generate karta hai.
 
-### 63. आप एक वास्तविक NULL और ROLLUP सारांश NULL के बीच अंतर कैसे करते हैं?
-**उत्तर**: `GROUPING(column)` फंक्शन का उपयोग करके, जो रोलअप सारांश NULLs के लिए `1` और वास्तविक डेटा मानों के लिए `0` लौटाता है।
+### 13. `DEFAULT` constraint ka purpose kya hai?
+**Answer**: Agar koi `INSERT` statement kisi column ke liye explicitly value provide nahi karta, toh `DEFAULT` constraint ek automatic fallback value supply karta hai.
 
-### 64. डेटाबेस नॉर्मलाइजेशन क्या है?
-**उत्तर**: डेटा अतिरेक (redundancy) को कम करने और इंसर्शन, अपडेट और डिलीशन विसंगतियों (anomalies) को खत्म करने के लिए रिलेशनल टेबल्स को संरचित करने की व्यवस्थित प्रक्रिया।
+### 14. MySQL 8.0 mein `CHECK` constraint kya karta hai?
+**Answer**: Ye inserted ya updated row values par boolean expression evaluate karta hai, aur agar expression `FALSE` evaluate hota hai toh transaction ko reject kar deta hai (e.g., `CHECK (salary > 0)`).
 
-### 65. फर्स्ट नॉर्मल फॉर्म (1NF) को परिभाषित करें।
-**उत्तर**: एक ऐसी टेबल जहाँ सभी कॉलम मान परमाणु (atomic - कोई सरणियाँ या अल्पविराम से अलग की गई सूचियाँ नहीं) होते हैं, कोई दोहराए जाने वाले समूह नहीं होते हैं, और एक प्राइमरी की विशिष्ट रूप से प्रत्येक पंक्ति की पहचान करती है।
+### 15. `COUNT(*)` aur `COUNT(column)` ke beech kya difference hai?
+**Answer**: `COUNT(*)` result set ki saari physical rows ko count karta hai chahe unme nulls hon ya na hon. `COUNT(column)` sirf un rows ko count karta hai jahan specified column non-NULL value contain karta hai.
 
-### 66. सेकंड नॉर्मल फॉर्म (2NF) को परिभाषित करें।
-**उत्तर**: 1NF में एक टेबल जिसमें कोई **आंशिक निर्भरता (partial dependency)** नहीं होती है — प्रत्येक गैर-की विशेषता पूरी कम्पोजिट प्राइमरी की पर निर्भर करती है।
+### 16. Logical precedence mein `AND` aur `OR` operators kaise differ karte hain?
+**Answer**: `AND` operator ki precedence `OR` se higher hoti hai. Bina parentheses ke expression `A OR B AND C` mein, engine pehle `(B AND C)` evaluate karta hai.
 
-### 67. थर्ड नॉर्मल फॉर्म (3NF) को परिभाषित करें।
-**उत्तर**: 2NF में एक टेबल जिसमें कोई **संक्रामक निर्भरता (transitive dependency)** नहीं होती है — गैर-की विशेषताएँ केवल प्राइमरी की पर निर्भर करती हैं, अन्य गैर-की विशेषताओं पर नहीं।
+### 17. `DISTINCT` keyword ka purpose kya hai?
+**Answer**: Ye projected result set se duplicate rows ko remove karta hai, aur sirf unique value combinations return karta hai.
 
-### 68. बॉयस-कॉड नॉर्मल फॉर्म (BCNF) क्या है?
-**उत्तर**: 3NF का एक सख्त संस्करण जहाँ प्रत्येक कार्यात्मक निर्भरता $X \rightarrow Y$ के लिए, निर्धारक $X$ एक सुपर की होना चाहिए।
+### 18. Boundary values ke saath `BETWEEN` operator kaise behave karta hai?
+**Answer**: SQL mein, `BETWEEN val1 AND val2` dono boundary values ke liye strictly **inclusive** hota hai (equivalent to `col >= val1 AND col <= val2`).
 
-### 69. डीनॉर्मलाइजेशन (Denormalization) क्या है, और यह कब उपयुक्त है?
-**उत्तर**: रीड-हैवी एनालिटिक्स या डेटा वेयरहाउस में रीड परफॉरमेंस को बेहतर बनाने और जॉइन ओवरहेड को कम करने के लिए एक सामान्यीकृत स्कीमा में अतिरेक (redundancy) का जानबूझकर किया गया समावेश।
+### 19. `LIKE` operator kaun se wildcards support karta hai?
+**Answer**: Percent sign (`%`) zero ya usse zyada arbitrary characters match karta hai; underscore (`_`) exactly ek single character match karta hai.
 
-### 70. व्यू (View) क्या है, और क्या यह डिस्क पर डेटा स्टोर करता है?
-**उत्तर**: एक सहेजी गई SQL क्वेरी द्वारा परिभाषित एक वर्चुअल टेबल। MySQL में, मानक व्यू डिस्क पर भौतिक डेटा स्टोर नहीं करते हैं; वे अंतर्निहित बेस टेबल्स के विरुद्ध गतिशील रूप से निष्पादित होते हैं।
+### 20. `NOW()` aur `CURDATE()` ke beech kya difference hai?
+**Answer**: `NOW()` current date aur time dono return karta hai (`YYYY-MM-DD HH:MM:SS`). `CURDATE()` sirf current date return karta hai (`YYYY-MM-DD`).
 
-### 71. MySQL में कौन सी चीज़ किसी व्यू को अपडेट करने योग्य (updatable) बनाती है?
-**उत्तर**: एक व्यू अपडेट करने योग्य होता है यदि व्यू की पंक्तियों और बेस टेबल की पंक्तियों के बीच सीधा 1:1 संबंध हो, और व्यू में `GROUP BY`, `DISTINCT`, एग्रीगेट्स या `UNION` शामिल न हों।
+### 21. `COALESCE()` function kya karta hai?
+**Answer**: Ye arguments ki list ko left to right evaluate karta hai aur pehli non-NULL value return karta hai.
 
-### 72. व्यू पर `WITH CHECK OPTION` का क्या उद्देश्य है?
-**उत्तर**: यह व्यू के माध्यम से ऐसे इन्सर्ट या अपडेट को रोकता है जो ऐसी पंक्तियाँ उत्पन्न करेंगे जो व्यू के अपने `WHERE` क्लॉज का उल्लंघन करती हैं।
+### 22. `COALESCE()` aur `IFNULL()` ke beech kya difference hai?
+**Answer**: `IFNULL(a, b)` proprietary MySQL function hai jo sirf do arguments accept karta hai. `COALESCE(...)` standard ANSI SQL function hai jo arbitrary number of arguments accept karta hai.
 
-### 73. इंडेक्स क्या है, और यह क्वेरीज को कैसे गति देता है?
-**उत्तर**: एक B+ Tree डेटा संरचना जो तेज़ $O(\log N)$ खोजों को सक्षम करने के लिए कॉलम मानों को व्यवस्थित करती है, जिससे पूर्ण टेबल स्कैन से बचा जा सके।
+### 23. `CONCAT_WS()` aur `CONCAT()` mein kya difference hai?
+**Answer**: `CONCAT()` agar koi bhi argument `NULL` ho toh `NULL` return karta hai. `CONCAT_WS()` (Concatenate With Separator) pehle argument ko delimiter banata hai aur `NULL` values ko cleanly skip karta hai.
 
-### 74. InnoDB में क्लस्टर्ड इंडेक्स (Clustered Index) क्या है?
-**उत्तर**: प्राथमिक B+ Tree इंडेक्स जो अपने लीफ नोड्स में वास्तविक पंक्ति डेटा संग्रहीत करता है, जो टेबल की प्राइमरी की द्वारा परिभाषित होता है।
+### 24. MySQL mein `LENGTH()` aur `CHAR_LENGTH()` ke beech kya difference hai?
+**Answer**: `LENGTH()` string ka size **bytes** mein measure karta hai, jabki `CHAR_LENGTH()` **characters** ki sankhya measure karta hai (jo multi-byte UTF-8 encodings ke liye bohot matter karta hai).
 
-### 75. InnoDB में सेकेंडरी इंडेक्स (Secondary Index) क्या है?
-**उत्तर**: एक गैर-क्लस्टर्ड इंडेक्स जिसके लीफ नोड्स इंडेक्स्ड की वैल्यू और संबंधित रो की प्राइमरी की वैल्यू को स्टोर करते हैं।
+### 25. MySQL mein `LIMIT` clause kya karta hai?
+**Answer**: Ye query dwara return ki jaane wali rows ki maximum sankhya restrict karta hai, jo commonly pagination ke liye use hota hai (e.g., `LIMIT 10 OFFSET 20`).
 
-### 76. बुकमार्क लुकअप (Bookmark Lookup) क्या है?
-**उत्तर**: जब कोई क्वेरी किसी पंक्ति को खोजने के लिए सेकेंडरी इंडेक्स का उपयोग करती है, तो वह प्राइमरी की प्राप्त करती है और शेष कॉलम्स को पुनः प्राप्त करने के लिए क्लस्टर्ड इंडेक्स में दूसरा लुकअप करना पड़ता है।
+### 26. Results ko descending order mein kaise sort kiya jaata hai?
+**Answer**: `ORDER BY` clause mein column ke aage `DESC` keyword append karke (e.g., `ORDER BY salary DESC`).
 
-### 77. कवरिंग इंडेक्स (Covering Index) क्या है?
-**उत्तर**: एक इंडेक्स जिसमें क्वेरी द्वारा अनुरोधित सभी कॉलम शामिल होते हैं, जिससे MySQL बुकमार्क लुकअप के बिना इंडेक्स ट्री से ही पूरी क्वेरी को संतुष्ट कर सकता है (`Extra: Using index`)।
+### 27. Alias kya hota hai, aur kaun sa keyword ise define karta hai?
+**Answer**: Alias ek temporary label hota hai jo table ya column ko readability improve karne ke liye assign kiya jaata hai, jise `AS` keyword se define karte hain (e.g., `SELECT salary AS base_pay`).
 
-### 78. कम्पोजिट इंडेक्स के लिए लेफ्टमोस्ट प्रीफिक्स नियम (Leftmost Prefix Rule) क्या है?
-**उत्तर**: `(A, B, C)` पर एक कम्पोजिट इंडेक्स का उपयोग केवल उन क्वेरीज द्वारा किया जा सकता है जो `A`, `(A, B)`, या `(A, B, C)` पर फ़िल्टर करती हैं। इसका उपयोग अकेले `B` या `C` पर फ़िल्टर करने वाली क्वेरीज के लिए नहीं किया जा सकता है।
+### 28. `USE` statement ka purpose kya hai?
+**Answer**: Ye current client connection ke liye active database schema context establish karta hai.
 
-### 79. इंडेक्स कार्डिनैलिटी (Index Cardinality) क्या है?
-**उत्तर**: इंडेक्स में अद्वितीय मानों की संख्या। उच्च-कार्डिनैलिटी वाले कॉलम (उदा. ईमेल) इंडेक्सिंग से बहुत लाभान्वित होते हैं; कम-कार्डिनैलिटी वाले कॉलम (उदा. बूलियन फ़्लैग) आमतौर पर नहीं होते हैं।
+### 29. Existing table mein column kaise add karte hain?
+**Answer**: `ALTER TABLE table_name ADD COLUMN column_name data_type;` syntax ka use karke.
 
-### 80. इंडेक्सिंग की परफॉरमेंस लागत (performance costs) क्या हैं?
-**उत्तर**: इंडेक्स डिस्क स्थान का उपभोग करते हैं, बफर पूल में मेमोरी लेते हैं, और `INSERT`, `UPDATE`, और `DELETE` संचालन को धीमा कर देते हैं क्योंकि प्रत्येक इंडेक्स ट्री को अपडेट किया जाना चाहिए।
+### 30. Column ko rename kiye bina uska data type kaise modify karte hain?
+**Answer**: `ALTER TABLE table_name MODIFY COLUMN column_name new_data_type;` syntax ka use karke.
 
-### 81. ट्रांजैक्शन (Transaction) क्या है?
-**उत्तर**: काम की एक तार्किक इकाई (logical unit of work) जिसमें एक या अधिक SQL स्टेटमेंट्स शामिल होते हैं जो एक एटॉमिक, सभी-या-कुछ-नहीं (all-or-nothing) ऑपरेशन के रूप में निष्पादित होते हैं।
+### 31. `ALTER TABLE ... MODIFY` aur `ALTER TABLE ... CHANGE` ke beech kya difference hai?
+**Answer**: `MODIFY` column ke attributes ya data types ko in-place change karta hai. `CHANGE` purana name aur naya name dono maangta hai, jisse column rename aur type change ek saath possible hota hai.
 
-### 82. ACID में एटॉमिसीटी (Atomicity) का क्या अर्थ है?
-**उत्तर**: ट्रांजैक्शन के सभी स्टेटमेंट एक साथ सफल और कमिट होते हैं, या विफलता पर अनडू लॉग (Undo Log) के माध्यम से सभी परिवर्तन रोलबैक हो जाते हैं।
+### 32. Bina `WHERE` clause ke `UPDATE` execute karne ka kya consequence hota hai?
+**Answer**: Table ki har ek single row specified values ke saath update ho jaati hai.
 
-### 83. ACID में कंसिस्टेंसी (Consistency) का क्या अर्थ है?
-**उत्तर**: एक ट्रांजैक्शन केवल डेटाबेस को मान्य स्थितियों के बीच स्थानांतरित कर सकता है जो सभी स्कीमा नियमों और बाधाओं को पूरा करती हैं।
+### 33. MySQL ka `sql_safe_updates` mode kya hota hai?
+**Answer**: Ek safety setting jo un `UPDATE` ya `DELETE` statements ke execution ko prevent karti hai jinme key column reference karne wala `WHERE` clause ya explicit `LIMIT` na ho.
 
-### 84. ACID में आइसोलेशन (Isolation) का क्या अर्थ है?
-**उत्तर**: समवर्ती ट्रांजेक्शन्स एक दूसरे की मध्यवर्ती, अनकमिटेड स्थितियों को देखे बिना स्वतंत्र रूप से निष्पादित होते हैं।
+### 34. `INSERT INTO ... SELECT` ka purpose kya hai?
+**Answer**: Ek single statement mein ek table se data directly doosri existing table mein copy karne ke liye use hota hai.
 
-### 85. ACID में ड्यूरेबिलिटी (Durability) का क्या अर्थ है?
-**उत्तर**: कमिट किए गए ट्रांजेक्शन्स को रेडो लॉग (Redo Log) के माध्यम से डिस्क पर स्थायी रूप से लिखा जाता है और वे सिस्टम क्रैश या बिजली की विफलता से बचे रहते हैं।
+### 35. Duplicate keys aane par `INSERT IGNORE` kaise behave karta hai?
+**Answer**: Ye primary key ya unique constraints violate karne wali rows ko bina kisi error ya batch abort kiye silently skip kar deta hai.
 
-### 86. डर्टी रीड (Dirty Read) क्या है?
-**उत्तर**: जब ट्रांजैक्शन A, ट्रांजैक्शन B द्वारा किए गए अनकमिटेड संशोधनों को पढ़ता है जिन्हें बाद में रोलबैक कर दिया जाता है।
+### 36. UPSERT kya hota hai, aur MySQL mein ise kaise implement karte hain?
+**Answer**: Ek aisi operation jo naya row insert karti hai agar key match na ho, ya agar duplicate key already exist karti ho toh use update karti hai; MySQL mein ise `INSERT ... ON DUPLICATE KEY UPDATE` ke through implement karte hain.
 
-### 87. नॉन-रिपीटेबल रीड (Non-Repeatable Read) क्या है?
-**उत्तर**: जब ट्रांजैक्शन A एक पंक्ति पढ़ता है, ट्रांजैक्शन B उस पंक्ति को अपडेट करता है और कमिट करता है, और ट्रांजैक्शन A अलग-अलग मान खोजने के लिए पंक्ति को फिर से पढ़ता है।
+### 37. `UNION` aur `UNION ALL` ke beech kya difference hai?
+**Answer**: `UNION` query results ke beech se duplicate rows eliminate karta hai (jisme sorting overhead hota hai); `UNION ALL` duplicates samet saari rows preserve karta hai.
 
-### 88. फैंटम रीड (Phantom Read) क्या है?
-**उत्तर**: जब ट्रांजैक्शन A एक रेंज क्वेरी चलाता है, ट्रांजैक्शन B उस रेंज से मेल खाने वाली एक नई पंक्ति सम्मिलित करता है और कमिट करता है, और ट्रांजैक्शन A एक नई पंक्ति खोजने के लिए क्वेरी को फिर से चलाता है।
+### 38. `UNION` ke through combine kiye jaane wale columns par kaun se rules apply hote hain?
+**Answer**: Saari participating queries ko exactly same number of columns project karne hote hain, aur corresponding positions par compatible data types hone chahiye.
 
-### 89. MySQL में डिफ़ॉल्ट आइसोलेशन स्तर क्या है?
-**उत्तर**: `REPEATABLE READ`।
+### 39. Scalar Function kya hota hai?
+**Answer**: Ek aisa function jo individual row inputs par operate karta hai aur per row ek single scalar value return karta hai (e.g., `ROUND()`, `UPPER()`).
 
-### 90. MySQL InnoDB `REPEATABLE READ` में फैंटम रीड्स को कैसे रोकता है?
-**उत्तर**: नियमित क्वेरीज के लिए सुसंगत नॉन-लॉकिंग स्नैपशॉट रीड्स (MVCC) का उपयोग करके, और लॉकिंग रीड्स के लिए नेक्स्ट-की लॉकिंग (गैप लॉक्स के साथ संयुक्त रिकॉर्ड लॉक्स) का उपयोग करके।
+### 40. Aggregate Function kya hota hai?
+**Answer**: Ek aisa function jo multiple rows par operate karta hai aur ek single consolidated value return karta hai (e.g., `SUM()`, `AVG()`).
 
-### 91. सेवपॉइंट (Savepoint) क्या है?
-**उत्तर**: पूरे ट्रांजैक्शन को निरस्त किए बिना आंशिक रोलबैक (`ROLLBACK TO SAVEPOINT`) की अनुमति देने वाला एक नामित मार्कर।
+### 41. Aggregate functions `NULL` values ko kaise treat karte hain?
+**Answer**: Saare aggregate functions (`SUM`, `AVG`, `MIN`, `MAX`, `COUNT(col)`) `NULL` values ko ignore karte hain. Sirf ek exception `COUNT(*)` hai, jo physical rows count karta hai.
 
-### 92. MySQL में DDL स्टेटमेंट्स को रोलबैक क्यों नहीं किया जा सकता है?
-**उत्तर**: DDL स्टेटमेंट निष्पादन से पहले और बाद में एक **इंप्लिसिट कमिट (implicit commit)** का कारण बनते हैं, जो पूर्व DML परिवर्तनों को स्थायी रूप से सहेजता है।
+### 42. `GROUP BY` clause ka purpose kya hai?
+**Answer**: Matching values wali rows ko aggregate metrics calculate karne ke liye summary buckets mein collapse karna.
 
-### 93. स्टोर्ड प्रोसीजर (Stored Procedure) क्या है?
-**उत्तर**: डेटाबेस में संग्रहीत और `CALL` के माध्यम से निष्पादित SQL स्टेटमेंट्स और कंट्रोल-फ्लो लॉजिक का एक पूर्व-संकलित सेट।
+### 43. `WHERE` aur `HAVING` ke beech kya difference hai?
+**Answer**: `WHERE` aggregation se *pehle* raw rows ko filter karta hai; `HAVING` aggregation ke *baad* summary groups ko filter karta hai.
 
-### 94. स्टोर्ड प्रोसीजर और स्टोर्ड फंक्शन में क्या अंतर है?
-**उत्तर**: एक प्रोसीजर को `CALL` के माध्यम से बुलाया जाता है, कई परिणाम सेट लौटा सकता है, और ट्रांजेक्शन्स का प्रबंधन कर सकता है। एक फंक्शन को SQL एक्सप्रेशन्स के भीतर इनलाइन बुलाया जाता है, ठीक एक स्केलर मान लौटाना चाहिए, और ट्रांजेक्शन्स का प्रबंधन नहीं कर सकता है।
+### 44. Kya `SELECT` mein define kiye gaye column aliases ko `WHERE` clause mein use kiya ja sakta hai?
+**Answer**: Nahi, kyunki query execution plan mein engine `WHERE` ko `SELECT` se pehle process karta hai.
 
-### 95. किसी फंक्शन में `DETERMINISTIC` कीवर्ड क्या दर्शाता है?
-**उत्तर**: यह गारंटी देता है कि फ़ंक्शन समान इनपुट तर्कों के लिए हमेशा सटीक समान आउटपुट लौटाएगा।
+### 45. `ORDER BY` ka purpose kya hai?
+**Answer**: Final result set ko ascending (`ASC`) ya descending (`DESC`) sequence mein deterministically sort karna.
 
-### 96. ट्रिगर (Trigger) क्या है?
-**उत्तर**: एक डेटाबेस प्रोग्राम जो किसी विशिष्ट टेबल पर `INSERT`, `UPDATE`, या `DELETE` इवेंट के जवाब में स्वचालित रूप से निष्पादित होता है।
+### 46. `DATE`, `DATETIME`, aur `TIMESTAMP` ke beech kya difference hai?
+**Answer**: `DATE` sirf calendar dates store karta hai (3 bytes). `DATETIME` bina timezone conversion ke statically date aur time store karta hai (5 bytes). `TIMESTAMP` date aur time ko UTC mein convert karke store karta hai (4 bytes, year 2038 tak range).
 
-### 97. ट्रिगर्स में `NEW` और `OLD` में क्या अंतर है?
-**उत्तर**: `NEW` आने वाले पंक्ति मानों का प्रतिनिधित्व करता है (`INSERT` और `UPDATE` में उपलब्ध)। `OLD` संशोधन से पहले के मानों का प्रतिनिधित्व करता है (`UPDATE` और `DELETE` में उपलब्ध)।
+### 47. `DATEDIFF(date1, date2)` kya return karta hai?
+**Answer**: Days mein difference calculate karke return karta hai (`date1 - date2`).
 
-### 98. कोई ट्रिगर अपनी ट्रिगरिंग टेबल को स्वयं संशोधित क्यों नहीं कर सकता है?
-**उत्तर**: अनंत पुनरावर्ती निष्पादन लूप (infinite recursive execution loops - MySQL Error 1442) को रोकने के लिए।
+### 48. `EXISTS` operator ka purpose kya hai?
+**Answer**: Subquery mein rows ki existence test karta hai, aur pehla matching row milte hi turant `TRUE` return kar deta hai (short-circuit evaluation).
 
-### 99. आप किसी ट्रिगर के अंदर कस्टम एरर कैसे उठाते हैं?
-**उत्तर**: `SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error description';` का उपयोग करके।
+### 49. SQL mein code comment kaise karte hain?
+**Answer**: Single-line comment ke liye `-- ` (trailing space ke saath) ya `#` use hota hai; multi-line comments ke liye `/* ... */` use hota hai.
 
-### 100. सरोगेट की (Surrogate Key) क्या है?
-**उत्तर**: कोई व्यावसायिक अर्थ न रखने वाला एक कृत्रिम, सिस्टम-जनरेटेड पहचानकर्ता (उदा. `INT AUTO_INCREMENT`), जिसे प्राथमिक कुंजी स्थिरता के लिए प्राकृतिक कुंजियों (natural keys) पर प्राथमिकता दी जाती है।
+### 50. MySQL server par existing databases kaise dekhte hain?
+**Answer**: `SHOW DATABASES;` command ka use karke.
 
 ---
 
-## Tier 3: एडवांस्ड SQL इंटरव्यू सवाल (101–150)
+## Tier 2: Intermediate SQL Interview Questions (51–100)
 
-### 101. विंडो फंक्शन (Window Function) क्या है, और यह `GROUP BY` से कैसे भिन्न है?
-**उत्तर**: एक विंडो फ़ंक्शन पंक्तियों को संक्षिप्त (collapse) किए बिना वर्तमान पंक्ति से संबंधित पंक्तियों के एक सेट पर गणना करता है। गणना किए गए विंडो मानों को प्रदर्शित करते हुए प्रत्येक पंक्ति अपनी व्यक्तिगत पहचान बनाए रखती है।
+### 51. `INNER JOIN` aur `LEFT JOIN` ke operational difference ko explain karein.
+**Answer**: `INNER JOIN` sirf wahi rows return karta hai jinke paas dono tables mein matching values hon. `LEFT JOIN` left table ki saari rows return karta hai, plus right table se matched rows; agar right table mein koi match na mile toh right-table columns ke liye `NULL` populate karta hai.
 
-### 102. `ROW_NUMBER()`, `RANK()`, और `DENSE_RANK()` में क्या अंतर है?
-**उत्तर**: `ROW_NUMBER()` बिना बराबरी के अनुक्रमिक संख्याएँ ($1, 2, 3$) प्रदान करता है। `RANK()` बराबरी पर समान रैंक देता है और बाद की संख्याओं को छोड़ देता है ($1, 2, 2, 4$)। `DENSE_RANK()` बिना नंबर छोड़े बराबरी पर समान रैंक प्रदान करता है ($1, 2, 2, 3$)।
+### 52. `RIGHT JOIN` kya hota hai, aur practice mein ye rarely kyun use hota hai?
+**Answer**: `RIGHT JOIN` right table ki saari rows aur left table ki matching rows return karta hai. Ye rarely use hota hai kyunki kisi bhi `RIGHT JOIN` ko table order switch karke intuitively `LEFT JOIN` ke roop mein rewrite kiya ja sakta hai.
 
-### 103. `LAG()` और `LEAD()` फंक्शन्स का उपयोग किस लिए किया जाता है?
-**उत्तर**: `LAG()` सेल्फ-जॉइन के बिना निर्दिष्ट ऑफसेट पर पूर्ववर्ती पंक्ति से मान पढ़ता है; `LEAD()` अगली पंक्ति से मान पढ़ता है।
+### 53. Anti-Join kya hota hai, aur aap ise kaise likhte hain?
+**Answer**: Anti-Join ek aisi query hai jo ek table ki un rows ko find karti hai jinka doosri table mein koi match nahi hai; ise `LEFT JOIN ... WHERE right_table.key IS NULL` ya `WHERE NOT EXISTS (...)` ke through likha jaata hai.
 
-### 104. SQL में विंडो फ्रेम (Window Frame) क्या है?
-**उत्तर**: किसी पार्टीशन के भीतर पंक्तियों का एक सबसेट जो मूल्यांकन की सीमा को परिभाषित करता है, जिसे `ROWS` (भौतिक पंक्ति संख्या) या `RANGE` (तार्किक मान सीमा) `BETWEEN ... AND ...` का उपयोग करके निर्दिष्ट किया जाता है।
+### 54. `CROSS JOIN` kya hota hai?
+**Answer**: Ek aisa join jo do tables ka Cartesian Product produce karta hai, yaani Table A ke har row ko Table B ke har row ke saath pair karta hai ($N \times M$ rows).
 
-### 105. विंडो फंक्शन्स का उपयोग `WHERE` क्लॉज में क्यों नहीं किया जा सकता है?
-**उत्तर**: क्योंकि क्वेरी प्रोसेसिंग के चरण 2 के दौरान `WHERE` का मूल्यांकन किया जाता है, जबकि विंडो फंक्शन्स की गणना चरण 5 में `SELECT` प्रोजेक्शन चरण के दौरान की जाती है।
+### 55. Self JOIN kya hota hai, aur ye kab required hota hai?
+**Answer**: Ek aisa join jahan table khud apne aap se do distinct aliases ke through join hoti hai; ye hierarchical ya recursive relationships ke liye zaroori hota hai (jaise employees ko unke managers se match karna).
 
-### 106. `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` और `RANGE BETWEEN ...` में क्या अंतर है?
-**उत्तर**: `ROWS` भौतिक पंक्ति स्थिति द्वारा बंधी पंक्तियों के साथ व्यक्तिगत रूप से व्यवहार करता है। `RANGE` समान सॉर्ट मान वाली सभी पंक्तियों को एक एकल सामूहिक सेट के रूप में मानता है।
+### 56. MySQL mein `FULL OUTER JOIN` kaise emulate karte hain?
+**Answer**: Ek `LEFT JOIN` aur ek `RIGHT JOIN` ko `UNION` set operator ke through combine karke.
 
-### 107. `NTILE(n)` विंडो फंक्शन क्या करता है?
-**उत्तर**: यह एक पार्टीशन किए गए परिणाम सेट को $n$ लगभग बराबर बकेट्स में विभाजित करता है, 1 से $n$ तक बकेट नंबर असाइन करता है।
+### 57. Correlated aur Non-Correlated subquery ke beech kya difference hai?
+**Answer**: Non-correlated subquery independent hoti hai aur sirf ek baar execute hoti hai. Correlated subquery outer query ke columns ko reference karti hai aur conceptually outer query dwara process kiye jaane wale har row ke liye evaluate hoti hai.
 
-### 108. आप MySQL 8.0 में JSON डॉक्यूमेंट को कैसे क्वेरी करते हैं?
-**उत्तर**: पाथ एक्सट्रैक्शन ऑपरेटर्स का उपयोग करके: `column->'$.path'` (कोटेड JSON लौटाता है) या `column->>'$.path'` (अनकोटेड टेक्स्ट लौटाता है)।
+### 58. Subqueries ke saath `NOT IN` ke muqable `NOT EXISTS` zyada safe kyun hai?
+**Answer**: Agar subquery ek bhi `NULL` return kare, toh `NOT IN` sabhi rows ke liye `UNKNOWN` evaluate ho jaata hai aur empty result set return karta hai. `NOT EXISTS` row existence check karta hai aur `NULL` values se negatively affect nahi hota.
 
-### 109. आप MySQL में JSON विशेषता को कैसे इंडेक्स कर सकते हैं?
-**उत्तर**: एक **वर्चुअल जनरेटेड कॉलम (Virtual Generated Column)** बनाकर जो JSON पाथ निकालता है और उस जनरेटेड कॉलम में एक मानक B+ Tree इंडेक्स जोड़ता है।
+### 59. Common Table Expression (CTE) kya hoti hai?
+**Answer**: `WITH` clause ka use karke query ke start mein define kiya gaya ek temporary named result set, jo readability improve karta hai aur query mein multiple times reference kiya ja sakta hai.
 
-### 110. SARGability क्या है, और यह क्वेरी परफॉरमेंस के लिए क्यों आवश्यक है?
-**उत्तर**: SARGable (*Search Argument Able*) उन क्वेरी प्रेडिकेट्स का वर्णन करता है जो ऑप्टिमाइज़र को फुल टेबल स्कैन के बजाय B+ Tree इंडेक्स सीक का उपयोग करने की अनुमति देते हैं।
+### 60. Recursive CTE kaise kaam karti hai?
+**Answer**: Ye ek **Anchor Member** (base query), ek `UNION ALL`, aur ek **Recursive Member** se consist karti hai jo CTE ko tab tak self-reference karta hai jab tak termination condition meet na ho jaye.
 
-### 111. `WHERE YEAR(date_col) = 2023` परफॉरमेंस को क्यों नष्ट कर देता है?
-**उत्तर**: इंडेक्स्ड कॉलम को किसी फंक्शन में लपेटने से इंजन B+ Tree को नेविगेट नहीं कर पाता है, जिससे प्रत्येक पंक्ति के लिए फंक्शन का मूल्यांकन करने के लिए फुल टेबल स्कैन करने पर मजबूर होना पड़ता है।
+### 61. `ONLY_FULL_GROUP_BY` SQL mode kya hai?
+**Answer**: MySQL ka ek standard SQL enforcement mode jo un queries ko reject karta hai jinme `SELECT` list ke columns na toh `GROUP BY` clause mein hote hain aur na hi aggregate functions mein wrapped hote hain.
 
-### 112. इंप्लिसिट टाइप रूपांतरण (implicit type conversion) फुल टेबल स्कैन का कारण कैसे बनता है?
-**उत्तर**: यदि किसी `VARCHAR` कॉलम की तुलना किसी पूर्णांक से की जाती है (`WHERE string_col = 123`), तो MySQL प्रत्येक पंक्ति के लिए कॉलम को एक संख्या में परिवर्तित करता है, जिससे इंडेक्स उपयोग अक्षम हो जाता है।
+### 62. `GROUP BY` query mein `WITH ROLLUP` kya karta hai?
+**Answer**: Ye grouping dimensions across right-to-left hierarchical subtotals aur grand total rows generate karta hai.
 
-### 113. `EXPLAIN` और `EXPLAIN ANALYZE` में क्या अंतर है?
-**उत्तर**: `EXPLAIN` स्थिर ऑप्टिमाइज़र योजना और लागत अनुमान दिखाता है। `EXPLAIN ANALYZE` वास्तव में क्वेरी को निष्पादित करता है, वास्तविक रनटाइम और रो काउंट्स को मापता है, और इटरेटर ट्री प्रदर्शित करता है।
+### 63. Genuine NULL aur ROLLUP summary NULL ke beech kaise distinguish karte hain?
+**Answer**: `GROUPING(column)` function ka use karke, jo rollup summary NULL ke liye `1` aur genuine data value ke liye `0` return karta hai.
 
-### 114. `EXPLAIN` रिपोर्ट में एक्सेस प्रकार `ALL` क्या इंगित करता है?
-**उत्तर**: एक फुल टेबल स्कैन; इंजन डिस्क या बफर पूल से टेबल के प्रत्येक पेज को पढ़ता है।
+### 64. Database Normalization kya hai?
+**Answer**: Relational tables ko systematically structure karne ka process jisse data redundancy minimize ho aur insertion, update, aur deletion anomalies eliminate ho sakein.
 
-### 115. `EXPLAIN` रिपोर्ट में एक्सेस प्रकार `ref` क्या इंगित करता है?
-**उत्तर**: एक गैर-अद्वितीय इंडेक्स सीक (non-unique index seek) जो इंडेक्स्ड मान के लिए कई पंक्तियों से मेल खाता है।
+### 65. First Normal Form (1NF) ko define karein.
+**Answer**: Ek aisi table jahan saari column values atomic hoti hain (koi arrays ya comma-separated lists nahi), koi repeating groups nahi hote, aur ek primary key har row ko uniquely identify karti hai.
 
-### 116. `EXPLAIN` रिपोर्ट में `Using filesort` का क्या अर्थ है?
-**उत्तर**: MySQL इंडेक्स का उपयोग करके `ORDER BY` क्लॉज को संतुष्ट नहीं कर सका और मेमोरी (`sort_buffer_size`) या डिस्क पर एक स्पष्ट सॉर्टिंग पास किया।
+### 66. Second Normal Form (2NF) ko define karein.
+**Answer**: Ek aisi table jo 1NF mein ho aur jisme koi **partial dependency** na ho — yaani har non-key attribute poori composite primary key par depend kare.
 
-### 117. हैश जॉइन (Hash Join) क्या है, और MySQL 8.0 इसका उपयोग कब करता है?
-**उत्तर**: एक एल्गोरिदम जो छोटी टेबल की इन-मेमोरी हैश टेबल बनाता है और इसके विरुद्ध बड़ी टेबल से पंक्तियों को स्ट्रीम करता है, जिसका उपयोग इंडेक्स की कमी वाले जॉइन्स के लिए किया जाता है।
+### 67. Third Normal Form (3NF) ko define karein.
+**Answer**: Ek aisi table jo 2NF mein ho aur jisme koi **transitive dependency** na ho — yaani non-key attributes sirf primary key par depend karein, kisi doosre non-key attribute par nahi.
 
-### 118. InnoDB में मल्टी-वर्जन कॉनकरेंसी कंट्रोल (MVCC) क्या है?
-**उत्तर**: एक समवर्ती तंत्र जहाँ रीडर्स पंक्तियों को लॉक नहीं करते हैं। जब किसी पंक्ति को संशोधित किया जाता है, तो InnoDB पुराने संस्करण को अनडू लॉग में लिखता है। समवर्ती रीडर्स ट्रांजैक्शन आईडी के आधार पर एक सुसंगत ऐतिहासिक स्नैपशॉट देखते हैं।
+### 68. Boyce-Codd Normal Form (BCNF) kya hai?
+**Answer**: 3NF ka ek stricter version jahan har functional dependency $X \rightarrow Y$ ke liye, determinant $X$ hamesha ek Super Key hona chahiye.
 
-### 119. InnoDB में नेक्स्ट-की लॉक (Next-Key Lock) क्या है?
-**उत्तर**: एक विशिष्ट पंक्ति पर एक इंडेक्स रिकॉर्ड लॉक और उस रिकॉर्ड से पहले के खुले स्थान पर एक **गैप लॉक (Gap Lock)** का संयोजन, जिसका उपयोग फैंटम इंसर्शन को रोकने के लिए `REPEATABLE READ` में किया जाता है।
+### 69. Denormalization kya hai, aur ye kab appropriate hoti hai?
+**Answer**: Read performance ko improve karne aur read-heavy analytics ya data warehouses mein join overhead kam karne ke liye intentional tareeqe se normalized schema mein redundancy add karna.
 
-### 120. MySQL में डेडलॉक (Deadlock) क्या है?
-**उत्तर**: एक चक्रीय निर्भरता जहाँ ट्रांजैक्शन 1 के पास लॉक A है और वह लॉक B की प्रतीक्षा करता है, जबकि ट्रांजैक्शन 2 के पास लॉक B है और वह लॉक A की प्रतीक्षा करता है।
+### 70. View kya hota hai, aur kya ye disk par data store karta hai?
+**Answer**: Saved SQL query dwara defined ek virtual table. MySQL mein standard views disk par physical data store nahi karte; ye underlying base tables ke against dynamically execute hote hain.
 
-### 121. MySQL डेडलॉक्स का पता कैसे लगाता है और उनका समाधान कैसे करता है?
-**उत्तर**: InnoDB का डेडलॉक डिटेक्टर चक्रीय निर्भरता का पता लगाता है, सबसे कम रोलबैक लागत वाले ट्रांजैक्शन का चयन करता है, इसे Error 1213 के साथ निरस्त करता है, और इसे रोलबैक करता है, जिससे दूसरा ट्रांजैक्शन आगे बढ़ सके।
+### 71. MySQL mein koi View updatable kab banta hai?
+**Answer**: View tabhi updatable hota hai jab view rows aur base table rows ke beech direct 1:1 relationship ho, aur view mein `GROUP BY`, `DISTINCT`, aggregates, ya `UNION` na ho.
 
-### 122. `SELECT ... FOR UPDATE` और `SELECT ... FOR SHARE` में क्या अंतर है?
-**उत्तर**: `FOR UPDATE` एक एक्सक्लूसिव लॉक (X-lock) प्राप्त करता है, जो अन्य ट्रांजेक्शन्स को उन पंक्तियों को पढ़ने (`FOR UPDATE` के साथ) या संशोधित करने से रोकता है। `FOR SHARE` एक शेयर्ड लॉक (S-lock) प्राप्त करता है, जिससे अन्य लोगों को पढ़ने की अनुमति मिलती है लेकिन संशोधन अवरुद्ध होते हैं।
+### 72. View par `WITH CHECK OPTION` ka purpose kya hai?
+**Answer**: View ke through un inserts ya updates ko block karna jo aisi rows produce karein jo view ke apne `WHERE` clause ko violate karti hon.
 
-### 123. `LIMIT offset, count` के साथ डीप पेजिंग (Deep Paging) की समस्या क्या है?
-**उत्तर**: `LIMIT 1000000, 20` जैसी क्वेरीज के लिए, इंजन को 1,000,020 पंक्तियों को पढ़ना और संसाधित करना पड़ता है, और 20 पंक्तियाँ देने के लिए पहले 1,000,000 को छोड़ना पड़ता है, जिससे I/O और CPU बर्बाद होता है।
+### 73. Index kya hota hai, aur ye queries ko kaise accelerate karta hai?
+**Answer**: Ek B+ Tree data structure jo column values ko order karta hai taaki fast $O(\log N)$ binary searches enable ho sakein, jisse full table scan avoid hota hai.
 
-### 124. कीसेट पेजिनेशन (Cursor Pagination) डीप पेजिंग को कैसे हल करता है?
-**उत्तर**: `OFFSET` का उपयोग करने के बजाय, यह अंतिम देखी गई पंक्ति से एक अनुक्रमित अद्वितीय कॉलम का उपयोग करके फ़िल्टर करता है (`WHERE id < last_id ORDER BY id DESC LIMIT 20`), जो एक त्वरित इंडेक्स सीक के माध्यम से निष्पादित होता है।
+### 74. InnoDB mein Clustered Index kya hota hai?
+**Answer**: Primary B+ Tree index jo apne leaf nodes mein actual row data physically store karta hai; ye table ki Primary Key se define hota hai.
 
-### 125. InnoDB बफर पूल (Buffer Pool) क्या है, और इसका आकार कैसे निर्धारित किया जाना चाहिए?
-**उत्तर**: मुख्य इन-मेमोरी कैश जहाँ InnoDB डेटा और इंडेक्स पेजेज को कैश करता है। एक समर्पित डेटाबेस सर्वर पर, इसे **कुल भौतिक रैम का 70%–80%** आवंटित किया जाना चाहिए।
+### 75. InnoDB mein Secondary Index kya hota hai?
+**Answer**: Ek non-clustered index jiske leaf nodes indexed key value aur corresponding row ki Primary Key value store karte hain.
 
-### 126. राइट-अहेड लॉग (WAL) प्रोटोकॉल क्या है?
-**उत्तर**: एक विश्वसनीयता नियम जिसमें कहा गया है कि मेमोरी में डेटा पेजेज को डिस्क टेबल्सस्पेस फाइलों में लिखे जाने से पहले परिवर्तनों को डिस्क पर एक स्थायी अपेंड-ओनली लॉग (रेडो लॉग) में लिखा जाना चाहिए।
+### 76. Bookmark Lookup kya hota hai?
+**Answer**: Jab query secondary index use karke row search karti hai, toh use pehle Primary Key milti hai, aur fir row ke baaki columns retrieve karne ke liye use Clustered Index mein second lookup karna padta hai.
 
-### 127. InnoDB में रेडो लॉग और अनडू लॉग में क्या अंतर है?
-**उत्तर**: **रेडो लॉग** ड्यूरेबिलिटी की गारंटी देता है (क्रैश रिकवरी के दौरान कमिट किए गए परिवर्तनों को फिर से चलाता है)। **अनडू लॉग** एटॉमिसीटी की गारंटी देता है (रोलबैक के दौरान अनकमिटेड परिवर्तनों को पूर्ववत करता है) और MVCC स्नैपशॉट का समर्थन करता है।
+### 77. Covering Index kya hota hai?
+**Answer**: Ek aisa index jo query dwara requested saare columns contain karta hai, jisse MySQL bina kisi bookmark lookup ke seedhe index tree se hi query satisfy kar leta hai (`Extra: Using index`).
 
-### 128. SQL इंजेक्शन (SQLi) क्या है?
-**उत्तर**: एक सुरक्षा भेद्यता जहाँ अविश्वसनीय उपयोगकर्ता इनपुट को एक SQL स्ट्रिंग में जोड़ा जाता है, जिससे हमलावर क्वेरी सिंटैक्स ट्री में हेरफेर कर सकता है और अनधिकृत कमांड निष्पादित कर सकता है।
+### 78. Composite indexes ke liye Leftmost Prefix Rule kya hota hai?
+**Answer**: Composite index `(A, B, C)` sirf un queries dwara use kiya ja sakta hai jo `A`, `(A, B)`, ya `(A, B, C)` par filter karti hain. Ye sirf `B` ya `C` par filter karne wali queries dwara use nahi ho sakta.
 
-### 129. प्रिपेयर्ड स्टेटमेंट्स SQL इंजेक्शन के खिलाफ एकमात्र वास्तविक रक्षा क्यों हैं?
-**उत्तर**: प्रिपेयर्ड स्टेटमेंट्स उपयोगकर्ता इनपुट प्राप्त करने से पहले क्वेरी टेम्प्लेट को एक निश्चित सिंटैक्स ट्री में संकलित करते हैं। इनपुट पैरामीटर्स लिटरल डेटा मानों के रूप में बाउंड होते हैं और क्वेरी संरचना को बदल नहीं सकते हैं।
+### 79. Index Cardinality kya hoti hai?
+**Answer**: Index mein unique values ki count. High-cardinality columns (jaise email) index karne par maximum benefit dete hain; low-cardinality columns (jaise boolean flags) generally index ke liye effective nahi hote.
 
-### 130. MySQL 8.0 में रोल-बेस्ड एक्सेस कंट्रोल (RBAC) क्या है?
-**उत्तर**: एक सुरक्षा मॉडल जहाँ नामित रोल्स को विशेषाधिकार दिए जाते हैं, जिन्हें बाद में उपयोगकर्ता खातों को सौंपा जाता है, जिससे अनुमति प्रबंधन सरल हो जाता है।
+### 80. Indexing ke performance costs kya hain?
+**Answer**: Indexes disk space consume karte hain, Buffer Pool mein memory occupy karte hain, aur `INSERT`, `UPDATE`, `DELETE` operations ko slow karte hain kyunki har index tree ko update karna padta hai.
 
-### 131. `mysqldump --single-transaction` नॉन-ब्लॉकिंग बैकअप कैसे प्राप्त करता है?
-**उत्तर**: यह ट्रांजैक्शन आइसोलेशन स्तर को `REPEATABLE READ` पर सेट करता है और एक स्पष्ट ट्रांजैक्शन शुरू करता है, जिससे InnoDB टेबल्स को लॉक किए बिना उनका एक सुसंगत MVCC स्नैपशॉट पढ़ा जा सके।
+### 81. Transaction kya hota hai?
+**Answer**: Ek logical unit of work jisme ek ya ek se zyada SQL statements shamil hoti hain aur jo atomic, all-or-nothing operation ke roop mein execute hota hai.
 
-### 132. एग्जीक्यूशन प्लान (Execution Plan) क्या है?
-**उत्तर**: SQL स्टेटमेंट को निष्पादित करने के लिए कॉस्ट-बेस्ड ऑप्टिमाइज़र द्वारा चुने गए भौतिक संचालन (इंडेक्स सीक, स्कैन, जॉइन, फ़िल्टर, सॉर्ट) का सेट।
+### 82. ACID mein Atomicity ka kya matlab hai?
+**Answer**: Transaction ke saare statements ek saath commit aur succeed hote hain, ya kisi failure par Undo Log ke through saare changes rollback ho jaate hain.
 
-### 133. व्यूज में `ALGORITHM=MERGE` और `ALGORITHM=TEMPTABLE` में क्या अंतर है?
-**उत्तर**: `MERGE` व्यू की क्वेरी को बाहरी यूजर क्वेरी के साथ एक ही निष्पादन योजना में मिला देता है। `TEMPTABLE` बाहरी क्वेरी चलाने से पहले व्यू के परिणामों को एक आंतरिक अस्थायी टेबल में भौतिक रूप से संग्रहीत (materialize) करता है।
+### 83. ACID mein Consistency ka kya matlab hai?
+**Answer**: Transaction database ko sirf ek valid state se doosre valid state mein transition kar sakta hai jo schema ke saare rules aur constraints ko satisfy karti ho.
 
-### 134. क्लस्टर्ड इंडेक्स पेज स्प्लिट (Page Split) क्या है?
-**उत्तर**: जब किसी भरे हुए इंडेक्स लीफ पेज में एक नई पंक्ति डाली जाती है, तो InnoDB को एक नया पेज आवंटित करना पड़ता है और आधी पंक्तियों को नए पेज पर ले जाना पड़ता है। यादृच्छिक प्राथमिक कुंजियाँ (जैसे UUID v4) बार-बार पेज स्प्लिट और डिस्क विखंडन का कारण बनती हैं।
+### 84. ACID mein Isolation ka kya matlab hai?
+**Answer**: Concurrent transactions ek doosre ke intermediate, uncommitted states ko observe kiye bina independently execute hote hain.
 
-### 135. InnoDB प्राइमरी कीज के लिए रैंडम UUIDs की तुलना में ऑटो-इन्क्रीमेंट पूर्णांकों को प्राथमिकता क्यों दी जाती है?
-**उत्तर**: एकरस रूप से बढ़ते पूर्णांक (monotonically increasing integers) पंक्तियों को क्लस्टर्ड इंडेक्स B+ Tree के अंत में क्रमिक रूप से जोड़ते हैं, जिससे पेज स्प्लिट्स से बचा जा सके, फ्रैगमेंटेशन कम से कम हो, और सेकेंडरी इंडेक्स लीफ नोड्स में काफी कम मेमोरी की खपत हो।
+### 85. ACID mein Durability ka kya matlab hai?
+**Answer**: Commit ho chuke transactions Redo Log ke through permanently disk par write hote hain aur system crash ya power failure ke baad bhi survive karte hain.
 
-### 136. रिलेशनल डिवीजन (Relational Division) क्या है?
-**उत्तर**: एक रिलेशनल ऑपरेशन जो टेबल A में ऐसी पंक्तियों को ढूंढता है जो टेबल B की **सभी** पंक्तियों से जुड़ी होती हैं (उदा. ऐसे कस्टमर्स को ढूंढना जिन्होंने किसी श्रेणी के *प्रत्येक* उत्पाद को खरीदा है)।
+### 86. Dirty Read kya hota hai?
+**Answer**: Jab Transaction A un uncommitted modifications ko read kar leta hai jo Transaction B ne kiye the aur jo baad mein rollback ho jaate hain.
 
-### 137. आप SQL में रिलेशनल डिवीजन को कैसे लागू करते हैं?
-**उत्तर**: `GROUP BY` और `HAVING COUNT(DISTINCT item) = (SELECT COUNT(*) FROM target_items)` का उपयोग करके।
+### 87. Non-Repeatable Read kya hota hai?
+**Answer**: Jab Transaction A ek row read karta hai, Transaction B us row ko update karke commit kar deta hai, aur Transaction A dobara read karne par different values pata hai.
 
-### 138. डेटा वेयरहाउसिंग में स्टार स्कीमा (Star Schema) क्या है?
-**उत्तर**: एक डीनॉर्मलाइज्ड बहुआयामी स्कीमा जिसमें एक केंद्रीय **फैक्ट टेबल (Fact Table)** (संख्यात्मक मेट्रिक्स युक्त) होती है, जो डीनॉर्मलाइज्ड **डायमेंशन टेबल्स (Dimension Tables)** (वर्णनात्मक विशेषताएँ युक्त) से घिरी होती है।
+### 88. Phantom Read kya hota hai?
+**Answer**: Jab Transaction A range query run karta hai, Transaction B us range mein naya row insert karke commit karta hai, aur Transaction A dobara query run karne par naya phantom row pata hai.
 
-### 139. स्नोफ्लेक स्कीमा (Snowflake Schema) क्या है?
-**उत्तर**: स्टार स्कीमा का एक रूप जहाँ डायमेंशन टेबल्स को कई संबंधित टेबल्स में सामान्यीकृत (normalized) किया जाता है।
+### 89. MySQL mein default isolation level kya hota hai?
+**Answer**: `REPEATABLE READ`.
 
-### 140. MySQL में `information_schema` का क्या उद्देश्य है?
-**उत्तर**: एक रीड-ओनली मेटा-डेटाबेस जो डेटाबेस मेटाडेटा, टेबल्स, कॉलम्स, इंडेक्स, कंस्ट्रेंट्स और विशेषाधिकारों तक पहुंच प्रदान करता है।
+### 90. `REPEATABLE READ` mein MySQL InnoDB Phantom Reads ko kaise prevent karta hai?
+**Answer**: Regular queries ke liye consistent non-locking snapshot reads (MVCC) ka use karke, aur locking reads ke liye Next-Key Locking (record locks + gap locks) ka use karke.
 
-### 141. आप MySQL में अप्रयुक्त इंडेक्स (unused indexes) का पता कैसे लगा सकते हैं?
-**उत्तर**: `sys.schema_unused_indexes` व्यू को क्वेरी करके।
+### 91. Savepoint kya hota hai?
+**Answer**: Transaction ke andar ek designated marker jo poore transaction ko abort kiye bina partial rollback (`ROLLBACK TO SAVEPOINT`) allow karta hai.
 
-### 142. ऑप्टिमिस्टिक और पैसिमिस्टिक कॉनकरेंसी कंट्रोल में क्या अंतर है?
-**उत्तर**: **पैसिमिस्टिक लॉकिंग** यह मानकर पंक्तियों को स्पष्ट रूप से लॉक करती है (`FOR UPDATE`) कि टकराव होंगे। **ऑप्टिमिस्टिक लॉकिंग** पढ़ने पर पंक्तियों को लॉक नहीं करती है; इसके बजाय, यह अपडेट पर एक वर्ज़न कॉलम की जाँच करती है, यदि किसी अन्य ट्रांजैक्शन ने बीच में पंक्ति को संशोधित किया है तो विफल हो जाती है।
+### 92. MySQL mein DDL statements ko rollback kyun nahi kiya ja sakta?
+**Answer**: DDL statements execution se pehle aur baad mein **implicit commit** trigger karte hain, jisse prior DML changes permanently save ho jaate hain.
 
-### 143. कम्पोजिट इंडेक्स क्या है, और कॉलम्स को कैसे व्यवस्थित किया जाना चाहिए?
-**उत्तर**: दो या दो से अधिक कॉलम्स पर एक इंडेक्स। कॉलम्स को आम तौर पर उच्चतम चयनात्मकता (highest selectivity - सबसे अधिक अद्वितीय मान) से सबसे कम चयनात्मकता के क्रम में व्यवस्थित किया जाना चाहिए, जो पहले `WHERE` समानता फिल्टर से मेल खाते हों।
+### 93. Stored Procedure kya hota hai?
+**Answer**: Pre-compiled SQL statements aur control-flow logic ka set jo database mein store hota hai aur `CALL` statement ke through execute hota hai.
 
-### 144. MySQL में `GROUP_CONCAT` बड़ी स्ट्रिंग्स को कैसे संभालता है?
-**उत्तर**: यदि आउटपुट `@@group_concat_max_len` (डिफ़ॉल्ट: 1024 बाइट्स) से अधिक हो जाता है तो आउटपुट कट जाता है। बड़े आउटपुट को संभालने के लिए, सेशन वेरिएबल बढ़ाएँ: `SET SESSION group_concat_max_len = 1000000;`।
+### 94. Stored Procedure aur Stored Function ke beech kya difference hai?
+**Answer**: Procedure `CALL` ke through invoke hota hai, multiple result sets return kar sakta hai, aur transactions manage kar sakta hai. Function SQL expressions ke andar inline call hota hai, strictly ek scalar value return karta hai, aur transactions manage nahi kar sakta.
 
-### 145. सबक्वेरीज के लिए `EXISTS` और `IN` में क्या अंतर है?
-**उत्तर**: जैसे ही कोई मिलान मिलता है `EXISTS` शॉर्ट-सर्किट हो जाता है और `NULL` मानों को सुरक्षित रूप से संभालता है। `IN` सबक्वेरी परिणामों को एक अस्थायी सेट में भौतिक रूप से संग्रहीत कर सकता है और यदि `NOT IN` में `NULL` मौजूद है तो खाली परिणाम देता है।
+### 95. Function mein `DETERMINISTIC` keyword kya signify karta hai?
+**Answer**: Ye guarantee karta hai ki given input arguments ke liye function hamesha exact same output return karega.
 
-### 146. MySQL 8.0 में `SELECT ... FOR UPDATE SKIP LOCKED` क्या करता है?
-**उत्तर**: यह उन मिलान पंक्तियों को लॉक करता है जो वर्तमान में अनलॉक हैं और अन्य ट्रांजेक्शन्स द्वारा पहले से लॉक की गई पंक्तियों को छोड़ देता है, जो उच्च-थ्रूपुट जॉब कतारों (job queues) को लागू करने के लिए आदर्श है।
+### 96. Trigger kya hota hai?
+**Answer**: Ek aisa database program jo kisi specific table par `INSERT`, `UPDATE`, ya `DELETE` event ke response mein automatically execute hota hai.
 
-### 147. MySQL 8.0 में इंडेक्स स्किप स्कैन (Index Skip Scan) क्या है?
-**उत्तर**: एक ऑप्टिमाइज़ेशन जो MySQL को कम्पोजिट इंडेक्स `(A, B)` का उपयोग करने की अनुमति देता है, भले ही क्वेरी अग्रणी कॉलम `A` पर फ़िल्टर न करे, `A` के प्रत्येक विशिष्ट मान को स्कैन करके और `B` पर एक इंडेक्स सीक निष्पादित करके।
+### 97. Triggers mein `NEW` aur `OLD` ke beech kya difference hai?
+**Answer**: `NEW` incoming row values represent karta hai (`INSERT` aur `UPDATE` mein available). `OLD` pre-modification row values represent karta hai (`UPDATE` aur `DELETE` mein available).
 
-### 148. टेबल लॉक और रो लॉक में क्या अंतर है?
-**उत्तर**: टेबल लॉक पूरी टेबल को लॉक कर देता है, जिससे अन्य सभी राइट एक्सेस ब्लॉक हो जाते हैं। रो लॉक (InnoDB द्वारा उपयोग किया जाता है) केवल विशिष्ट प्रभावित पंक्ति को लॉक करता है, जिससे समवर्ती ट्रांजेक्शन्स को उसी टेबल में अन्य पंक्तियों को पढ़ने और लिखने की अनुमति मिलती है।
+### 98. Trigger apni triggering table ko directly modify kyun nahi kar sakta?
+**Answer**: Infinite recursive execution loops ko prevent karne ke liye (MySQL Error 1442).
 
-### 149. MySQL 8.0 में लेटरल डिराइव्ड टेबल (LATERAL Join) क्या है?
-**उत्तर**: `FROM` क्लॉज में एक डिराइव्ड टेबल जो उसी `FROM` क्लॉज में पूर्ववर्ती टेबल्स के कॉलम्स को संदर्भित कर सकती है, जो `FROM` क्लॉज में एक कोरिलेटेड सबक्वेरी के समान है।
+### 99. Trigger ke andar custom error kaise raise karte hain?
+**Answer**: `SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error description';` ka use karke.
 
-### 150. आप ज़ीरो-डाउनटाइम माइग्रेशन (zero-downtime migrations) के लिए डेटाबेस स्कीमा कैसे डिज़ाइन करते हैं?
-**उत्तर**: **एक्सपैंड-कॉन्ट्रैक्ट (समानांतर रन)** पैटर्न अपनाकर:
-1. *Expand*: पुराने कॉलम या टेबल के साथ नया कॉलम या टेबल जोड़ें।
-2. *Dual-Write*: पुराने और नए दोनों स्ट्रक्चर्स में लिखने के लिए एप्लिकेशन कोड को अपडेट करें।
-3. *Backfill*: बैकग्राउंड बैचों में ऐतिहासिक डेटा को माइग्रेट करें।
-4. *Switch*: नए स्ट्रक्चर का उपयोग करने के लिए एप्लिकेशन रीड्स को अपडेट करें।
-5. *Contract*: पुराने स्ट्रक्चर को डिप्रिकेट करें और ड्रॉप करें।
+### 100. Surrogate Key kya hoti hai?
+**Answer**: Ek artificial, system-generated identifier (e.g., `INT AUTO_INCREMENT`) jiska koi business meaning nahi hota; primary key stability ke liye ise natural keys ke upar prefer kiya jaata hai.
+
+---
+
+## Tier 3: Advanced SQL Interview Questions (101–150)
+
+### 101. Window Function kya hota hai, aur ye `GROUP BY` se kaise differ karta hai?
+**Answer**: Window function rows ko collapse kiye bina current row se related rows ke set par calculations perform karta hai. Har individual row apni identity preserve rakhti hai jabki calculated window values display karti hai.
+
+### 102. `ROW_NUMBER()`, `RANK()`, aur `DENSE_RANK()` ke beech kya difference hai?
+**Answer**: `ROW_NUMBER()` bina ties ke strictly sequential numbers assign karta hai ($1, 2, 3$). `RANK()` ties ko identical ranks deta hai aur agle numbers ko skip karta hai ($1, 2, 2, 4$). `DENSE_RANK()` ties ko identical ranks deta hai lekin numbers skip nahi karta ($1, 2, 2, 3$).
+
+### 103. `LAG()` aur `LEAD()` functions kiske liye use hote hain?
+**Answer**: `LAG()` bina self-join kiye specified offset par preceding row se value read karta hai; `LEAD()` subsequent row se value read karta hai.
+
+### 104. SQL mein Window Frame kya hota hai?
+**Answer**: Partition ke andar rows ka ek subset jo evaluation ki boundary define karta hai, jise `ROWS` (physical row count) ya `RANGE` (logical value range) `BETWEEN ... AND ...` se specify karte hain.
+
+### 105. Window functions ko `WHERE` clause mein kyun use nahi kiya ja sakta?
+**Answer**: Kyunki query processing pipeline mein `WHERE` Step 2 par evaluate hota hai, jabki window functions Step 5 par `SELECT` projection phase mein calculate hote hain.
+
+### 106. `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` aur `RANGE BETWEEN ...` mein kya difference hai?
+**Answer**: `ROWS` physical row position ke basis par tied rows ko individually treat karta hai. `RANGE` identical sort values wali sabhi tied rows ko ek single collective set ke roop mein treat karta hai.
+
+### 107. `NTILE(n)` window function kya karta hai?
+**Answer**: Partitioned result set ko $n$ roughly equal buckets mein divide karta hai aur 1 se $n$ tak bucket numbers assign karta hai.
+
+### 108. MySQL 8.0 mein JSON document ko kaise query karte hain?
+**Answer**: Path extraction operators ke through: `column->'$.path'` (quoted JSON return karta hai) ya `column->>'$.path'` (unquoted text return karta hai).
+
+### 109. MySQL mein JSON attribute ko kaise index kiya ja sakta hai?
+**Answer**: Ek **Virtual Generated Column** create karke jo JSON path extract kare, aur fir us generated column par standard B+ Tree index build karke.
+
+### 110. SARGability kya hoti hai, aur ye query performance ke liye essential kyun hai?
+**Answer**: SARGable (*Search Argument Able*) un query predicates ko describe karta hai jo query optimizer ko full table scan ke bajaye fast index seek use karne allow karte hain.
+
+### 111. `WHERE YEAR(date_col) = 2023` query performance ko kyun degrade karta hai?
+**Answer**: Indexed column ko function mein wrap karne se engine B+ Tree index navigate nahi kar paata, aur har row ke liye function evaluate karne ke chakkar mein full table scan force hota hai.
+
+### 112. Implicit type conversion full table scan kaise cause karta hai?
+**Answer**: Agar `VARCHAR` column ko integer se compare kiya jaye (`WHERE string_col = 123`), toh MySQL har row ke liye column ko number mein convert karta hai, jisse index lookup disable ho jaata hai.
+
+### 113. `EXPLAIN` aur `EXPLAIN ANALYZE` ke beech kya difference hai?
+**Answer**: `EXPLAIN` static optimizer plan aur cost estimates show karta hai. `EXPLAIN ANALYZE` query ko actually execute karta hai, real execution time aur row counts measure karta hai, aur iterator tree display karta hai.
+
+### 114. `EXPLAIN` report mein access type `ALL` kya indicate karta hai?
+**Answer**: Full table scan; engine table ke har single disk page ya buffer page ko read karta hai.
+
+### 115. `EXPLAIN` report mein access type `ref` kya indicate karta hai?
+**Answer**: Ek non-unique index seek jo indexed value ke liye multiple matching rows retrieve karta hai.
+
+### 116. `EXPLAIN` report mein `Using filesort` ka kya matlab hota hai?
+**Answer**: MySQL `ORDER BY` clause ko index se satisfy nahi kar paya aur usne memory (`sort_buffer_size`) ya disk par ek explicit sorting pass perform kiya.
+
+### 117. Hash Join kya hota hai, aur MySQL 8.0 ise kab use karta hai?
+**Answer**: Ek aisi algorithm jo smaller table ka in-memory hash table build karti hai aur larger table se rows ko uske against stream karti hai; ye un joins ke liye use hoti hai jinme indexes absent hote hain.
+
+### 118. InnoDB mein Multi-Version Concurrency Control (MVCC) kya hota hai?
+**Answer**: Ek aisi concurrency technique jahan readers rows ko lock nahi karte. Jab row modify hoti hai, toh InnoDB puraana version Undo Log mein write karta hai. Concurrent readers transaction IDs ke basis par ek consistent historical snapshot view karte hain.
+
+### 119. InnoDB mein Next-Key Lock kya hota hai?
+**Answer**: Specific row par lagne wale record lock aur us record se pehle aane wale open space par lagne wale **Gap Lock** ka combination, jo `REPEATABLE READ` mein phantom insertions ko prevent karta hai.
+
+### 120. MySQL mein Deadlock kya hota hai?
+**Answer**: Ek circular dependency jahan Transaction 1 Lock A hold karke Lock B ka wait karta hai, jabki Transaction 2 Lock B hold karke Lock A ka wait karta hai.
+
+### 121. MySQL deadlocks ko kaise detect aur resolve karta hai?
+**Answer**: InnoDB ka Deadlock Detector circular dependencies detect karta hai, sabse kam rollback cost wale transaction ko select karke Error 1213 ke saath abort aur rollback kar deta hai, jisse doosra transaction proceed kar sake.
+
+### 122. `SELECT ... FOR UPDATE` aur `SELECT ... FOR SHARE` ke beech kya difference hai?
+**Answer**: `FOR UPDATE` Exclusive Lock (X-lock) acquire karta hai, jo doosre transactions ko rows read (`FOR UPDATE`) ya modify karne se block karta hai. `FOR SHARE` Shared Lock (S-lock) acquire karta hai, jo doosron ko read karne allow karta hai lekin modifications block karta hai.
+
+### 123. `LIMIT offset, count` ke saath Deep Paging problem kya hoti hai?
+**Answer**: `LIMIT 1000000, 20` jaisi queries ke liye engine ko 1,000,020 rows read aur process karni padti hain, jisme se shuru ki 1,000,000 discard karke sirf 20 deliver hoti hain, jisse heavy I/O aur CPU waste hota hai.
+
+### 124. Keyset Pagination (Cursor Pagination) Deep Paging ko kaise solve karta hai?
+**Answer**: `OFFSET` use karne ke bajaye, ye last seen row ke indexed unique column par filter karta hai (`WHERE id < last_id ORDER BY id DESC LIMIT 20`), jo instant index seek ke through execute hota hai.
+
+### 125. InnoDB Buffer Pool kya hota hai, aur iska size kaise decide karna chahiye?
+**Answer**: Main in-memory cache jahan InnoDB data aur index pages cache karta hai. Dedicated database server par ise **total physical RAM ka 70%–80%** allocate karna chahiye.
+
+### 126. Write-Ahead Log (WAL) protocol kya hota hai?
+**Answer**: Ek reliability rule jiske mutabiq memory mein data pages tablespace disk files par write hone se pehle modifications ko disk par persistent append-only log (Redo Log) mein write hona lazmi hai.
+
+### 127. InnoDB mein Redo Log aur Undo Log ke beech kya difference hai?
+**Answer**: **Redo Log** Durability guarantee karta hai (crash recovery ke dauran committed changes replay karta hai). **Undo Log** Atomicity guarantee karta hai (rollback ke dauran uncommitted changes revert karta hai) aur MVCC snapshots support karta hai.
+
+### 128. SQL Injection (SQLi) kya hota hai?
+**Answer**: Ek security vulnerability jahan untrusted user input ko directly SQL string mein concatenate kiya jaata hai, jisse attacker query syntax tree manipulate karke unauthorized commands execute kar sakta hai.
+
+### 129. SQL Injection ke against Prepared Statements hi ekmatra true defense kyun hain?
+**Answer**: Prepared statements user input lene se pehle query template ko fixed syntax tree mein compile kar dete hain. User parameters literal data values ke roop mein bind hote hain aur query structure ko alter nahi kar sakte.
+
+### 130. MySQL 8.0 mein Role-Based Access Control (RBAC) kya hota hai?
+**Answer**: Ek security model jahan permissions named Roles ko grant kiye jaate hain, aur fir wo roles user accounts ko assign kiye jaate hain, jisse permission management streamline ho jaati hai.
+
+### 131. `mysqldump --single-transaction` non-blocking backups kaise achieve karta hai?
+**Answer**: Ye transaction isolation level ko `REPEATABLE READ` par set karta hai aur explicit transaction shuru karke InnoDB tables ka consistent MVCC snapshot read karta hai bina unhe lock kiye.
+
+### 132. Execution Plan kya hota hai?
+**Answer**: Cost-Based Optimizer dwara kisi SQL statement ko execute karne ke liye choose kiye gaye physical operations ka set (index seeks, scans, joins, filters, sorts).
+
+### 133. Views mein `ALGORITHM=MERGE` aur `ALGORITHM=TEMPTABLE` ke beech kya difference hai?
+**Answer**: `MERGE` view ki query ko outer query ke saath combine karke single execution plan banata hai. `TEMPTABLE` outer query run karne se pehle view results ko ek internal temporary table mein materialize karta hai.
+
+### 134. Clustered Index Page Split kya hota hai?
+**Answer**: Jab kisi full index leaf page mein naya row insert hota hai, toh InnoDB ko ek naya page allocate karke aadhe rows naye page par move karne padte hain. Random primary keys (jaise UUID v4) frequent page splits aur disk fragmentation cause karti hain.
+
+### 135. InnoDB Primary Keys ke liye random UUIDs ke muqable auto-increment integers kyun prefer kiye jaate hain?
+**Answer**: Monotonically increasing integers rows ko clustered index B+ Tree ke end mein sequentially append karte hain, jisse page splits avoid hote hain, fragmentation minimize hoti hai, aur secondary indexes mein memory footprint kafi kam rehta hai.
+
+### 136. Relational Division kya hoti hai?
+**Answer**: Ek aisi relational operation jo Table A ki un rows ko find karti hai jo Table B ki **saari** rows se associated hon (e.g., un customers ko find karna jinhone kisi category ka *har ek* product khareeda ho).
+
+### 137. SQL mein Relational Division kaise implement karte hain?
+**Answer**: `GROUP BY` aur `HAVING COUNT(DISTINCT item) = (SELECT COUNT(*) FROM target_items)` pattern ka use karke.
+
+### 138. Data Warehousing mein Star Schema kya hota hai?
+**Answer**: Ek denormalized multidimensional schema jisme ek central **Fact Table** (numeric metrics wali) hoti hai aur uske charo taraf denormalized **Dimension Tables** (descriptive attributes wali) hoti hain.
+
+### 139. Snowflake Schema kya hota hai?
+**Answer**: Star Schema ka ek variation jahan dimension tables multiple related tables mein further normalize ki jaati hain.
+
+### 140. MySQL mein `information_schema` ka purpose kya hai?
+**Answer**: Ek read-only metadata database jo database tables, columns, indexes, constraints, aur privileges ki details provide karta hai.
+
+### 141. MySQL mein unused indexes kaise detect kiye ja sakte hain?
+**Answer**: `sys.schema_unused_indexes` view ko query karke.
+
+### 142. Optimistic aur Pessimistic concurrency control ke beech kya difference hai?
+**Answer**: **Pessimistic locking** rows ko explicitly lock karta hai (`FOR UPDATE`) ye assume karke ki conflicts honge. **Optimistic locking** read par rows lock nahi karta; balki update karte waqt version column check karta hai, aur agar interim mein kisi doosre transaction ne row modify kar di ho toh fail ho jaata hai.
+
+### 143. Composite Index kya hota hai, aur columns ko kis order mein arrange karna chahiye?
+**Answer**: Do ya do se zyada columns par bana index. Columns ko generally highest selectivity (sabse zyada distinct values) se lowest selectivity ke order mein arrange karna chahiye, matching `WHERE` equality filters first.
+
+### 144. MySQL mein `GROUP_CONCAT` large strings ko kaise handle karta hai?
+**Answer**: Agar output `@@group_concat_max_len` (default: 1024 bytes) se exceed karta hai toh truncate ho jaata hai. Badi output ke liye session variable increase karna padta hai: `SET SESSION group_concat_max_len = 1000000;`.
+
+### 145. Subqueries ke liye `EXISTS` aur `IN` ke beech kya difference hai?
+**Answer**: `EXISTS` match milte hi short-circuit ho jaata hai aur `NULL` values ko safely handle karta hai. `IN` subquery results ko temporary set mein materialize kar sakta hai aur `NOT IN` mein `NULL` hone par empty result deta hai.
+
+### 146. MySQL 8.0 mein `SELECT ... FOR UPDATE SKIP LOCKED` kya karta hai?
+**Answer**: Ye un matching rows ko lock karta hai jo currently unlocked hain aur doosre transactions dwara already locked rows ko silently skip kar deta hai; ye high-throughput job queues implement karne ke liye ideal hai.
+
+### 147. MySQL 8.0 mein Index Skip Scan kya hota hai?
+**Answer**: Ek aisi optimization jo MySQL ko composite index `(A, B)` use karne allow karti hai bhale hi query leading column `A` par filter na kare, by scanning each distinct value of `A` aur fir `B` par index seek perform karke.
+
+### 148. Table Lock aur Row Lock ke beech kya difference hai?
+**Answer**: Table Lock poori table ko lock kar deta hai, jisse baaki sabhi write access block ho jaate hain. Row Lock (jo InnoDB use karta hai) sirf specific affected row ko lock karta hai, jisse concurrent transactions usi table ki doosri rows ko simultaneously read aur write kar sakte hain.
+
+### 149. MySQL 8.0 mein Lateral Derived Table (LATERAL Join) kya hota hai?
+**Answer**: `FROM` clause mein ek aisi derived table jo usi `FROM` clause ki preceding tables ke columns ko reference kar sakti hai, similar to a correlated subquery in the `FROM` clause.
+
+### 150. Zero-downtime database migrations kaise design ki jaati hain?
+**Answer**: **Expand-Contract (Parallel Run)** pattern adopt karke:
+1. *Expand*: Purane structure ke parallel naya column ya table add karein.
+2. *Dual-Write*: Application code update karein taaki wo purane aur naye dono structures par simultaneously write kare.
+3. *Backfill*: Background batches mein historical data migrate karein.
+4. *Switch*: Application reads ko naye structure par point karein.
+5. *Contract*: Purane deprecated structure ko safe tareeqe se drop karein.

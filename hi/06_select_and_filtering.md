@@ -1,36 +1,36 @@
-# Chapter 06 — Data Querying & Filtering: SELECT और WHERE
+# Chapter 06 — Data Querying & Filtering: SELECT & WHERE (Data Querying aur Filtering: SELECT aur WHERE)
 
 ---
 
-## 1. What is it? (यह क्या है?)
+## 1. What is it? (Ye Kya Hai?)
 
-**Data Query Language (DQL)** उपयोगकर्ताओं और ऍप्लिकेशन्स को टेबल्स में स्टोर किए गए डेटा को पढ़ने और निकालने (retrieve करने) की अनुमति देता है। SQL की दुनिया में हर एक क्वेरी की शुरुआत **`SELECT`** स्टेटमेंट से होती है।
+**Data Query Language (DQL)** users aur applications ko database tables me store kiye gaye records ko retrieve (read) karne ki capability deta hai. SQL me kisi bhi data querying ki shuruat hamesha **`SELECT`** statement ke sath hoti hai.
 
-सरल शब्दों में कहें तो, एक बेसिक क्वेरी किसी टेबल से पंक्तियों (rows) और स्तंभों (columns) को स्क्रीन पर दिखाती है (प्रोजेक्ट करती है)। लेकिन लाखों रिकॉर्ड्स वाले वास्तविक प्रोडक्शन डेटाबेस्स में पूरी की पूरी टेबल फेच करना बेवकूफी होगी। यहीं काम आता है **`WHERE`** क्लॉज़! यह कंडीशनल फ़िल्टरिंग प्रदान करता है: यह हर एक रो पर बूलियन प्रेडिकेट (कंडीशन) चेक करता है, और केवल उन्हीं रोज़ को चुनकर वापस भेजता है जिनके लिए कंडीशन **`TRUE`** साबित होती है।
+Simple words me kahein, to ek basic query table se rows aur columns ko project (fetch) karti hai. Lekin real-world production databases me jahan millions of records hote hain, poori table ko bina kisi filter ke return karna practically impossible aur inefficient hota hai. Yahan kaam aata hai **`WHERE`** clause: ye har candidate row ke upar ek conditional boolean predicate evaluate karta hai, aur client ko sirf wahi specific rows return karta hai jinke liye condition strictly **`TRUE`** evaluate hoti hai.
 
-यहाँ एक बहुत ही महत्वपूर्ण बात समझनी होगी: SQL में बूलियन लॉजिक साधारण 2-वैल्यूड (True/False) नहीं होता, बल्कि **Three-Valued Logic (3VL)** पर काम करता है:
-* **`TRUE`**: रो कंडीशन को पास करती है और रिजल्ट सेट में शामिल की जाती है।
-* **`FALSE`**: रो कंडीशन में फेल हो जाती है और उसे बाहर निकाल दिया जाता है।
-* **`UNKNOWN` (`NULL`)**: जब हम किसी गायब या अज्ञात मान (`NULL`) की तुलना करते हैं, तो SQL का जवाब होता है `UNKNOWN`। और चूँकि `WHERE` क्लॉज़ केवल उन्हीं पंक्तियों को स्वीकार करता है जो सख्ती से `TRUE` होती हैं, इसलिए `UNKNOWN` वाली सभी रोज़ को रिजेक्ट कर दिया जाता है!
+SQL me boolean logic standard binary (`TRUE`/`FALSE`) nahi hota, balki **Three-Valued Logic (3VL)** par kaam karta hai. SQL me kisi bhi condition ke teen possible outcomes ho sakte hain:
+* `TRUE`: Row condition ko satisfy karti hai aur output result set me include hogi.
+* `FALSE`: Row condition fail kar deti hai aur filter out ho jaati hai.
+* `UNKNOWN` (`NULL`): Jab missing ya unknown data ke sath comparison hota hai, to SQL `UNKNOWN` return karta hai. Kyunki `WHERE` clause sirf aur sirf strictly `TRUE` rows ko admit karta hai, isliye `UNKNOWN` result aane par row ko instantly exclude kar diya jata hai!
 
-SQL में मुख्य फ़िल्टरिंग टूल्स ये हैं:
-1. **Relational Comparison Operators**: `=`, `!=` (या `<>`), `<`, `>`, `<=`, `>=`।
-2. **Range Filtering (`BETWEEN ... AND ...`)**: यह जाँचता है कि क्या कोई वैल्यू किसी निरंतर सीमा $[A, B]$ के अंदर आती है (यह दोनों छोरों को शामिल करता है)।
-3. **Discrete Set Membership (`IN (...)` और `NOT IN (...)`)**: यह जाँचता है कि क्या कोई वैल्यू दी गई लिस्ट या सबक्वेरी में मौजूद है।
-4. **Pattern Matching (`LIKE` और `NOT LIKE`)**: वाइल्डकार्ड्स (`%` और `_`) का उपयोग करके स्ट्रिंग सर्च करता है।
-5. **Three-Valued Nullability Checks (`IS NULL` और `IS NOT NULL`)**: यह जाँचता है कि क्या किसी कॉलम में वैल्यू गायब (`NULL`) है।
-
----
-
-## 2. Why do we use it? (हम इसका उपयोग क्यों करते हैं?)
-
-1. **Bandwidth & Latency Minimization (नेटवर्क और मेमोरी की बचत)**: नेटवर्क पर 1 करोड़ अनचाहे रिकॉर्ड्स भेजने के बजाय सिर्फ 10 काम की रोज़ ट्रांसफर करने से क्वेरी का समय मिनटों से घटकर मिलीसेकंड्स में आ जाता है।
-2. **Targeted Business Analytics (सटीक बिज़नेस रिपोर्टिंग)**: बिज़नेस को हमेशा खास डेटा चाहिए होता है: जैसे पिछले 7 दिनों में डिलीवर हुए ऑर्डर्स, मुंबई में रहने वाले कस्टमर्स, या ऐसे प्रोडक्ट्स जिनका स्टॉक खत्म होने की कगार पर है।
-3. **Database Index Acceleration (इंडेक्स की सुपरफास्ट स्पीड)**: जब `WHERE` क्लॉज़ किसी इंडेक्स्ड कॉलम को टारगेट करता है (जैसे `WHERE customer_id = 4`), तो डेटाबेस इंजन को पूरी डिस्क छानने (full scan) की ज़रूरत नहीं पड़ती; वह सीधे B+ Tree इंडेक्स सीख (Index Seek) के ज़रिए चुटकियों में रिकॉर्ड पर पहुँच जाता है।
+SQL me primary filtering constructs ye hain:
+1. **Relational Comparison Operators**: `=`, `!=` (ya `<>`), `<`, `>`, `<=`, `>=`.
+2. **Range Filtering (`BETWEEN ... AND ...`)**: Check karta hai ki kya koi value ek inclusive continuous range $[A, B]$ ke beech exist karti hai.
+3. **Discrete Set Membership (`IN (...)` aur `NOT IN (...)`)**: Verify karta hai ki value kisi comma-separated list ya subquery result set ka part hai ya nahi.
+4. **Pattern Matching (`LIKE` aur `NOT LIKE`)**: Wildcards (`%` aur `_`) ka use karke text patterns search karta hai.
+5. **Three-Valued Nullability Checks (`IS NULL` aur `IS NOT NULL`)**: Check karta hai ki kisi column me actual value missing (NULL) hai ya present hai.
 
 ---
 
-## 3. Syntax (सिंटैक्स)
+## 2. Why do we use it? (Hum Iska Use Kyun Karte Hain?)
+
+1. **Bandwidth & Latency Minimization (Superfast Response Time)**: Network connection par 10,000,000 unneeded rows transfer karne ke bajaye sirf 10 relevant rows transfer karne se query response latency minutes se ghat kar milliseconds par aa jaati hai.
+2. **Targeted Business Analytics (Pinpoint Insights)**: Business operations ko precise data chahiye hota hai: jaise pichhle 7 dino me ship hue orders dhoondhna, Mumbai ke active customers ko filter karna, ya un products ko nikalna jinka stock safety level se kam ho gaya hai.
+3. **Database Index Acceleration (B+ Tree Seeks)**: Jab aapka `WHERE` clause kisi indexed column ko target karta hai (jaise `WHERE customer_id = 4`), to database engine poori table scan karne ke bajaye directly B+ Tree index seek ke through target record par jump kar jata hai.
+
+---
+
+## 3. Syntax
 
 ```sql
 SELECT [DISTINCT] column1, column2, ...
@@ -38,7 +38,7 @@ FROM table_name
 WHERE boolean_predicate;
 ```
 
-### Filtering Predicate Forms (फ़िल्टरिंग के अलग-अलग रूप)
+### Filtering Predicate Forms
 ```sql
 -- 1. Equality & Inequality
 WHERE status = 'Delivered';
@@ -66,9 +66,9 @@ WHERE phone IS NOT NULL;
 
 ---
 
-## 4. Basic Example (बेसिक उदाहरण)
+## 4. Basic Example
 
-एक ही टेबल से पंक्तियों को सेलेक्ट और फ़िल्टर करने के बुनियादी उदाहरण:
+Aaiye ek single table se distinct values retrieve karne aur alag-alag filters apply karne ka basic example dekhte hain:
 
 ```sql
 USE sql_mastery;
@@ -90,9 +90,9 @@ WHERE phone IS NULL;
 
 ---
 
-## 5. Real-World Example (रियल-वर्ल्ड उदाहरण)
+## 5. Real-World Example
 
-हमारे `sql_mastery` प्रोडक्शन डेटाबेस में, ऑपरेशन्स डायरेक्टर को उन सभी एक्टिव प्रोडक्ट्स की लिस्ट चाहिए जो कैटेगरी 1 (`Electronics`) या 2 (`Home Appliances`) में आते हैं, जिनकी यूनिट प्राइस कम से कम $300 है, और जिनका मौजूदा स्टॉक उनके री-ऑर्डर लेवल के बराबर या उससे कम हो चुका है:
+Hamare production `sql_mastery` database me, operations team ko ek critical inventory analysis chahiye: Category 1 (`Electronics`) ya 2 (`Home Appliances`) ke aise sabhi active products identify karo jinka unit price kam se kam $300 ho aur jinki current stock quantity safety reorder level tak ya usse niche gir chuki ho.
 
 ```sql
 USE sql_mastery;
@@ -115,24 +115,24 @@ WHERE is_active = TRUE
 
 ---
 
-## 6. Step-by-Step Explanation (स्टेप-बाय-स्टेप व्याख्या)
+## 6. Step-by-Step Explanation
 
-आइए देखें कि डेटाबेस इंजन बैकएंड में इस जटिल क्वेरी को कैसे प्रोसेस करता है:
+Aaiye dekhein ki database engine is complex filtering query ko internally kaise execute karta hai:
 
-1. **`FROM products`**: स्टोरेज इंजन सबसे पहले `products` टेबल का एक्सेस हैंडल खोलता है।
-2. **`WHERE` Clause Evaluation (पंक्ति-दर-पंक्ति फ़िल्टरिंग)**:
-   * `is_active = TRUE`: जो प्रोडक्ट्स डिस्कन्टिन्यू हो चुके हैं, उन्हें तुरंत बाहर निकाल दिया जाता है।
-   * `category_id IN (1, 2)`: यह चेक करता है कि क्या प्रोडक्ट इलेक्ट्रॉनिक्स (1) या होम अप्लायंसेज (2) से संबंधित है।
-   * `unit_price >= 300.00`: सस्ते सामान और एक्सेसरीज को हटाकर केवल हाई-वैल्यू प्रोडक्ट्स पर फोकस करता है।
-   * `stock_quantity <= reorder_level`: उसी पंक्ति के दो अलग-अलग कॉलम्स की आपस में तुलना करता है। रो केवल तभी पास होती है जब इन्वेंट्री खतरे के निशान तक गिर चुकी हो।
-3. **Logical Intersection (`AND`)**: इन चारों शर्तों का एक साथ **`TRUE`** होना अनिवार्य है।
-4. **`SELECT` Projection**: जो रोज़ इन सभी शर्तों को पास कर लेती हैं, उनके लिए MySQL गणितीय एक्सप्रेशन `(reorder_level - stock_quantity)` को `units_to_order` के रूप में कैलकुलेट करता है, चुने गए कॉलम्स को प्रोजेक्ट करता है, और परिणाम आपके क्लाइंट को स्ट्रीम कर देता है।
+1. **`FROM products`**: Sabse pehle storage engine `products` table ko open karke access establish karta hai.
+2. **`WHERE` Clause Evaluation (Row-by-Row Filtering)**:
+   * `is_active = TRUE`: Jo products discontinue ho chuke hain unhe filter out kar deta hai.
+   * `category_id IN (1, 2)`: Check karta hai ki kya item Electronics (1) ya Home Appliances (2) category me aata hai.
+   * `unit_price >= 300.00`: Chhote-mote accessories ko discard karke sirf high-value items ko isolate karta hai.
+   * `stock_quantity <= reorder_level`: Ek hi row ke do alag-alag columns ko dynamically compare karta hai. Row tabhi select hogi jab available inventory reorder point tak ya usse kam ho chuki ho.
+3. **Logical Intersection (`AND`)**: Ye chaaro predicates simultaneously `TRUE` evaluate hone compulsory hain. Agar ek bhi condition `FALSE` ya `UNKNOWN` hui, to row drop ho jayegi.
+4. **`SELECT` Projection**: Survive karne wali rows ke liye MySQL on-the-fly calculated column `(reorder_level - stock_quantity)` compute karta hai aur use `units_to_order` ka alias dekar requested columns ke sath client ko return kar deta hai.
 
 ---
 
-## 7. Expected Result (अपेक्षित परिणाम / Expected Output)
+## 7. Expected Result
 
-इन्वेंट्री फ़िल्टरिंग क्वेरी का आउटपुट:
+Inventory filtering query ka output:
 
 ```
 +------------+-------------------------------+-------------+------------+----------------+---------------+----------------+
@@ -142,90 +142,90 @@ WHERE is_active = TRUE
 +------------+-------------------------------+-------------+------------+----------------+---------------+----------------+
 1 row in set (0.00 sec)
 ```
-*(ध्यान दें कि केवल मॉनिटर ही इस क्राइटेरिया पर खरा उतरा: कीमत $389.00 ($\ge 300$), कैटेगरी 1 है, और स्टॉक 10 री-ऑर्डर लेवल 10 के बराबर ($\le 10$) है)।*
+*(Notice kijiye ki sirf Monitor match hua: iska price $389.00 jo ki $\ge 300$ hai, category 1 hai, aur stock 10 reorder level 10 ke $\le$ hai).*
 
 ---
 
-## 8. Common Mistakes (सामान्य गलतियाँ और Pitfalls)
+## 8. Common Mistakes
 
-1. **`WHERE column = NULL` लिखना (सबसे क्लासिक ट्रैप!)**:
-   * *गलती*: `SELECT * FROM customers WHERE phone = NULL;`
-   * *परिणाम*: टेबल में भले ही सैकड़ों ग्राहकों के फोन नंबर `NULL` हों, लेकिन यह क्वेरी हमेशा **खाली परिणाम (0 rows)** देगी!
-   * *कारण*: ANSI SQL में `NULL` का मतलब कोई खाली स्ट्रिंग या ज़ीरो नहीं, बल्कि "अज्ञात" (unknown) होता है। जब आप पूछते हैं "क्या अज्ञात चीज़ अज्ञात के बराबर है?", तो कंप्यूटर कहता है "मुझे नहीं पता" (`UNKNOWN`)। और `WHERE` क्लॉज़ केवल `TRUE` को ही अंदर आने देता है।
-   * *समाधान*: हमेशा `WHERE phone IS NULL` या `WHERE phone IS NOT NULL` का उपयोग करें।
-2. **`BETWEEN` की सीमाओं को गलत समझना**:
-   * *गलती*: यह सोचना कि `BETWEEN 10 AND 20` में 10 और 20 शामिल नहीं होंगे।
-   * *सच्चाई*: SQL में `BETWEEN` **सख्ती से दोनों किनारों को शामिल (inclusive)** करता है। यह गणितीय रूप से `col >= 10 AND col <= 20` के बिल्कुल बराबर होता है।
-3. **`NOT IN` के साथ `NULL` का जानलेवा गड्ढा (The `NOT IN` with `NULL` Pitfall)**:
-   * *क्लासिक ट्रैप*:
+1. **`WHERE column = NULL` Likhna**:
+   * *Mistake*: `SELECT * FROM customers WHERE phone = NULL;`
+   * *Problem*: Hamesha **Empty set (0 rows)** return karega, chahe table me hazaron customers ke phone numbers NULL kyun na hon!
+   * *Why?*: ANSI SQL me `NULL` ka matlab hota hai unknown. Kisi bhi value ko unknown se compare karne par result hamesha `UNKNOWN` aata hai. Aur kyunki `WHERE` clause sirf `TRUE` results ko accept karta hai, isliye condition hamesha fail ho jaati hai.
+   * *Correction*: Hamesha `WHERE phone IS NULL` ya `WHERE phone IS NOT NULL` use karein.
+2. **`BETWEEN` Ke Boundaries Ko Galat Samajhna**:
+   * *Mistake*: Ye maan lena ki `BETWEEN 10 AND 20` sirf 11 se 19 tak include karega.
+   * *Reality*: SQL me `BETWEEN` hamesha **strictly inclusive** hota hai. Ye mathematically `col >= 10 AND col <= 20` ke barabar hota hai (10 aur 20 dono output me shamil hote hain).
+3. **`NOT IN` Ke Sath `NULL` Ka Dangerous Trap**:
+   * *The Classic Trap*:
      ```sql
      SELECT * FROM customers WHERE customer_id NOT IN (1, 2, NULL);
      ```
-   * *भयानक परिणाम*: **यह हमेशा 0 rows लौटाएगा!**
-   * *क्यों?*: `x NOT IN (1, 2, NULL)` का अंदरूनी विस्तार होता है: `x != 1 AND x != 2 AND x != NULL`। चूँकि किसी भी चीज़ की तुलना `NULL` से करने पर परिणाम `UNKNOWN` आता है, इसलिए पूरी `AND` श्रृंखला का परिणाम कभी भी `TRUE` नहीं बन पाता। नतीजा: पूरी टेबल की सारी रोज़ ख़ारिज हो जाती हैं!
-   * *नियम*: कभी भी `NOT IN` वाली लिस्ट या सबक्वेरी में `NULL` न आने दें (या इसके बदले हमेशा `NOT EXISTS` का उपयोग करें)।
-4. **`LIKE` में शुरुआत में वाइल्डकार्ड लगाना (`'%term'`)**:
-   * *समस्या*: `WHERE email LIKE '%@company.com'` लिखने से डेटाबेस ईमेल पर बने B+ Tree इंडेक्स का फायदा नहीं उठा पाता, और उसे मजबूरी में पूरी टेबल स्कैन (Full Table Scan) करनी पड़ती है।
+   * *Catastrophic Result*: **Poori query 0 rows return karegi!**
+   * *Why?*: `x NOT IN (1, 2, NULL)` internally expand hokar banta hai: `x != 1 AND x != 2 AND x != NULL`. Kyunki `x != NULL` ka result `UNKNOWN` hota hai, to poori composite `AND` condition ka final result `UNKNOWN` (ya `FALSE`) ban jata hai. Is wajah se har ek row discard ho jaati hai.
+   * *Rule*: Hamesha ensure karein ki `NOT IN` ke andar aane wali subquery ya list me kabhi `NULL` na ho, ya iski jagah `NOT EXISTS` ka use karein.
+4. **`LIKE` Me Leading Wildcards (`'%term'`) Lagana**:
+   * *Problem*: `WHERE email LIKE '%@company.com'` likhne se MySQL index tree ke root se traverse nahi kar pata, jiski wajah se B+ Tree index completely bypass ho jata hai aur slow full table scan execute hota hai.
 
 ---
 
-## 9. Best Practices (बेस्ट प्रैक्टिसेस)
+## 9. Best Practices
 
-1. **केवल ज़रूरी कॉलम्स ही प्रोजेक्ट करें**:
-   * प्रोडक्शन ऍप्लिकेशन्स में कभी भी `SELECT *` न चलाएं। स्पष्ट रूप से कॉलम्स का नाम लिखने से भारी `TEXT` या `BLOB` फील्ड्स का गैर-ज़रूरी मेमोरी ओवरहेड बचता है, और क्वेरी को केवल कवरिंग इंडेक्स से ही पूरा किया जा सकता है।
-2. **फ़िल्टर प्रेडिकेट्स को हमेशा SARGable (Search Argument Able) रखें**:
-   * इंडेक्स्ड कॉलम्स को कभी भी फंक्शन्स के अंदर न लपेटें:
-     * *Non-SARGable (इंडेक्स का उपयोग नहीं कर सकता - बहुत धीमा)*:
+1. **Sirf Zaroori Columns Hi Project Karein**:
+   * Production applications me `SELECT *` kabhi mat chalayein. Explicit column names specify karne se unnecessary `TEXT` ya `BLOB` fields read nahi hote, network bandwidth bachti hai, aur queries covering indexes ke through satisfy ho sakti hain.
+2. **Filter Predicates Ko Hamesha SARGable Rakhein (Search Argument Able)**:
+   * Indexed columns ko kabhi bhi functions ke andar wrap mat kijiye:
+     * *Non-SARGable (Index use nahi ho sakta)*:
        ```sql
        WHERE YEAR(order_date) = 2023;
        ```
-     * *SARGable (इंडेक्स सीख का उपयोग करेगा - सुपरफास्ट)*:
+     * *SARGable (Direct B+ Tree index seek)*:
        ```sql
        WHERE order_date >= '2023-01-01' AND order_date < '2024-01-01';
        ```
-3. **`DISTINCT` का उपयोग सोच-समझकर करें**:
-   * गलत JOIN कंडीशन्स के कारण आ रही डुप्लीकेट रोज़ को छुपाने के लिए आँख बंद करके `DISTINCT` का लेप न लगाएं। `DISTINCT` डुप्लीकेट्स हटाने के लिए मेमोरी में पूरे रिजल्ट सेट को सॉर्ट या हैश करता है, जिससे भारी CPU लोड पड़ता है।
+3. **`DISTINCT` Ko Samajhkar Use Karein**:
+   * Galat join conditions ki wajah se aane wale duplicate rows ko hide karne ke liye `DISTINCT` ko short-cut ki tarah mat lagaiye. `DISTINCT` remove karne ke liye database engine ko memory me poore result set ko sort ya hash karna padta hai, jo heavy performance degradation create karta hai.
 
 ---
 
-## 10. Practice Questions (अभ्यास प्रश्न)
+## 10. Practice Questions
 
-### Easy (सरल)
-1. $500.00 से अधिक `unit_price` वाले सभी प्रोडक्ट्स के `product_name` और `unit_price` निकालने के लिए क्वेरी लिखें।
-2. उन सभी कर्मचारियों को खोजने के लिए क्वेरी लिखें जो `'2021-01-01'` को या उसके बाद हायर किए गए थे।
-3. `'Delivered'` स्टेटस वाले सभी ऑर्डर्स को खोजने के लिए क्वेरी लिखें।
+### Easy
+1. Aise sabhi products ke `product_name` aur `unit_price` select karne ke liye query likhiye jinka `unit_price` $500.00 se zyada ho.
+2. `'2021-01-01'` ko ya uske baad hire hue sabhi employees ko find karne ke liye query likhiye.
+3. Aise sabhi orders find karne ke liye query likhiye jinka status `'Delivered'` hai.
 
-### Medium (मध्यम)
-4. उन सभी ग्राहकों को खोजने के लिए क्वेरी लिखें जिनका `email` पता `'@gmail.com'` पर समाप्त होता है।
-5. उन सभी प्रोडक्ट्स को रिट्रीव करने के लिए क्वेरी लिखें जिनका `stock_quantity` 20 और 60 (दोनों शामिल) के बीच है, लेकिन जिनकी `category_id` 1 के बराबर नहीं है।
-6. अगस्त 2023 (`2023-08-01` से `2023-08-31`) के महीने में दिए गए उन सभी ऑर्डर्स को खोजने की क्वेरी लिखें जिनकी `shipping_fee` $0.00 से अधिक है।
+### Medium
+4. Aise sabhi customers find karne ke liye query likhiye jinka `email` address `'@gmail.com'` par end hota hai.
+5. Aise sabhi products retrieve karne ke liye query likhiye jinki `stock_quantity` 20 aur 60 ke beech (inclusive) ho, lekin jinki `category_id` 1 ke barabar NA ho.
+6. August 2023 ke month (`2023-08-01` se `2023-08-31`) me place kiye gaye aise sabhi orders find kijiye jinka `shipping_fee` $0.00 se zyada ho.
 
-### Difficult (कठिन)
-7. उन सभी ग्राहकों को खोजने की क्वेरी लिखें जिनका `state` दर्ज है (`state IS NOT NULL`), जिनका `first_name` या तो 'S' या 'E' से शुरू होता है और जिनकी लंबाई कम से कम 5 कैरेक्टर्स है।
-8. निम्नलिखित क्वेरी को रन करने से पहले हर कॉलम के बूलियन मान का सटीक अनुमान लगाइए और विस्तार से समझाइए: `SELECT (5 = NULL), (NULL = NULL), (NULL IS NULL), (5 > NULL);`।
-
----
-
-## 11. Interview Questions (इंटरव्यू प्रश्न और उत्तर)
-
-### Q1: `SELECT * FROM table WHERE column = NULL;` चलाने पर जिन रोज़ में NULL वैल्यू होती है वे भी क्यों नहीं लौटतीं?
-**Answer**: SQL में बूलियन लॉजिक बाइनरी (True/False) नहीं बल्कि Three-Valued Logic (3VL) होता है, जिसमें `TRUE`, `FALSE`, और `UNKNOWN` तीन स्थितियाँ होती हैं। `NULL` का अर्थ गायब या अज्ञात जानकारी है। जब हम इक्वेलिटी ऑपरेटर से किसी चीज़ की तुलना `NULL` से करते हैं (यहाँ तक कि `NULL = NULL` भी), तो डेटाबेस यह तय नहीं कर सकता कि दो अज्ञात चीजें बराबर हैं या नहीं, इसलिए परिणाम `UNKNOWN` आता है। चूँकि `WHERE` क्लॉज़ केवल उन्हीं रिकॉर्ड्स को चुनता है जो सख्ती से `TRUE` होते हैं, इसलिए यह कंडीशन कभी पास नहीं होती। अज्ञात मानों को पकड़ने के लिए SQL में विशेष ऑपरेटर **`IS NULL`** दिया गया है।
-
-### Q2: SARGable क्वेरी क्या होती है, और `WHERE LOWER(email) = 'user@example.com'` लिखने से परफॉरमेंस क्यों गिर जाती है?
-**Answer**: SARGable का फुल फॉर्म होता है *Search Argument Able*। एक क्वेरी प्रेडिकेट तब SARGable कहलाता है जब डेटाबेस इंजन का ऑप्टिमाइज़र पूरी टेबल स्कैन किए बिना सीधे B+ Tree इंडेक्स सीख (Index Seek) का उपयोग करके सीधे लक्षित रिकॉर्ड्स तक पहुँच सके। जब आप किसी इंडेक्स्ड कॉलम को किसी फंक्शन (जैसे `LOWER(email)`) के अंदर लपेट देते हैं, तो डेटाबेस को रनटाइम पर हर एक रो की वैल्यू बदलकर फंक्शन कैलकुलेट करना पड़ता है। इससे इंडेक्स का सॉर्टेड ऑर्डर बेकार हो जाता है, और इंजन को मजबूरी में पूरी टेबल की हर रो को स्कैन (Full Table Scan) करना पड़ता है।
-
-### Q3: सबक्वेरी में `NULL` लौटने पर `NOT IN` ऑपरेटर का उपयोग करने में क्या गंभीर जोखिम है?
-**Answer**: `column NOT IN (val1, val2, NULL)` लॉजिकल रूप से इस प्रकार विस्तारित होता है:
-`column != val1 AND column != val2 AND column != NULL`।
-चूँकि `NULL` के साथ किसी भी तुलना का परिणाम `UNKNOWN` आता है, इसलिए पूरी `AND` श्रृंखला का अंतिम परिणाम भी `UNKNOWN` हो जाता है। और `WHERE` क्लॉज़ `UNKNOWN` को रिजेक्ट कर देता है। इसका विनाशकारी परिणाम यह होता है कि पूरी क्वेरी चुपचाप **0 rows (खाली सेट)** लौटाती है, जिससे ऍप्लिकेशन में एक साइलेंट और गंभीर बग पैदा हो जाता है। इससे बचने के लिए सबक्वेरी से NULLs को फ़िल्टर करें या हमेशा `NOT EXISTS` का उपयोग करें।
+### Difficult
+7. Aise sabhi customers find karne ke liye query likhiye jinka `state` recorded hai (yani `state IS NOT NULL`), jinka `first_name` 'S' ya 'E' se start hota ho aur jinki name length kam se kam 5 characters ho.
+8. Is query ke exact boolean results predict kijiye: `SELECT (5 = NULL), (NULL = NULL), (NULL IS NULL), (5 > NULL);`. Query run karne se pehle har ek column ki predicted value explain kijiye.
 
 ---
 
-## 12. Quick Revision (त्वरित सारांश / क्विक रिविजन)
+## 11. Interview Questions
 
-* **`SELECT`** कॉलम्स के प्रोजेक्शन को तय करता है; **`WHERE`** पंक्तियों (rows) की फ़िल्टरिंग को नियंत्रित करता है।
-* SQL **Three-Valued Logic** (`TRUE`, `FALSE`, `UNKNOWN`) पर काम करता है।
-* कभी भी `= NULL` न लिखें; हमेशा **`IS NULL`** या **`IS NOT NULL`** का इस्तेमाल करें।
-* **`BETWEEN`** हमेशा अपनी दोनों ऊपरी और निचली सीमाओं को शामिल (inclusive) करता है।
-* **`LIKE`** दो वाइल्डकार्ड्स सपोर्ट करता है: `%` (शून्य या अधिक कैरेक्टर्स) और `_` (ठीक एक कैरेक्टर)।
-* क्वेरीज को हमेशा **SARGable** रखें: `WHERE` क्लॉज़ में इंडेक्स्ड कॉलम्स पर गैर-ज़रूरी फंक्शन्स लगाने से बचें।
+### Q1: `SELECT * FROM table WHERE column = NULL;` NULL values wali rows ko kyun return nahi karta?
+**Answer**: SQL me standard boolean logic ke bajaye Three-Valued Logic (3VL) use hota hai jisme teen states hoti hain: `TRUE`, `FALSE`, aur `UNKNOWN`. `NULL` ka matlab hota hai missing ya unknown value. Jab equality operator kisi value ko `NULL` se compare karta hai (even `NULL = NULL`), to engine ye decide nahi kar sakta ki do unknown cheezein barabar hain ya nahi, isliye result hamesha `UNKNOWN` aata hai. Aur kyunki `WHERE` clause sirf aur sirf strictly `TRUE` rows ko admit karta hai, isliye row filter out ho jaati hai. Missing values ko match karne ke liye SQL ne special unary operator **`IS NULL`** provide kiya hai.
+
+### Q2: SARGable query kya hoti hai, aur `WHERE LOWER(email) = 'user@example.com'` likhne se performance kyun drop hoti hai?
+**Answer**: SARGable ka full form hota hai *Search Argument Able*. Ek query predicate tab SARGable kehlata hai jab database engine ka query optimizer table ke B+ Tree index seek ka use karke directly matching keys par navigate kar sake bina saare data pages ko scan kiye. Jab aap indexed column ko kisi function ke andar wrap kar dete hain (jaise `LOWER(email)`), to engine ko pehle runtime par har ek row ki value par function evaluate karna padta hai. Is transformation ki wajah se index ka sorted order render ho jata hai aur engine index seek nahi kar pata, majbooran poori table scan (full table scan) karni padti hai.
+
+### Q3: `NOT IN` ke sath aisi subquery use karne me kya risk hai jo ek `NULL` value return kar sakti ho?
+**Answer**: Expression `column NOT IN (val1, val2, NULL)` logically expand hokar banta hai:
+`column != val1 AND column != val2 AND column != NULL`.
+Kyunki kisi bhi value ka `NULL` ke sath comparison `UNKNOWN` deta hai, isliye ek single `NULL` aate hi poori `AND` chain ka result `UNKNOWN` ban jata hai. Result ye hota hai ki `WHERE` clause har candidate row ko reject kar deta hai aur poori query silently 0 rows return karti hai. Ye production applications me ek bohot hi silent aur critical bug create karta hai. Iska solution ye hai ki subquery me `WHERE col IS NOT NULL` filter lagaya jaye ya phir `NOT EXISTS` clause ka use kiya jaye.
+
+---
+
+## 12. Quick Revision
+
+* **`SELECT`** columns ki projection ko control karta hai; **`WHERE`** rows ki filtering ko control karta hai.
+* SQL me **Three-Valued Logic** chalta hai: `TRUE`, `FALSE`, aur `UNKNOWN`.
+* Kabhi bhi `= NULL` mat likhiye; missing values check karne ke liye hamesha **`IS NULL`** ya **`IS NOT NULL`** use karein.
+* **`BETWEEN`** hamesha inclusive hota hai (upper aur lower dono limits included rehti hain).
+* **`LIKE`** pattern matching do wildcards support karta hai: `%` (zero ya more characters) aur `_` (exactly ek character).
+* Queries ko hamesha **SARGable** rakhein: `WHERE` clause me indexed columns ko functions ke andar wrap karne se bachein.

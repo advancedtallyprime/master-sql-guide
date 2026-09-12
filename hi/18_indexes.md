@@ -1,21 +1,21 @@
-# Chapter 18 — Query Acceleration: MySQL B-Tree Indexes & Optimization (क्वेरी एक्सेलेरेशन: MySQL B-Tree इंडेक्स और ऑप्टिमाइज़ेशन)
+# Chapter 18 — Query Acceleration: MySQL B-Tree Indexes & Optimization (B-Tree Indexes Aur Optimization)
 
 ---
 
-## 1. What is it? (यह क्या है?)
+## 1. What is it? (Ye Kya Hai?)
 
-Relational database systems mein **Index** disk par bani ek aisi specialized, highly-ordered data structure hoti hai (MySQL ke InnoDB engine mein mukhya roop se **B+ Tree**) jo database engine ko $O(\log N)$ logarithmic time complexity ke andar specific rows dhundhne ki suvidha deti hai. Isse engine ko disk par maujood har ek data page ko scan nahi karna padta.
+Relational database systems me **Index** disk par bani ek aisi specialized, highly-ordered data structure hoti hai (MySQL ke InnoDB engine me mukhya roop se **B+ Tree**) jo database engine ko $O(\log N)$ logarithmic time complexity ke andar specific rows dhundhne ki facility deti hai. Isse engine ko disk par maujood har ek data page ko scan nahi karna padta.
 
-### The Book Index Analogy (किताब के इंडेक्स का उदाहरण)
-Maan lijiye aap 800 panno ki ek moti Database Engineering ki kitaab mein *"Foreign Keys"* topic dhundh rahe hain:
-* **Full Table Scan (बिना इंडेक्स के)**: Aapko page 1 se lekar page 800 tak har ek panna palat-palat kar ek-ek paragraph padhna padega. Isme ghanto lag jayenge!
-* **Index Seek (इंडेक्स के साथ)**: Aap kitaab ke aakhiri panno par bane Alphabetical Index par jate hain, *"Foreign Keys"* dekhte hain, wahan likha milta hai *"Pages 145, 148"*, aur aap 2 second ke andar seedhe page 145 khol lete hain. Database Index bhi bilkul yahi jaadu karta hai!
+### The Book Index Analogy (Kitab Ke Index Ka Example)
+Maan lijiye aap 800 pages ki ek moti Database Engineering textbook me *"Foreign Keys"* topic dhundh rahe hain:
+* **Full Table Scan (Bina Index Ke)**: Aapko page 1 se lekar page 800 tak har ek page palat-palat kar ek-ek paragraph padhna padega. Isme ghanto lag jayenge!
+* **Index Seek (Index Ke Saath)**: Aap kitab ke aakhiri panno par bane Alphabetical Index par jaate hain, *"Foreign Keys"* dekhte hain, wahan likha milta hai *"Pages 145, 148"*, aur aap 2 seconds ke andar seedhe page 145 open kar lete hain. Database Index bhi bilkul yahi kaam karta hai!
 
-### 1.1. The Physical B+ Tree Architecture (B+ Tree का भौतिक ढाँचा)
-MySQL ke default **InnoDB** engine mein indexes balanced search trees (**B+ Trees**) ke roop mein store hote hain:
-* **Root & Branch Nodes**: Ye tree ke upar aur beech ke levels hote hain jo sirf key values aur child page pointers store karte hain taaki search navigation tezi se ho sake.
-* **Leaf Nodes**: Ye tree ka sabse nichla level (bottom tier) hota hai. B+ Tree mein sabhi leaf nodes aapas mein ek doubly-linked list ke zariye jude hote hain, jisse range scans (jaise `BETWEEN 10 AND 50`) bohot fast ho jate hain.
-* **Depth (Tree ki Lambai)**: Karodo rows wale database mein bhi B+ Tree ki depth aamtaur par sirf 3 se 4 levels hoti hai. Iska matlab hai ki lakho-karodo rows mein se kisi bhi row ko sirf 3 ya 4 disk page reads ke andar search kiya ja sakta hai!
+### 1.1. The Physical B+ Tree Architecture (Physical B+ Tree Architecture)
+MySQL ke default **InnoDB** engine me indexes balanced search trees (**B+ Trees**) ke roop me store hote hain:
+* **Root & Branch Nodes**: Ye tree ke top aur middle levels hote hain jo sirf key values aur child page pointers store karte hain taaki search navigation tezi se ho sake.
+* **Leaf Nodes**: Ye tree ka sabse nichla level (bottom tier) hota hai. B+ Tree me sabhi leaf nodes aapas me ek doubly-linked list ke zariye jude hote hain, jisse range scans (jaise `BETWEEN 10 AND 50`) bohot fast ho jaate hain.
+* **Depth**: Karodo rows wale database me bhi B+ Tree ki depth aamtaur par sirf 3 se 4 levels hoti hai. Iska matlab hai ki lakho-karodo rows me se kisi bhi row ko sirf 3 ya 4 disk page reads ke andar search kiya ja sakta hai!
 
 ```mermaid
 flowchart TD
@@ -36,9 +36,9 @@ flowchart TD
 
 ---
 
-## 2. Why do we use it? (हम इसका उपयोग क्यों करते हैं? — Clustered vs Secondary Indexes)
+## 2. Why do we use it? (Hum Iska Use Kyun Karte Hain?)
 
-Jab table mein lakho ya karodo records hote hain, toh bina index ke query run karna poor server crash karwa sakta hai. Lekin index use karte waqt **Clustered Index** aur **Secondary Index** ke beech ka physical difference samajhna sabse zyada zaroori hai:
+Jab table me lakho ya karodo records hote hain, toh bina index ke query run karna poor server ko freeze kar sakta hai. Lekin index use karte waqt **Clustered Index** aur **Secondary Index** ke beech ka physical difference samajhna sabse zyada zaroori hai:
 
 ```mermaid
 flowchart TD
@@ -52,18 +52,18 @@ flowchart TD
 ```
 
 1. **Clustered Index**:
-   * InnoDB engine mein, table khud hi Clustered Index hoti hai (table *is* the clustered index).
+   * InnoDB engine me, table khud hi Clustered Index hoti hai (table *is* the clustered index).
    * Ye table ki `PRIMARY KEY` dwara define hota hai.
    * Clustered index ke leaf nodes ke andar actual physical row ka poora data store hota hai!
    * Ek table ke paas **sirf aur sirf ek** clustered index ho sakta hai.
 2. **Secondary (Non-Clustered) Index**:
    * Primary key ke alawa kisi bhi doosre column par banaya gaya index (jaise `CREATE INDEX idx_email ON customers(email)`).
-   * Secondary index ke leaf nodes mein poori row ka data ya physical disk pointer store **nahi** hota; balki indexed column ki value ke sath us row ki **Primary Key value** store hoti hai.
-   * Jab aap secondary index se query karte hain, toh MySQL pehle secondary B+ Tree ko traverse karke Primary Key nikalta hai, aur fir us Primary Key ke zariye Clustered Index mein jakar poori row ka data fetch karta hai. Is double-hop process ko **Bookmark Lookup** kaha jata hai.
+   * Leaf nodes row ka data ya physical disk offsets store nahi karte; balki indexed column value aur us row ki **Primary Key value** store karte hain.
+   * Jab aap secondary index se query karte hain, MySQL pehle secondary B+ Tree traverse karta hai, Primary Key nikalta hai, aur phir baki columns fetch karne ke liye Clustered Index me doosra lookup karta hai (jise **Bookmark Lookup** kaha jata hai).
 
 ---
 
-## 3. Syntax (सिंटैक्स)
+## 3. Syntax (Syntax)
 
 ```sql
 -- 1. Create a Single-Column Index
@@ -87,27 +87,23 @@ EXPLAIN SELECT * FROM customers WHERE city = 'San Francisco';
 
 ---
 
-## 4. The Leftmost Prefix Rule (बेसिक नियम — Leftmost Prefix Rule)
+## 4. Basic Example (Basic Example)
 
-Jab aap multiple columns ko milakar ek Composite Index banate hain, jaise `(colA, colB, colC)`, toh MySQL is index ko sirf unhi queries ke liye use kar sakta hai jo filter karti hain:
-* Sirf `colA` par
-* `colA` AND `colB` par
-* `colA` AND `colB` AND `colC` par
+### The Leftmost Prefix Rule for Composite Indexes
+Jab aap multiple columns `(colA, colB, colC)` par composite index banate hain, toh MySQL us index ko sirf un queries ke liye use kar sakta hai jo filter karti hain:
+* `colA` alone
+* `colA` AND `colB`
+* `colA` AND `colB` AND `colC`
 
-Lekin MySQL is composite index ko use **nahi** kar payega agar aapki query filter karti hai:
-* Sirf `colB` par
-* Sirf `colC` par
-* `colB` AND `colC` par (bina `colA` ke!)
+Lekin MySQL is index ko use **nahi** kar sakta agar query filter kare:
+* `colB` alone
+* `colC` alone
+* `colB` AND `colC`
 
 > [!TIP]
-> Composite index ko ek Telephone Directory ki tarah samjhiye jo `(Last_Name, First_Name)` ke order mein printed hai. Agar aapko surname `"Sharma"` (`colA`) dhundhna hai, ya `"Sharma, Rohit"` (`colA, colB`) dhundhna hai, toh directory bohot fast kaam karegi. Lekin agar koi aapse kahe ki "Aise sabhi logon ko dhundho jinka first name `"Rohit"` (`colB`) hai chahe surname kuch bhi ho", toh aapko telephone directory ka pehla panna se lekar aakhiri panna tak poora scan karna padega!
+> Composite index ko ek aisi telephone directory ki tarah samjhiye jo `(Last_Name, First_Name)` ke order me sorted hai. Isme kisi `"Smith"` (`colA`) ya `"Smith, John"` (`colA, colB`) ko dhundhna bohot aasan hai. Lekin agar aapko kisi aise insaan ko dhundhna ho jiska sirf first name `"John"` (`colB` alone) pata ho, toh aapko poori phone book shuru se aakhir tak scan karni padegi!
 
----
-
-## 5. Basic Example (बेसिक उदाहरण)
-
-`customers` table par index banate hain aur `EXPLAIN` ke zariye query execution plan ko analyze karte hain:
-
+### Index Creation and Analysis on `customers` Table:
 ```sql
 USE sql_mastery;
 
@@ -128,10 +124,9 @@ DROP INDEX idx_customers_city ON customers;
 
 ---
 
-## 6. Real-World Example: The Covering Index Optimization (रियल-वर्ल्ड उदाहरण — कवरिंग इंडेक्स ऑप्टिमाइज़ेशन)
+## 5. Real-World Example (Real-World Example)
 
-**Covering Index** ek aisa index hota hai jisme query dwara maange gaye saare columns (`SELECT`, `WHERE`, `GROUP BY`, aur `ORDER BY` clauses) us index tree ke andar hi maujood hote hain!
-Jab koi query covering index dwara cover hoti hai, toh InnoDB ko clustered index mein jakar double-hop bookmark lookup karne ki bilkul zaroorat nahi padti—poora data secondary index ke RAM pages se hi return ho jata hai!
+Ek **Covering Index** wo index hota hai jisme query dwara maange gaye saare columns (`SELECT`, `WHERE`, `GROUP BY`, aur `ORDER BY` clauses) index ke andar hi maujood hote hain. Jab query covered hoti hai, toh InnoDB result poori tarah secondary index tree se hi return kar deta hai, jisse clustered index ka secondary lookup (bookmark lookup) completely eliminate ho jata hai!
 
 ```sql
 USE sql_mastery;
@@ -160,25 +155,25 @@ DROP INDEX idx_cov_country_loyalty ON customers;
 
 ---
 
-## 7. Step-by-Step Explanation & EXPLAIN Output (स्टेप-बाय-स्टेप व्याख्या और EXPLAIN आउटपुट)
+## 6. Step-by-Step Explanation (Step-by-Step Explanation)
 
-Jab aap query health aur index efficiency check karne ke liye `EXPLAIN` run karte hain, toh in mukhya columns par dhyan dein:
+Index health verify karne ke liye `EXPLAIN` command run karte waqt in key columns ko inspect karein:
 
 | EXPLAIN Field | Ideal Target Value | Danger Value | Technical Explanation |
 | :--- | :--- | :--- | :--- |
-| **`type`** | `const`, `eq_ref`, `ref`, `range` | `ALL` | Access mechanism. `ALL` ka matlab full table scan; `ref` ya `range` ka matlab index seek. |
-| **`possible_keys`** | Index ka naam | `NULL` | Optimizer ne kin indexes par vichar kiya. |
-| **`key`** | Actually chuna gaya index | `NULL` | Cost-Based Optimizer ne kis index ko select kiya. |
-| **`rows`** | Kam se kam number | Table ki total rows | Query execute karne ke liye engine ko kitni rows inspect karni padengi. |
-| **`Extra`** | `Using index` (Covering!) | `Using filesort`, `Using temporary` | `Using index` ka matlab memory se direct return; `Using filesort` ka matlab disk/memory par unindexed sorting. |
+| **`type`** | `const`, `eq_ref`, `ref`, `range` | `ALL` | Access mechanism. `ALL` indicates a full table scan; `ref` ya `range` indicates index usage. |
+| **`possible_keys`** | Name of your index | `NULL` | Optimizer ne jin indexes ko consider kiya. |
+| **`key`** | Name of index actually chosen | `NULL` | Cost-Based Optimizer dwara select kiya gaya actual index. |
+| **`rows`** | Lowest possible number | Total table rows | Engine ko inspect karne ke liye estimated disk rows ka count. |
+| **`Extra`** | `Using index` (Covering!) | `Using filesort`, `Using temporary` | Performance notes. `Using index` means query memory me covered hai; `Using filesort` indicates sorting without index. |
 
 ---
 
-## 8. Expected Result & The Write Penalty (अपेक्षित परिणाम और राइट पेनल्टी)
+## 7. Expected Result (Expected Result)
 
-### Covering Index se pehle aur baad ka `EXPLAIN` comparison:
+Covering Index banane se pehle aur baad ke `EXPLAIN` output ka comparison:
 
-Index create karne se pehle:
+Before index creation:
 ```
 +----+-------------+-----------+------------+------+---------------+------+---------+------+------+----------+-------------+
 | id | select_type | table     | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra       |
@@ -186,9 +181,9 @@ Index create karne se pehle:
 |  1 | SIMPLE      | customers | NULL       | ALL  | NULL          | NULL | NULL    | NULL |   10 |    10.00 | Using where |
 +----+-------------+-----------+------------+------+---------------+------+---------+------+------+----------+-------------+
 ```
-*(Notice karein `type: ALL` aur `key: NULL` $\rightarrow$ Poori table ka Full Scan ho raha hai).*
+*(Notice karein `type: ALL` aur `key: NULL` $\rightarrow$ Full Table Scan).*
 
-`idx_cov_country_loyalty` create karne ke baad:
+After creating `idx_cov_country_loyalty`:
 ```
 +----+-------------+-----------+------------+------+------------------------+------------------------+---------+-------+------+----------+-------------+
 | id | select_type | table     | partitions | type | possible_keys          | key                    | key_len | ref   | rows | filtered | Extra       |
@@ -198,77 +193,81 @@ Index create karne se pehle:
 ```
 *(Notice karein `type: ref`, `key: idx_cov_country_loyalty`, aur `Extra: Using index` $\rightarrow$ Clustered table lookup zero ho gaya, blazing-fast response!).*
 
-### The Write Penalty: Indexes Free Nahi Hote!
-Database mein har naye index ki ek keemat hoti hai jise **Write Penalty (DML Overhead)** kehte hain:
-1. **DML Overhead**: Jab bhi table par `INSERT`, `UPDATE`, ya `DELETE` hota hai, engine ko na sirf clustered table update karni padti hai, balki table par bane **har ek secondary index** ke B+ Tree ko rebalance aur update karna padta hai! Agar table par 10 indexes hain, toh har ek insert par 11 alag-alag index trees mein write I/O hoga.
-2. **Buffer Pool RAM Consumption**: Sabhi index trees disk space lete hain aur MySQL ke Buffer Pool (RAM) ke liye compete karte hain, jisse active data pages memory se bahar dhakle jaate hain.
-3. **Low-Cardinality Trap**: Aise columns par index lagana jinki bahut kam unique values hoti hain (jaise `is_active BOOLEAN` ya `gender`) bekaar hota hai. Agar table ki 50% rows `is_active = TRUE` hain, toh optimizer index ko chhod kar direct full table scan karega kyunki index traversal zyada mehenga padega.
+---
+
+## 8. Common Mistakes (Common Mistakes)
+
+Indexes free nahi hote. Har index ke sath significant trade-offs aate hain:
+1. **The Write Penalty (DML Overhead)**: Har baar jab `INSERT`, `UPDATE`, ya `DELETE` run hota hai, database engine ko na sirf clustered table update karni padti hai, balki table ke **har ek secondary index** ke B+ Tree ko rebalance aur update karna padta hai! Ek table jisme 10 indexes hain, wo har single insert par 11 distinct index trees me write karegi, jisse heavy write slowdown hoga.
+2. **Buffer Pool RAM Consumption**: Index trees disk space consume karte hain aur MySQL Buffer Pool (RAM) ke liye compete karte hain, jisse active data pages memory se bahar push ho jaate hain.
+3. **Indexing Low-Cardinality Columns**: Aise column par index lagana jisme bohot kam distinct values hoti hain (jaise `is_active BOOLEAN` ya `gender`) aamtaur par useless hota hai. Agar table ki 50% rows `is_active = TRUE` hain, toh optimizer index ko ignore karke full table scan karega, kyunki sequentially scan karna random index lookup se zyada fast hota hai.
+4. **Neglecting the Leftmost Prefix**: Composite index `(A, B)` banakar query me sirf `WHERE B = 'val'` filter karna; is case me index completely unutilized rehta hai.
 
 ---
 
-## 9. Best Practices (बेस्ट प्रैक्टिसेज)
+## 9. Best Practices (Best Practices)
 
-1. **`WHERE`, `JOIN ... ON`, aur `ORDER BY` wale columns par Index lagayein**:
+1. **Index Columns Frequently Used in `WHERE`, `JOIN ... ON`, and `ORDER BY` Clauses**:
    * Unhi columns ko index karein jo high cardinality (zyada unique values) rakhte hon ya foreign key joins ka hissa hon.
-2. **Composite Indexes mein Leftmost Prefix Rule ka dhyan rakhein**:
-   * Composite index banate waqt columns ko most-selective se least-selective ke order mein arrange karein: `(high_cardinality_col, low_cardinality_col)`.
-3. **High-Frequency Queries ke liye Covering Index banayein**:
-   * Critical API endpoints jo second mein hazaro baar run hote hain, unke liye covering index banayein taaki clustered index bookmark lookups eliminate ho sakein (`Extra: Using index`).
-4. **Unused Indexes ko dhundhkar Drop karein**:
-   * MySQL ke `sys.schema_unused_indexes` view ko regularly check karein. Jo indexes kabhi query mein use nahi ho rahe hain, unhe drop karein taaki write speed boost ho sake.
+2. **Follow the Leftmost Prefix Rule in Composite Indexes**:
+   * Composite index banate waqt columns ko highest selectivity se lowest selectivity ke order me arrange karein: `(high_cardinality_col, low_cardinality_col)`.
+3. **Design Covering Indexes for High-Frequency Queries**:
+   * Critical high-throughput API endpoints ke liye covering index banayein taaki clustered index bookmark lookups eliminate ho sakein (`Extra: Using index`).
+4. **Audit and Remove Unused or Duplicate Indexes**:
+   * MySQL ke `sys.schema_unused_indexes` view ko regularly inspect karein. Jo indexes kisi bhi query dwara use nahi ho rahe, unhe drop karein taaki write speed boost ho sake.
 
 ---
 
-## 10. Practice Questions (अभ्यास प्रश्न)
+## 10. Practice Questions (Practice Questions)
 
-### Easy (सरल)
-1. MySQL InnoDB engine mein indexes store karne ke liye mukhya roop se kaun sa data structure use hota hai?
-2. InnoDB mein Clustered Index aur Secondary Index ke beech sabse bada buniyadi antar kya hai?
-3. Ek table par maximum kitne Clustered Indexes banaye ja sakte hain?
+### Easy
+1. MySQL InnoDB engine me indexes store karne ke liye mukhya roop se kaun sa data structure use hota hai?
+2. InnoDB me Clustered Index aur Secondary Index ke beech sabse bada basic difference kya hai?
+3. Ek table par maximum kitne Clustered Indexes ho sakte hain?
 
-### Medium (मध्यम)
-4. Agar `orders(customer_id, order_date, status)` par composite index bana ho, toh inme se kaun si queries is index ka upyog kar sakti hain?
+### Medium
+4. Agar `orders(customer_id, order_date, status)` par composite index bana ho, toh inme se kaun si query `WHERE` clauses is index ka use kar sakti hain?
    * A: `WHERE customer_id = 5`
    * B: `WHERE order_date = '2023-08-01'`
    * C: `WHERE customer_id = 5 AND order_date = '2023-08-01'`
    * D: `WHERE status = 'Delivered'`
-5. `employees` table ke `hire_date` column par `idx_emp_hire_date` naam ka index banane ke liye SQL statement likhiye.
-6. `EXPLAIN` query plan ke `Extra` column mein `Using filesort` aane ka kya matlab hota hai?
+5. `employees` table ke `hire_date` column par `idx_emp_hire_date` naam ka index create karne ke liye SQL statement likhiye.
+6. `EXPLAIN` query plan ke `Extra` column me `Using filesort` aane ka kya matlab hota hai?
 
-### Difficult (कठिन)
-7. "Covering Index" kya hota hai aur ye InnoDB mein "Bookmark Lookup" step ko kaise completely eliminate karta hai? `products` table ke liye ek concrete query aur covering index ka DDL likhkar samjhaiye.
-8. Agar kisi indexed column par query run karne par 40% matching rows aane wali hon, toh MySQL Cost-Based Optimizer jaan-boojh kar index ko ignore karke Full Table Scan (`type: ALL`) kyu choose karta hai?
+### Difficult
+7. "Covering Index" kya hota hai aur ye InnoDB me "Bookmark Lookup" step ko kaise completely prevent karta hai? `products` table ke liye ek concrete query aur covering index definition likhiye.
+8. Agar kisi indexed query predicate par run karne par 40% matching rows aane wali hon, toh MySQL Cost-Based Optimizer jaan-boojhkar index ko ignore karke Full Table Scan (`type: ALL`) kyun choose karta hai?
 
 ---
 
-## 11. Interview Questions (इंटरव्यू सवाल और जवाब)
+## 11. Interview Questions (Interview Questions)
 
 ### Q1: Samjhaiye ki InnoDB ka B+ Tree index `WHERE id BETWEEN 100 AND 200` jaisi range query ko internally kaise execute karta hai?
-**Answer**: InnoDB B+ Tree index mein engine sabse pehle **Root Node** se shuru karta hai aur key `100` ko branch nodes ke pointers ke sath compare karte hue $O(\log N)$ steps mein us specific **Leaf Node Page** par pahunchta hai jahan key `100` maujood hai.
+**Answer**: InnoDB B+ Tree index me engine sabse pehle **Root Node** se shuru karta hai aur target key `100` ko branch nodes ke pointers ke sath compare karte hue $O(\log N)$ time me us specific **Leaf Node Page** par pahunchta hai jahan key `100` maujood hai. 
 
-Kyunki B+ Tree ke sabhi leaf nodes aapas mein doubly-linked list ke zariye jude hote hain, engine ko agle keys (`101`, `102`...) dhundhne ke liye wapas upar tree traversal nahi karna padta! Wo linked leaf pages par aage sequential scan karta rehta hai aur rows read karta jata hai jab tak ki use `200` se badi key nahi milti. Jaise hi `> 200` milta hai, scan foran ruk jata hai.
+Kyunki B+ Tree ke sabhi leaf nodes aapas me doubly-linked list ke zariye jude hote hain, engine ko agle keys (`101`, `102`...) dhundhne ke liye wapas upar tree traversal nahi karna padta! Wo linked leaf pages par aage sequential scan karta rehta hai aur rows read karta jata hai jab tak ki use `200` se badi key nahi milti. Jaise hi `> 200` milta hai, scan turant ruk jata hai.
 
-### Q2: MySQL multi-column indexing mein "Leftmost Prefix Rule" kya hota hai?
-**Answer**: Leftmost Prefix Rule ka niyam ye hai ki multiple columns `(A, B, C)` par bana composite index sirf tabhi use ho sakta hai jab query ke filters sabse leftmost column `A` se shuru hote hon. Index in filtering combinations par tezi se kaam karega:
+### Q2: MySQL multi-column indexing me "Leftmost Prefix Rule" kya hota hai?
+**Answer**: Leftmost Prefix Rule ka niyam ye hai ki multiple columns `(A, B, C)` par bana composite index sirf tabhi use ho sakta hai jab query ke filtering predicates sabse leftmost column `A` se shuru hote hon. Index in queries ko accelerate karega:
 * `(A)`
 * `(A, B)`
 * `(A, B, C)`
-Lekin agar query sirf `(B)` par, sirf `(C)` par, ya `(B, C)` par filter karegi (bina `A` ke), toh optimizer is index ko use nahi kar payega. Aisa isliye hai kyunki physical B+ Tree pehle `A` ke order mein sort hota hai, fir `A` ke andar `B` sort hota hai, aur `B` ke andar `C` sort hota hai.
+Lekin agar query sirf `(B)` par, sirf `(C)` par, ya `(B, C)` par filter karegi (bina `A` ke), toh optimizer is index ko use nahi kar payega. Aisa isliye hai kyunki composite B+ Tree physically pehle `A` ke order me sort hota hai, fir `A` ke andar `B` sort hota hai, aur `B` ke andar `C` sort hota hai.
 
-### Q3: Kisi table par bohot zyada indexes banane ke kya nuksan hote hain?
+### Q3: Database table par bohot zyada indexes banane ke kya nuksan hote hain?
 **Answer**:
-1. **DML Write Penalty**: Har `INSERT`, `UPDATE`, aur `DELETE` operation ko clustered table ke sath-sath sabhi secondary index trees ko update aur rebalance karna padta hai, jisse writes bohot slow ho jate hain.
-2. **Buffer Pool Contention**: Sabhi indexes InnoDB Buffer Pool (RAM) mein jagah gherte hain, jisse active data pages memory se bahar nikal jaate hain aur disk I/O badh jata hai.
-3. **Storage Overhead**: Lakho rows wali tables mein secondary indexes ka kul size table ke actual data se bhi bada ho sakta hai.
-4. **Optimizer Latency**: Bohot saare overlapping indexes hone par MySQL Cost-Based Optimizer ko query plan generate karne mein zyada samay lagta hai.
+1. **DML Write Penalty**: Har `INSERT`, `UPDATE`, aur `DELETE` operation ko clustered table ke sath-sath sabhi secondary index trees ko update aur rebalance karna padta hai, jisse write operations bohot slow ho jaate hain.
+2. **Buffer Pool Contention**: Sabhi indexes InnoDB Buffer Pool (RAM) me jagah gherte hain, jisse active data pages memory se bahar dhakel diye jaate hain aur disk I/O badh jata hai.
+3. **Storage Overhead**: Lakho rows wali tables me secondary indexes ka cumulative disk space table ke actual data se bhi bada ho sakta hai.
+4. **Optimizer Latency**: Bohot saare overlapping indexes hone par MySQL Cost-Based Optimizer ko query plan generate karne me zyada samay lagta hai kyunki use multiple candidate indexes ko evaluate karna padta hai.
 
 ---
 
-## 12. Quick Revision (क्विक रिविजन)
+## 12. Quick Revision (Quick Revision)
 
-* **Index** ek B+ Tree structure hai jo queries ko $O(N)$ full table scan se badal kar $O(\log N)$ fast seeks mein convert karta hai.
-* **Clustered Index**: Table ki `PRIMARY KEY` par banta hai; iske leaf nodes mein poori row ka physical data hota hai.
+* **Index** ek B+ Tree search structure hai jo queries ko $O(N)$ full table scans se badal kar $O(\log N)$ fast logarithmic seeks me convert karta hai.
+* **Clustered Index**: Table ki `PRIMARY KEY` dwara define hota hai; leaf nodes me poori row ka physical data hota hai.
 * **Secondary Index**: Indexed column aur Primary Key ki value store karta hai (bookmark lookup required).
-* **Covering Index**: Saare required columns index mein hi maujood hote hain, jisse bookmark lookup eliminate ho jata hai (`Using index`).
-* Composite indexes hamesha **Leftmost Prefix Rule** ko follow karte hain.
-* Indexes reads ko superfast banate hain, lekin writes (`INSERT`/`UPDATE`/`DELETE`) par **Write Penalty** lagate hain.
+* **Covering Index**: Saare required columns index me hi maujood hote hain, jisse bookmark lookup eliminate ho jata hai (`Using index`).
+* Multi-column composite indexes strictly **Leftmost Prefix Rule** ko obey karte hain.
+* Indexes reads ko superfast banate hain, lekin `INSERT`, `UPDATE`, aur `DELETE` par **Write Penalty** impose karte hain.

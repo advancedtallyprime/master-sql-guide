@@ -1,35 +1,35 @@
-# Chapter 08 — SQL Operators & Expression Evaluation (SQL ऑपरेटर्स और एक्सप्रेशन इवैल्यूएशन)
+# Chapter 08 — SQL Operators & Expression Evaluation (SQL Operators aur Expression Evaluation)
 
 ---
 
-## 1. What is it? (यह क्या है?)
+## 1. What is it? (Ye Kya Hai?)
 
-SQL mein ek **operator** ek reserved keyword ya symbol hota hai jo database engine ko ek ya zyada data items (jinhe hum **operands** kehte hain) par mathematical, logical, comparison ya bitwise calculation karne ka instruction deta hai.
+SQL mein ek **operator** ek reserved keyword ya symbol hota hai jo database engine ko ek ya multiple data items (operands) par specific mathematical, logical, comparison, ya bitwise computation perform karne ka instruction deta hai.
 
-Operands table ke column values ho sakte hain, koi literal constant (jaise `10` ya `'Active'`), kisi subquery ka result, ya phir kisi function ki return value. Jab hum operators aur operands ko aapas mein jodte hain, toh ek **expression** banta hai jo calculate hokar ek scalar value deta hai (jaise koi number, string ya boolean truth value).
+Operands table column values, literal constants, subquery results, ya functions ke return values ho sakte hain. Jab operators aur operands aapas mein combine hote hain, toh wo **expressions** banate hain jo ek scalar value (jaise number, string, ya boolean truth value) evaluate karte hain.
 
-SQL operators ko 6 mukhya functional categories mein baanta gaya hai:
-1. **Arithmetic Operators**: Basic numerical calculations ke liye (`+`, `-`, `*`, `/`, `DIV`, `%` / `MOD`).
-2. **Comparison Operators**: Do expressions ko compare karke boolean result dete hain (`=`, `!=`, `<>`, `<`, `>`, `<=`, `>=`, `<=>`).
-3. **Logical Operators**: Multiple boolean conditions ko aapas mein jodne ke liye (`AND`, `OR`, `NOT`, `XOR`).
-4. **Set & Membership Operators**: Kisi set ya range ke andar existence check karne ke liye (`IN`, `NOT IN`, `BETWEEN`, `EXISTS`, `ANY`, `ALL`).
-5. **Pattern & Regular Expression Operators**: Text ke patterns match karne ke liye (`LIKE`, `NOT LIKE`, `REGEXP` / `RLIKE`).
-6. **Bitwise Operators**: Binary bits ke level par operations perform karne ke liye (`&`, `|`, `^`, `~`, `<<`, `>>`).
-
----
-
-## 2. Why do we use it? (हम इसका उपयोग क्यों करते हैं?)
-
-1. **Dynamic Business Calculations (बिजनेस कैलकुलेशन डेटाबेस में)**: Discounted prices calculate karna (`unit_price * (1 - discount)`), employees ka bonus nikalna, ya tax withholding calculate karna seedhe database level par efficiently ho jata hai.
-2. **Multi-Condition Filtering (जटिल बिजनेस रूल्स)**: Multiple business conditions ko aapas mein combine karna (jaise: *"Aise orders dhundho jo ya toh Shipped hon YA Delivered hon, AUR jinka total amount $500 se zyada ho"*).
-3. **Advanced Pattern Matching (सर्च और वैलिडेशन)**: User ke search keywords match karna, email formats validate karna, ya phone numbers se country code nikalne ke liye Regular Expressions (`REGEXP`) ka use karna.
-4. **Safe Nullability Comparison (NULL वैल्यूज की सुरक्षित तुलना)**: Do columns ko compare karna jahan dono taraf `NULL` ho sakta hai, bina 3-Valued Logic ke trap mein fase, MySQL ke NULL-Safe Equality operator (`<=>`) se aasaani se sambhav hota hai.
+SQL operators ko 6 alag-alag functional families mein organize kiya gaya hai:
+1. **Arithmetic Operators**: Basic numerical computations perform karte hain (`+`, `-`, `*`, `/`, `DIV`, `%` / `MOD`).
+2. **Comparison Operators**: Do expressions ko compare karte hain aur boolean truth value return karte hain (`=`, `!=`, `<>`, `<`, `>`, `<=`, `>=`, `<=>`).
+3. **Logical Operators**: Multiple boolean conditions ko combine karte hain (`AND`, `OR`, `NOT`, `XOR`).
+4. **Set & Membership Operators**: Sets ya ranges ke against presence test karte hain (`IN`, `NOT IN`, `BETWEEN`, `EXISTS`, `ANY`, `ALL`).
+5. **Pattern & Regular Expression Operators**: String patterns test karte hain (`LIKE`, `NOT LIKE`, `REGEXP` / `RLIKE`).
+6. **Bitwise Operators**: Binary bit-level operations perform karte hain (`&`, `|`, `^`, `~`, `<<`, `>>`).
 
 ---
 
-## 3. Comprehensive Operator Taxonomy & Syntax (ऑपरेटर टैक्सोनॉमी और सिंटैक्स)
+## 2. Why do we use it? (Hum Iska Use Kyun Karte Hain?)
 
-### 3.1. Arithmetic Operators (अंकगणितीय ऑपरेटर्स)
+1. **Dynamic Business Calculations**: Discounted prices calculate karna (`unit_price * (1 - discount)`), employee bonuses calculate karna, ya database engine mein directly tax withholdings determine karna.
+2. **Multi-Condition Filtering**: Multiple business rules ko combine karna (for example, *"Aise orders select karo jo ya toh Shipped hon YA Delivered hon AUR unka total amount $500 se zyada ho"*).
+3. **Advanced Pattern Matching**: User text inputs search karna, email formats validate karna, ya regular expressions (`REGEXP`) use karke international dialing prefixes extract karna.
+4. **Safe Nullability Comparison**: Aise do columns ko compare karna jin dono mein `NULL` ho sakta hai, bina MySQL ke NULL-Safe Equality operator (`<=>`) ke relational logic break kiye.
+
+---
+
+## 3. Syntax
+
+### 3.1. Arithmetic Operators
 
 ```sql
 SELECT 
@@ -42,7 +42,7 @@ SELECT
     MOD(10, 3) AS mod_function;  -- 1
 ```
 
-### 3.2. Comparison & NULL-Safe Equality Operators (तुलना और NULL-सुरक्षित ऑपरेटर्स)
+### 3.2. Comparison & NULL-Safe Equality Operators
 
 ```sql
 -- Standard equality and inequality
@@ -57,17 +57,17 @@ SELECT
     (NULL <=> NULL) AS null_safe_eq;   -- 1 (TRUE)
 ```
 
-### 3.3. Logical Operators & Precedence Rules (लॉजिकल ऑपरेटर्स और प्राथमिकता नियम)
+### 3.3. Logical Operators & Precedence Rules
 
 | Operator | Syntax Alias | Description | Precedence Rank |
 | :--- | :--- | :--- | :--- |
-| `NOT` | `!` | Boolean truth value ko ulta karta hai (`NOT TRUE` $\rightarrow$ `FALSE`) | High (उच्च) |
-| `AND` | `&&` | Tabhi `TRUE` evaluate hota hai jab **dono** operands `TRUE` hon | Medium (मध्यम) |
-| `OR` | `\|\|` | Tab `TRUE` evaluate hota hai jab **koi bhi ek** operand `TRUE` ho | Low (कम) |
-| `XOR` | | Tab `TRUE` evaluate hota hai jab theek **ek hi** operand `TRUE` ho | Low (कम) |
+| `NOT` | `!` | Reverses boolean truth value (`NOT TRUE` $\rightarrow$ `FALSE`) | High |
+| `AND` | `&&` | Evaluates to `TRUE` only if **both** operands are `TRUE` | Medium |
+| `OR` | `\|\|` | Evaluates to `TRUE` if **either** operand is `TRUE` | Low |
+| `XOR` | | Evaluates to `TRUE` if exactly **one** operand is `TRUE` | Low |
 
 > [!CAUTION]
-> **Operator Precedence Trap (ऑपरेटर प्राथमिकता का जाल)**: `AND` ki priority `OR` se hamesha zyada hoti hai. Iska matlab `A OR B AND C` ko SQL hamesha `A OR (B AND C)` ki tarah evaluate karega. Apne logic ko 100% safe aur bug-free rakhne ke liye hamesha brackets `(A OR B) AND C` ka use karein!
+> **Operator Precedence Trap**: `AND` ki precedence `OR` se higher hoti hai. Expression `A OR B AND C` internally `A OR (B AND C)` evaluate hota hai. Apna intended evaluation order guarantee karne ke liye hamesha parentheses `(A OR B) AND C` use karo!
 
 ### 3.4. Regular Expression Operators (`REGEXP` / `RLIKE`)
 
@@ -81,9 +81,9 @@ SELECT phone FROM customers WHERE phone REGEXP '^[0-9-]+$';
 
 ---
 
-## 4. Basic Example (बुनियादी उदाहरण)
+## 4. Basic Example
 
-Basic arithmetic, logical precedence, aur pattern operators ka evaluation:
+Basic arithmetic, logical precedence, aur pattern operators ko evaluate karne ke examples:
 
 ```sql
 USE sql_mastery;
@@ -112,13 +112,13 @@ WHERE (department_id = 1 OR department_id = 2) AND salary > 100000;
 
 ---
 
-## 5. Real-World Example (वास्तविक दुनिया का उदाहरण)
+## 5. Real-World Example
 
-E-commerce sales director ko `order_items` table ka ek complete financial audit report chahiye. Har ordered item ke liye:
-1. Gross total calculate karein (`quantity * unit_price`).
-2. Monetary discount amount nikalen (`gross_total * discount`).
-3. Discount ke baad net billed amount calculate karein.
-4. Sirf unhi items ko filter karein jinka net billed price $200 se zyada ho AUR ya toh unpar discount diya gaya ho (`discount > 0`) YA phir unki quantity 1 se zyada ho.
+E-commerce sales director ko `order_items` ke line items ka ek comprehensive audit chahiye. Har ordered item ke liye:
+1. Gross total calculate karo (`quantity * unit_price`).
+2. Monetary discount amount calculate karo (`gross_total * discount`).
+3. Discounts apply karne ke baad net billed price calculate karo.
+4. Sirf unhi items ko filter karo jahan net item price $200 se zyada ho AUR ya toh discount apply hua ho (`discount > 0`) YA phir item quantity 1 se zyada ho.
 
 ```sql
 USE sql_mastery;
@@ -140,24 +140,24 @@ WHERE (quantity * unit_price * (1.00 - discount)) > 200.00
 
 ---
 
-## 6. Step-by-Step Explanation (कदम-दर-कदम व्याख्या)
+## 6. Step-by-Step Explanation
 
 1. `(quantity * unit_price)`:
-   * Integer column `quantity` ko exact decimal `unit_price` se multiply karta hai, jisse bina discount ka raw gross total milta hai.
+   * Integer column `quantity` ko exact decimal column `unit_price` se multiply karta hai, jisse raw gross monetary value milti hai.
 2. `(1.00 - discount)`:
-   * Discount ke baad bacha hua percentage calculate karta hai (jaise agar discount 5% yaani `0.05` hai, toh bachega `1.00 - 0.05 = 0.95`).
+   * Discount apply hone ke baad remaining percentage calculate karta hai (jaise `1.00 - 0.05 = 0.95`).
 3. `ROUND(quantity * unit_price * (1.00 - discount), 2)`:
-   * Net final price calculate karta hai aur `ROUND(..., 2)` currency cents ke hisab se exact 2 decimal places tak round kar deta hai.
+   * Net price calculate karta hai aur result ko 2 decimal places tak round karta hai taki exact currency cents ensure ho sakein.
 4. `WHERE (...) > 200.00 AND (discount > 0.00 OR quantity > 1)`:
-   * **Sub-expression 1**: `(quantity * unit_price * (1.00 - discount)) > 200.00` check karta hai ki net price $200 se upar hai ya nahi.
-   * **Sub-expression 2**: `(discount > 0.00 OR quantity > 1)` check karta hai ki customer ko promotional discount mila tha YA unhone bulk mein saman kharida tha.
-   * **Logical Operator**: `AND` operator ensure karta hai ki yeh dono conditions ek sath satisfy hon.
+   * **Sub-expression 1**: `(quantity * unit_price * (1.00 - discount)) > 200.00` net price ko evaluate karta hai.
+   * **Sub-expression 2**: `(discount > 0.00 OR quantity > 1)` check karta hai ki customer ko ya toh promotion mila ho YA unhone bulk mein buy kiya ho.
+   * **Logical Operator**: `AND` operator ensure karta hai ki dono parenthesized conditions ek sath satisfy hon.
 
 ---
 
-## 7. Expected Result (अपेक्षित परिणाम)
+## 7. Expected Result
 
-Order items audit query ka result:
+Order item discount audit query ka output:
 
 ```
 +---------+----------+------------+----------+------------+----------+-------------+-----------------+-------------------+
@@ -171,86 +171,85 @@ Order items audit query ka result:
 
 ---
 
-## 8. Common Mistakes (आम गलतियाँ)
+## 8. Common Mistakes
 
-1. **Forgetting Parentheses with `AND` and `OR` (`AND` और `OR` में ब्रैकेट भूल जाना)**:
+1. **Forgetting Parentheses with `AND` and `OR`**:
    * *Mistake*:
      ```sql
      WHERE status = 'Shipped' OR status = 'Processing' AND total_amount > 500;
      ```
-   * *What actually runs (इंजन असल में क्या चलाता है)*:
+   * *What actually runs*:
      ```sql
      WHERE status = 'Shipped' OR (status = 'Processing' AND total_amount > 500);
      ```
-   * *Consequence*: Har ek order jiska status `'Shipped'` hai woh result mein aa jayega, chahe uska `total_amount` sirf $5.00 hi kyun na ho!
-   * *Correction*: Hamesha brackets lagayein: `WHERE (status = 'Shipped' OR status = 'Processing') AND total_amount > 500;`.
-2. **Dividing by Zero (शून्य से भाग देना)**:
+   * *Consequence*: Status `'Shipped'` wala koi bhi order return ho jayega chahe uska `total_amount` kitna bhi kam ho (bhale hi wo $5.00 ho)!
+   * *Correction*: Hamesha explicitly likho: `WHERE (status = 'Shipped' OR status = 'Processing') AND total_amount > 500;`.
+2. **Dividing by Zero**:
    * *Query*: `SELECT 100 / 0;`
-   * *Behavior*: MySQL default mode mein division by zero par `NULL` return karta hai aur warning deta hai (`Warning 1365: Division by 0`). Lekin strict mode (`ERROR_FOR_DIVISION_BY_ZERO`) mein yeh query ko seedhe fail kar deta hai. Isse bachne ke liye `NULLIF` ka use karein: `100 / NULLIF(divisor, 0)`.
-3. **Using `=` for NULL Checks in Joins or Filtering (NULL चेक्स में `=` लगाना)**:
-   * Agar do tables ke columns mein `NULL` values hain, toh `t1.manager_id = t2.manager_id` likhne par dono ke `NULL` aapas mein match nahi honge kyunki SQL mein `NULL = NULL` ka result `UNKNOWN` hota hai.
-   * *Fix*: Hamesha NULL-Safe Equality operator use karein: `t1.manager_id <=> t2.manager_id`.
-4. **Confusing `%` (Modulo) with `%` (LIKE Wildcard) (`%` के दो अलग मतलब)**:
-   * Arithmetic expressions (`10 % 3`) mein `%` remainder (sheshfal) nikalta hai (`1`). Jabki string search pattern (`WHERE name LIKE '%son'`) mein `%` zero ya zyada characters match karne wala wildcard hota hai.
+   * *Behavior*: MySQL ke default mode mein, division by zero `NULL` return karta hai aur ek warning issue karta hai (`Warning 1365: Division by 0`). Strict SQL modes (`ERROR_FOR_DIVISION_BY_ZERO`) mein ye execution halt kar deta hai. Aise calculations ko `NULLIF` ke sath protect karo: `100 / NULLIF(divisor, 0)`.
+3. **Using `=` for NULL Checks in Joins or Filtering**:
+   * Agar do tables ke columns mein dono values `NULL` ho sakti hain, toh `t1.manager_id = t2.manager_id` par join karne se wo rows kabhi match nahi hongi jahan dono managers `NULL` hain.
+   * *Fix*: NULL-safe equality operator use karo: `t1.manager_id <=> t2.manager_id`.
+4. **Confusing `%` (Modulo) with `%` (LIKE Wildcard)**:
+   * Arithmetic expressions (`10 % 3`) mein `%` division remainder (`1`) calculate karta hai. Pattern strings (`WHERE name LIKE '%son'`) mein `%` arbitrary character sequences match karta hai.
 
 ---
 
-## 9. Best Practices (सर्वोत्तम प्रथाएं / Best Practices)
+## 9. Best Practices
 
-1. **Always Use Parentheses to Disambiguate Compound Logical Predicates (लॉजिकल कंडीशन्स में ब्रैकेट का उपयोग करें)**:
-   * Chahe aapko operator precedence kitni bhi achhi tarah yaad ho, team ke dusre developers confuse ho sakte hain. Brackets lagane se code clear rehta hai aur PR reviews aasaan ho jaate hain.
-2. **Prefer Standard ANSI SQL Operator Names (मानक ANSI कीवर्ड्स चुनें)**:
-   * Non-standard shortcuts jaise `&&`, `||`, `!`, `!=` ke bajaye standard `AND`, `OR`, `NOT`, `<>` ka use karein. Isse aapka SQL code MySQL, PostgreSQL, Oracle, aur Snowflake sabhi par bina badlav ke chalta hai.
-3. **Guard Against Division by Zero Using `NULLIF` (`NULLIF` से क्रैश होने से बचाएं)**:
-   * Production analytical queries mein hamesha `dividend / NULLIF(divisor, 0)` pattern use karein taaki zero aane par runtime crash na ho.
-4. **Optimize Pattern Searches (पैटर्न सर्च ऑप्टिमाइज़ करें)**:
-   * Simple prefix match (`name LIKE 'San%'`) B+ Tree index ka use karke fast execute hota hai. Lekin complex regular expressions (`name REGEXP '^San[a-z]+'`) standard index use nahi kar pate aur full table scan karte hain. Large tables par inka use soch-samajhkar karein.
-
----
-
-## 10. Practice Questions (अभ्यास प्रश्न)
-
-### Easy (सरल)
-1. `employees` table se har employee ka annual bonus nikalne ki query likhein, jo unki `salary` ka 12% ho, aur use `bonus_amount` ke naam se alias karein.
-2. Modulo operator (`%`) ka use karke `products` table se un sabhi products ko find karein jinka `stock_quantity` ek even (sam) number hai.
-3. `IN` operator ka use karke un sabhi customers ko find karein jinki `country` ya toh `'USA'` hai ya `'Germany'`.
-
-### Medium (मध्यम)
-4. Aise sabhi employees ko find karne ke liye query likhein jinka `manager_id` `NOT NULL` hai aur jinki salary $100,000 se zyada hai.
-5. `REGEXP` operator ka use karke un sabhi customers ko nikalen jinka `email` address `.com` ya `.org` par end hota hai.
-6. `orders` table se un sabhi orders ko find karein jinka `status` `'Pending'` YA `'Processing'` ho, AUR jinka `total_amount` + `shipping_fee` milakar $500.00 se zyada ho.
-
-### Difficult (कठिन)
-7. Ek aisi query likhein jo `(5, 5)`, `(5, NULL)`, aur `(NULL, NULL)` values par `col1 = col2` aur `col1 <=> col2` ka exact difference live compare karke dikhaye.
-8. `products` table par ek query likhein jo bitwise operator ka use karke verify kare ki kisi integer status flag ka 3rd bit set hai ya nahi (`flag & 4 != 0`).
+1. **Always Use Parentheses to Disambiguate Compound Logical Predicates**:
+   * Bhale hi aapko operator precedence zabani yaad ho, aapke team members ko shayad na ho. Parentheses ambiguity ko eliminate karte hain aur code review ko easy banate hain.
+2. **Prefer Standard ANSI SQL Operator Names**:
+   * Dialect shortcuts jaise `&&`, `||`, `!`, `!=` ke bajay standard `AND`, `OR`, `NOT`, `<>` use karo. Isse queries MySQL, PostgreSQL, Oracle, aur Snowflake ke beech fully portable rehti hain.
+3. **Guard Against Division by Zero Using `NULLIF`**:
+   * Production analytical calculations mein runtime crash se bachne ke liye hamesha `dividend / NULLIF(divisor, 0)` likho.
+4. **Optimize Pattern Searches**:
+   * Simple prefix matches (`name LIKE 'San%'`) B+ Tree indexes use kar sakte hain. Complex regular expressions (`name REGEXP '^San[a-z]+'`) standard indexes use nahi kar sakte aur full table scan trigger karte hain. Large datasets par inka use dhyan se karo.
 
 ---
 
-## 11. Interview Questions (साक्षात्कार प्रश्न)
+## 10. Practice Questions
+
+### Easy
+1. Employees ke liye annual bonus calculate karne ki query likho, jise unki `salary` ka 12% define kiya gaya hai, aur ise `bonus_amount` project karo.
+2. Modulo operator (`%`) use karke un sabhi products ko find karne ki query likho jahan `stock_quantity` ek even number hai.
+3. `IN` operator use karke un sabhi customers ko find karne ki query likho jinka `country` ya toh `'USA'` hai ya `'Germany'`.
+
+### Medium
+4. Ek aisi query likho jo un sabhi employees ko find kare jinka `manager_id` NOT NULL ho aur jinki salary $100,000 se zyada ho.
+5. `REGEXP` operator use karke un sabhi customers ko fetch karne ki query likho jinka `email` address ya toh `.com` par ya `.org` par end hota ho.
+6. `orders` table ke against aisi query likho jo un sabhi orders ko find kare jahan `status` `'Pending'` ho YA `status` `'Processing'` ho, AUR `total_amount` plus `shipping_fee` milakar $500.00 se exceed karta ho.
+
+### Difficult
+7. Ek aisi query likh kar `col1 = col2` aur `col1 <=> col2` ke beech exact operational difference demonstrate karo jo `(5, 5)`, `(5, NULL)`, aur `(NULL, NULL)` contain karne wale columns ko compare karti ho.
+8. `products` table ke against aisi query likho jo bitwise operators use karke check kare ki integer status flag ka 3rd bit set hai ya nahi (`flag & 4 != 0`).
+
+---
+
+## 11. Interview Questions
 
 ### Q1: What is operator precedence in SQL, and why is the interaction between `AND` and `OR` a frequent source of bugs?
-**Answer**: Operator precedence yeh tay karti hai ki complex expressions mein database engine kis operator ko pehle evaluate karega. SQL mein `AND` ki priority `OR` se zyada hoti hai. Isliye, agar brackets nahi lagaye jayein, toh `A OR B AND C` ko database hamesha `A OR (B AND C)` manta hai. Agar developer ka matlab tha `(A OR B) AND C`, toh ek gambhir bug paida ho jata hai—kyunki condition `A` satisfy karne wali koi bhi row result mein chali aayegi chahe condition `C` fail hi kyun na ho rahi ho.
+**Answer**: Operator precedence ye determine karta hai ki database engine complex expression mein alag-alag operators ko kis order mein evaluate karega. SQL mein, `AND` ki precedence `OR` se zyada hoti hai. Is wajah se, bina explicit parentheses ke, `A OR B AND C` jaisa expression internally `A OR (B AND C)` parse hota hai. Agar developer ka intention `(A OR B) AND C` tha, toh ek serious logic bug create ho jayega, kyunki condition `A` satisfy karne wali koi bhi row result set mein shamil ho jayegi, chahe condition `C` kuch bhi ho.
 
 ### Q2: What is the NULL-Safe Equality Operator (`<=>`) in MySQL, and when is it required?
-**Answer**: Standard SQL mein jab aap do values ko compare karte hain aur unme se koi ek ya dono `NULL` hoti hain (jaise `val = NULL` ya `NULL = NULL`), toh result hamesha `UNKNOWN` (`NULL`) aata hai. 
-MySQL ka NULL-Safe Equality Operator (`<=>`) ek special equality check hai jo `NULL` ko ek normal comparable value ki tarah treat karta hai:
-* Agar dono operands `NULL` hain, toh `NULL <=> NULL` return karta hai `1` (`TRUE`).
-* Agar ek operand `NULL` hai aur dusra nahi, toh `val <=> NULL` return karta hai `0` (`FALSE`).
-* Agar dono operands non-null hain, toh yeh normal `=` operator ki tarah hi kaam karta hai.
-Yeh operator tab behad zaroori ho jata hai jab aap nullable columns ko compare kar rahe hon ya join kar rahe hon aur do `NULL` entries ko match karwana chahte hon.
+**Answer**: Standard SQL mein, agar do values ko compare karte waqt ek ya dono values `NULL` hon (jaise `val = NULL` ya `NULL = NULL`), toh result hamesha `UNKNOWN` (treated as `NULL`) aata hai. MySQL ka NULL-Safe Equality Operator (`<=>`) ek aisi equality check perform karta hai jo `NULL` ko normal comparable value ki tarah treat karti hai:
+* Agar dono operands `NULL` hain, toh `NULL <=> NULL` return karega `1` (`TRUE`).
+* Agar ek operand `NULL` hai aur doosra nahi hai, toh `val <=> NULL` return karega `0` (`FALSE`).
+* Agar dono mein se koi bhi `NULL` nahi hai, toh ye standard `=` operator ki tarah behave karta hai.
+Ye operator tab zaroori hota hai jab hum nullable columns ko compare ya join kar rahe hote hain aur chahte hain ki do `NULL` entries ek-doosre se successfully match hon.
 
 ### Q3: How do you safely prevent division-by-zero errors in analytical SQL queries?
-**Answer**: SQL queries mein division-by-zero se bachne ke liye hum denominator ko `NULLIF(expression, 0)` function ke andar wrap karte hain. `NULLIF` apne arguments ko check karta hai: agar denominator ki value `0` hoti hai, toh yeh `NULL` return karta hai, warna normal value deta hai. Aur SQL mein kisi bhi number ko `NULL` se divide karne par result `NULL` aata hai, bina kisi fatal runtime error ya warning ke:
+**Answer**: SQL mein, division-by-zero prevent karne ke liye denominator ko `NULLIF(expression, 0)` function ke andar wrap kiya jata hai. `NULLIF` apne arguments ko evaluate karta hai: agar denominator `0` ke barabar hota hai, toh ye `NULL` return karta hai; warna denominator ki original value return karta hai. SQL mein kisi bhi number ko `NULL` se divide karne par fatal runtime division-by-zero error aane ke bajay clean `NULL` produce hota hai:
 ```sql
 SELECT total_revenue / NULLIF(total_units_sold, 0) AS avg_unit_price FROM sales;
 ```
 
 ---
 
-## 12. Quick Revision (त्वरित सारांश)
+## 12. Quick Revision
 
-* **Arithmetic**: `+`, `-`, `*`, `/` (standard division), `DIV` (integer division), `%` / `MOD` (remainder/sheshfal).
-* **Precedence Order**: `NOT` $\rightarrow$ `AND` $\rightarrow$ `OR`. Jab bhi `AND` aur `OR` ko mix karein, **hamesha brackets use karein**.
-* **NULL-Safe Equality (`<=>`)**: Nullable columns ko safely compare karta hai; `NULL <=> NULL` ka result `1` (`TRUE`) hota hai.
-* **Pattern Matching**: `LIKE` simple wildcards (`%`, `_`) handle karta hai; `REGEXP` / `RLIKE` powerful regular expressions handle karta hai.
-* Production calculations mein fatal division-by-zero errors se bachne ke liye hamesha **`NULLIF(divisor, 0)`** ka prayog karein.
+* **Arithmetic**: `+`, `-`, `*`, `/` (standard division), `DIV` (integer division), `%` / `MOD` (remainder).
+* **Precedence**: `NOT` $\rightarrow$ `AND` $\rightarrow$ `OR`. Jab `AND` aur `OR` ko mix karein, toh **hamesha parentheses** use karein.
+* **NULL-Safe Equality (`<=>`)**: Nullable columns ko safely compare karta hai, aur `NULL <=> NULL` ke liye `1` (`TRUE`) return karta hai.
+* **Pattern Matching**: `LIKE` simple wildcards (`%`, `_`) handle karta hai; `REGEXP` / `RLIKE` powerful regular expression matching handle karta hai.
+* Fatal division-by-zero errors se bachne ke liye **`NULLIF(divisor, 0)`** use karein.

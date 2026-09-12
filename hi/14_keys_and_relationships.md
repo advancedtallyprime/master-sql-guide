@@ -1,27 +1,27 @@
-# Chapter 14 — Relational Architecture: Keys & Entity Relationships (कीज और एंटिटी रिलेशनशिप्स)
+# Chapter 14 — Relational Architecture: Keys & Entity Relationships (Keys Aur Entity Relationships)
 
 ---
 
-## 1. What is it? (यह क्या है?)
+## 1. What is it? (Ye Kya Hai?)
 
-Relational Database Management Systems (RDBMS) में, **Keys** और **Relationships** वे बुनियादी structural pillars हैं जो अलग-अलग tables को आपस में जोड़कर एक coherent, reliable और self-enforcing data web तैयार करते हैं। 
+Relational Database Management Systems (RDBMS) ke andar, **Keys** aur **Relationships** wo fundamental structural mechanisms hain jo alag-alag discrete tables ko aapas me jodkar ek coherent, reliable aur self-enforcing data web banate hain.
 
-Bina relationships ke, aapka database sirf alag-alag spreadsheet sheets ka collection ban kar reh jayega jisme data redundancy aur inconsistency ka khatra hamesha bana rehta hai. Keys hume ensure karti hain ki har record uniquely identifiable ho aur do tables ke beech ka connection perfectly valid rahe.
+Bina relationships ke, aapka database bas isolated spreadsheets ka ek collection ban kar reh jayega, jisme data redundancy aur data inconsistency ka bohot bada risk bana rehta hai. Keys hume guarantee deti hain ki table ka har record uniquely identify ho sake aur multiple tables ke beech ka connection referentially solid rahe.
 
-### 1.1. The Key Taxonomy (कीज का वर्गीकरण)
-* **Super Key**: Table ke kisi bhi ek ya multiple columns ka aisa set jinki values milkar table ki har ek row ko uniquely identify karne ki guarantee deti hain. Ek table me multiple super keys ho sakti hain.
-* **Candidate Key**: Ek minimal Super Key—yaani aisa super key jisme se agar aap ek bhi column hata dein, toh uniqueness guarantee khatam ho jayegi (no proper subset can guarantee uniqueness). Ek table ke paas multiple Candidate Keys ho sakti hain.
-* **Primary Key (PK)**: Database architect dwara chuni gayi woh single candidate key jo table ki rows ka official unique identifier banti hai. MySQL ke default **InnoDB** storage engine mein, Primary Key physically **Clustered Index** define karti hai. Iska matlab hai ki table ka data disk par physically Primary Key ke order mein hi store hota hai!
-* **Alternate Key**: Aisi candidate keys jinhe Primary Key ke roop mein select *nahi* kiya gaya (inhe aamtaur par table me `UNIQUE NOT NULL` constraint ke sath implement kiya jata hai, jaise `email` ya `phone_number`).
-* **Composite Key**: Jab do ya do se zyada columns ko combine karke ek key banayi jaati hai (jaise `(order_id, product_id)`).
+### 1.1. The Key Taxonomy (Keys Ka Taxonomy)
+* **Super Key**: Kisi bhi table ke ek ya ek se zyada columns ka aisa set jinki values milkar table ki har ek row ko uniquely identify karne ki guarantee deti hain. Ek table me multiple super keys ho sakti hain.
+* **Candidate Key**: Ek minimal Super Key—yaani aisa super key jisme se agar aap koi bhi ek column hata dein, toh uniqueness ki guarantee khatam ho jayegi (no proper subset can guarantee uniqueness). Ek table ke paas multiple Candidate Keys ho sakti hain.
+* **Primary Key (PK)**: Database architect dwara select ki gayi wo single candidate key jo table ki rows ka official unique identifier banti hai. MySQL ke default **InnoDB** storage engine me, Primary Key physically **Clustered Index** define karti hai. Iska matlab ye hai ki table ka actual data disk par physically Primary Key ke order me hi store hota hai!
+* **Alternate Key**: Wo saari candidate keys jinhe Primary Key ke roop me select *nahi* kiya gaya (inhe aamtaur par table me `UNIQUE NOT NULL` constraint ke sath implement kiya jata hai, jaise `email` ya `phone_number`).
+* **Composite Key**: Jab do ya do se zyada columns ko combine karke ek single key banayi jaati hai (for example, `(order_id, product_id)`).
 * **Surrogate Key vs Natural Key**:
   * **Natural Key**: Ek real-world business attribute jisme inherent uniqueness hoti hai (jaise Social Security Number, Aadhar Number, VIN, ISBN, email).
-  * **Surrogate Key**: Ek artificial, system-generated identifier jiska real-world business logic se koi matlab nahi hota (jaise `INT AUTO_INCREMENT` ya `UUID`).
-* **Foreign Key (FK)**: Ek **child table** ka aisa column (ya columns ka set) jo kisi **parent table** ki Primary Key ki values ko reference karta hai. Ye **referential integrity** enforce karta hai taaki database me koi invalid ya orphan record create na ho sake.
+  * **Surrogate Key**: Ek artificial, system-generated identifier jiska koi business meaning nahi hota (jaise `INT AUTO_INCREMENT` ya `UUID`).
+* **Foreign Key (FK)**: Ek **child table** ka aisa column (ya columns ka set) jo kisi **parent table** ki Primary Key ki values ko reference karta hai. Ye **referential integrity** enforce karta hai taaki database me koi orphan ya invalid records create na ho sakein.
 
 ---
 
-## 2. Cardinality & Relational Patterns (कार्डिनैलिटी और रिलेशनल पैटर्न्स)
+## 2. Cardinality & Relational Patterns (Cardinality Aur Relational Patterns)
 
 Ek table ke entity instances dusri table ke kitne entity instances ke sath relate kar sakte hain, is ratio ya count ko hum **cardinality** kehte hain:
 
@@ -42,25 +42,25 @@ erDiagram
 ```
 
 1. **One-to-One (1:1)**:
-   * *Rule*: Table A ki bilkul ek row, Table B ki maximum ek row se correspond karti hai.
-   * *Implementation*: Table B ke andar Foreign Key banaiye aur us par ek `UNIQUE` constraint laga dijiye (ya fir dono tables mein identical Primary Key share karwaiye).
-   * *Example*: `employees` aur `employee_passports` — ek employee ka sirf ek passport ho sakta hai aur ek passport sirf ek employee ka hota hai.
+   * *Rule*: Table A ki exactly ek row, Table B ki maximum ek row se relate karti hai.
+   * *Implementation*: Table B ke andar Foreign Key banaiye aur us par ek `UNIQUE` constraint apply kar dijiye (ya dono tables me identical Primary Key share karwaiye).
+   * *Example*: `employees` aur `employee_passports` — ek employee ka maximum ek passport record hoga aur ek passport record kisi ek hi employee ko belong karega.
 2. **One-to-Many (1:N)**:
-   * *Rule*: Table A ki ek row, Table B ki multiple rows se relate ho sakti hai, lekin Table B ki har row Table A ki sirf ek hi row se judi hoti hai.
-   * *Implementation*: Foreign Key ko hamesha "Many" (child) side wali table mein rakha jata hai.
-   * *Example*: Ek `department` mein multiple `employees` kaam kar sakte hain; ek `customer` multiple `orders` place kar sakta hai.
+   * *Rule*: Table A ki ek row Table B ki multiple rows se relate ho sakti hai, lekin Table B ki har ek row Table A ki exactly ek hi row se judi hoti hai.
+   * *Implementation*: Foreign Key ko hamesha "Many" (child) side wali table me place kiya jata hai.
+   * *Example*: Ek `department` ke andar multiple `employees` kaam karte hain; ek `customer` multiple `orders` place kar sakta hai.
 3. **Many-to-Many (N:M)**:
-   * *Rule*: Table A ki multiple rows, Table B ki multiple rows se relate kar sakti hain.
-   * *Implementation*: Relational engines do tables ke beech direct N:M link store nahi kar sakte. Iske liye hume ek teesri intermediate table banani padti hai jise **Junction Table** (ya Associative / Bridge Table) kehte hain. Is junction table mein dono parent tables ki primary keys foreign keys ke roop mein store hoti hain.
-   * *Example*: `orders` aur `products` jo aapas mein `order_items` table ke zariye jude hote hain (ek order mein kayi products ho sakte hain aur ek product kayi orders ka hissa ho sakta hai).
+   * *Rule*: Table A ki multiple rows Table B ki multiple rows se relate kar sakti hain.
+   * *Implementation*: Relational engines direct do tables ke beech N:M relationship implement nahi kar sakte. Iske liye hume ek third table introduce karni padti hai jise **Junction Table** (ya Associative / Bridge Table) kehte hain. Is table me dono parent tables ki primary keys foreign keys ban kar aati hain.
+   * *Example*: `orders` aur `products` aapas me `order_items` junction table ke through connect hote hain.
 4. **Self-Referencing (Unary)**:
-   * *Rule*: Jab ek table khud ko hi reference karti hai.
-   * *Implementation*: Table ke andar ek foreign key column create kiya jata hai jo usi table ki primary key ko point karta hai.
-   * *Example*: `employees.manager_id` jo usi table ke `employees.employee_id` ko point karta hai (kyunki manager bhi aakhirkar ek employee hi hota hai).
+   * *Rule*: Ek table khud apne aap ko hi reference karti hai.
+   * *Implementation*: Table ke andar ek aisa foreign key column hota hai jo usi table ki primary key ko point karta hai.
+   * *Example*: `employees.manager_id` jo usi table ke `employees.employee_id` ko reference karta hai.
 
 ---
 
-## 3. Syntax (सिंटैक्स)
+## 3. Syntax (Syntax)
 
 ### Creating Relationships with Referential Actions
 ```sql
@@ -127,9 +127,9 @@ DROP PRIMARY KEY;
 
 ---
 
-## 4. Basic Example (बेसिक उदाहरण)
+## 4. Basic Example (Basic Example)
 
-Chaliye dekhte hain ki parent aur child tables ke beech referential integrity kaise kaam karti hai aur `ON DELETE CASCADE` ka kya asar hota hai:
+Parent aur child tables ke beech referential integrity enforcement ko samajhte hain:
 
 ```sql
 USE sql_mastery;
@@ -164,12 +164,12 @@ DROP TABLE authors;
 
 ---
 
-## 5. Real-World Example (रियल-वर्ल्ड उदाहरण)
+## 5. Real-World Example (Real-World Example)
 
-Ab hamare `sql_mastery` database ke real production architecture ko samajhte hain, jisme `customers`, `orders`, aur `order_items` tables aapas mein connected hain:
-1. `orders` aur `order_items` par defined foreign keys aur unke cascade rules ko test karenge.
-2. Dekhenge ki kaise `ON DELETE RESTRICT` rule customer history ko galti se delete hone se bachata hai.
-3. Dekhenge ki jab ek order cancel hoke remove hota hai, toh `ON DELETE CASCADE` kaise uske sabhi child line items ko automatically safely clean up kar deta hai.
+Chaliye hamare `sql_mastery` database ke andar `customers`, `orders`, aur `order_items` ko connect karne wale relational architecture ko dekhte hain:
+1. `orders` aur `order_items` par foreign keys aur cascade rules ko verify karte hain.
+2. Demonstrate karte hain ki kaise `ON DELETE RESTRICT` customer history ko accidental deletion se bachata hai.
+3. Demonstrate karte hain ki kaise `ON DELETE CASCADE` ensure karta hai ki agar order cancel ho kar delete ho, toh child line items automatically clean up ho jayein.
 
 ```sql
 USE sql_mastery;
@@ -199,23 +199,23 @@ SELECT * FROM order_items WHERE order_id = 9999;
 
 ---
 
-## 6. Step-by-Step Explanation (स्टेप-बाय-स्टेप व्याख्या)
+## 6. Step-by-Step Explanation (Step-by-Step Explanation)
 
 1. `DELETE FROM customers WHERE customer_id = 1;`:
-   * InnoDB storage engine ko customer `1` ko delete karne ki query milti hai.
-   * Customer row ko chhoone se pehle, InnoDB un sabhi foreign key references ko inspect karta hai jo `customers(customer_id)` ko point kar rahe hain.
-   * Use `orders` table mein aisi child rows milti hain jahan `customer_id = 1` maujood hai.
-   * Kyunki constraint par `ON DELETE RESTRICT` configure hai, InnoDB turant operation ko halt kar deta hai, transaction ko roll back karta hai, aur ek fatal error return karta hai:
+   * InnoDB storage engine ke paas customer `1` ko delete karne ki request aati hai.
+   * Customer row ko chhoone se pehle, InnoDB un saare foreign key references ko check karta hai jo `customers(customer_id)` ki taraf point kar rahe hain.
+   * Use `orders` table ke andar matching child rows milti hain jahan `customer_id = 1` hai.
+   * Kyunki foreign key constraint me `ON DELETE RESTRICT` specify kiya gaya hai, InnoDB turant operation ko halt kar deta hai, rollback karta hai, aur error return karta hai:
      `ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails`.
 2. `DELETE FROM orders WHERE order_id = 9999;`:
    * InnoDB order `9999` ko dhundhta hai.
-   * Ye check karta hai ki kya koi foreign key `orders(order_id)` ko reference kar rahi hai.
-   * Use `order_items` mein child line item `8888` milta hai jahan rule `ON DELETE CASCADE` set hai.
-   * InnoDB automatically ek internal cascade deletion perform karta hai aur `order_items` se row `8888` ko pehle delete karta hai, fir parent order `9999` ko `orders` se delete karta hai. Ye dono operations ek single atomic transaction ke andar commit hote hain.
+   * Wo un foreign keys ko inspect karta hai jo `orders(order_id)` ko reference kar rahi hain.
+   * Use `order_items` table me child row `8888` milti hai jahan constraint `ON DELETE CASCADE` configure kiya hua hai.
+   * InnoDB ek internal cascade deletion perform karta hai, jisse order `9999` delete hone se pehle `order_items` se item `8888` automatically delete ho jati hai. Dono operations ek single atomic transaction me commit ho jaate hain.
 
 ---
 
-## 7. Expected Result (अपेक्षित परिणाम)
+## 7. Expected Result (Expected Result)
 
 Deletion test ka terminal output:
 
@@ -239,78 +239,78 @@ Empty set (0.00 sec)
 
 ---
 
-## 8. Common Mistakes (सामान्य गलतियाँ और Pitfalls)
+## 8. Common Mistakes (Common Mistakes)
 
-1. **Natural Keys ko Clustered Primary Key banana**:
-   * *Mistake*: `email VARCHAR(100)` ya `uuid CHAR(36)` ko InnoDB table ki Primary Key bana dena.
-   * *Performance Problem*: InnoDB mein Primary Key physical clustered index ko decide karti hai. Random string keys (jaise UUID v4) insert ke time par lagatar **page splits**, random disk I/O, aur heavy index fragmentation cause karti hain. Iske alawa, table ka har secondary index apne leaf nodes mein primary key ki copy store karta hai, jiska matlab hai ki ek lambi primary key table ke *har doosre index* ka size bohot badha deti hai!
-   * *Rule*: Hamesha compact, monotonically increasing surrogate keys (`INT` ya `BIGINT AUTO_INCREMENT`) ko primary key banayein, aur real-world uniqueness enforce karne ke liye secondary `UNIQUE` constraint ka use karein.
-2. **Foreign Key Columns par Index miss kar dena**:
-   * Child table ke foreign key columns par hamesha index hona chahiye. Agar `child_table(parent_id)` par index nahi hoga, toh jab bhi parent table se koi row update ya delete hogi, database engine ko matching records dhundhne ke liye child table ka full table scan karna padega, jisse massive table locking aur bottlenecks paida ho jayenge. (Note: MySQL aamtaur par foreign key banate waqt index automatically create kar deta hai, lekin explicit dhyan rakhna zaroori hai).
+1. **Using Natural Keys as Clustered Primary Keys**:
+   * *Mistake*: InnoDB table me `email VARCHAR(100)` ya `uuid CHAR(36)` ko Primary Key bana dena.
+   * *Performance Problem*: InnoDB me primary key physically clustered index tay karti hai. Random string keys (jaise UUID v4) inserts ke dauran **page splits**, random disk I/O aur heavy index fragmentation cause karti hain. Iske alawa, har secondary index apne leaf nodes me primary key ki copy store karta hai, yaani ek lamba primary key table ke *baaki sabhi indexes* ke size ko bohot bada bana deta hai.
+   * *Rule*: Primary keys ke liye hamesha compact, monotonically increasing surrogate keys (`INT` ya `BIGINT AUTO_INCREMENT`) choose karein, aur natural uniqueness ko secondary `UNIQUE` constraints ke through enforce karein.
+2. **Missing Indexes on Foreign Key Columns**:
+   * Child tables ke andar foreign key columns par index hona bohot zaroori hai. Agar `child_table(parent_id)` par index nahi hoga, toh parent row ko delete ya update karte samay database engine ko match check karne ke liye poori child table ka full table scan karna padega, jisse severe locking bottlenecks aur performance drop hoga.
 3. **Circular Foreign Key Deadlocks**:
-   * Table A ko Table B ke foreign key ke sath create karna, aur Table B ko Table A ke foreign key ke sath create karna. Aise case mein pehli row insert karna impossible ho jata hai kyunki dono mein se koi bhi parent row pehle se maujood nahi hoti. (Agar circular dependency zaroori hi ho, toh pehle `NULL` insert karein ya temporary tor par `SET FOREIGN_KEY_CHECKS = 0;` ka use karein).
+   * Table A create karna jisme Table B ka foreign key ho, aur Table B me Table A ka foreign key ho. Is scenario me pehli row insert karna impossible ho jata hai kyunki dono me se koi bhi parent record pehle se exist nahi karta. (Agar circular references unavoidable hon, toh pehle `NULL` ke sath insert karein, ya temporarily checks disable karein: `SET FOREIGN_KEY_CHECKS = 0;`).
 
 ---
 
-## 9. Best Practices (बेस्ट प्रैक्टिसेज)
+## 9. Best Practices (Best Practices)
 
-1. **Relational Joins ke liye hamesha Surrogate Keys chunein**:
-   * Relational joins ke liye integer surrogate keys (`customer_id INT`) use karein. Business attributes (jaise email ya phone number) samay ke sath badal sakte hain jab user apna profile update karta hai; surrogate keys kabhi nahi badalti, jisse lakho child foreign keys ko update karne ki naubat nahi aati.
-2. **Orphan Records kabhi allow na karein**:
-   * Relationships ko hamesha database engine level par explicit Foreign Keys se enforce karein. Sirf application-layer code ke checks par bharosa na karein, kyunki direct script execution ya concurrent bugs se orphan rows ban sakti hain.
-3. **Hamesha `ON UPDATE CASCADE` configure karein**:
-   * Kabhi agar rare case mein parent table ki primary key re-sequence ya migrate hoti hai, toh `ON UPDATE CASCADE` ensure karta hai ki sabhi child tables automatically naye key value ke sath sync ho jayein.
-4. **Many-to-Many Relationships ke liye explicit Junction Tables banayein**:
-   * Junction table mein auditing metadata (`created_at`, `assigned_by`, `status`) zaroor add karein taaki relationships ki history track ki ja sake.
-
----
-
-## 10. Practice Questions (अभ्यास प्रश्न)
-
-### Easy (सरल)
-1. Natural Key aur Surrogate Key ke beech mukhya antar kya hai? Real-world udaharan ke sath samjhaiye.
-2. `departments` aur `employees` ke relationship mein kaun si table Parent Table hai aur kaun si Child Table?
-3. Agar aap `employees` table mein ek aisa record insert karne ki koshish karein jisme `department_id = 999` ho aur department 999 exist na karta ho, toh MySQL kya error return karega?
-
-### Medium (मध्यम)
-4. Ek aisi DDL statement likhiye jo `customer_passports` table create kare jo `customers` ke sath strict 1:1 relationship maintain kare, taaki har customer ka maximum ek hi passport ho sake.
-5. `employees` table se foreign key constraint `fk_emp_department` ko drop karne ke liye sahi SQL command likhiye.
-6. `students` aur `classes` ke beech ek Many-to-Many relationship design kijiye jisme junction table ka naam `class_roster` ho. Isme composite uniqueness constraint include kijiye.
-
-### Difficult (कठिन)
-7. InnoDB ke clustered index aur secondary index ke internal storage mechanics ko detail mein samjhaiye. Ek 36-character UUID string primary key ke roop mein 8-byte `BIGINT` ke mukable RAM mein kitna zyada overhead create karti hai?
-8. Ek aisa `ALTER TABLE` execution sequence banaiye jo ek existing nullable foreign key relationship ko strict `NOT NULL` foreign key with `ON DELETE CASCADE` mein badalta ho, aur ensure karein ki pehle se maujood koi bhi orphaned rows pehle clean ho jayein.
+1. **Always Choose Surrogate Keys for Relational Joins**:
+   * Relational joins ke liye hamesha surrogate integer keys (`customer_id INT`) use karein. Real-world business attributes (jaise email ya username) user update ke waqt badal sakte hain; jabki surrogate keys kabhi change nahi hote, jisse millions of foreign keys me cascading updates ka risk khatam ho jata hai.
+2. **Never Permit Orphaned Records**:
+   * Relationships ko hamesha explicit database-level Foreign Keys se enforce karein, na ki sirf application code ke integrity checks par depend karein.
+3. **Always Configure `ON UPDATE CASCADE`**:
+   * Agar rare case me primary key value ko migrate ya re-sequence karna pade, toh `ON UPDATE CASCADE` ensure karta hai ki sabhi child tables me updated key automatically reflect ho jaye.
+4. **Model Many-to-Many Relationships with Explicit Junction Tables**:
+   * Junction tables me relationship history track karne ke liye auditing metadata columns (`created_at`, `assigned_by`) zaroor shamil karein.
 
 ---
 
-## 11. Interview Questions (इंटरव्यू सवाल और जवाब)
+## 10. Practice Questions (Practice Questions)
 
-### Q1: MySQL InnoDB mein Clustered Index kya hota hai, aur ye Primary Key dwara kaise decide hota hai?
-**Answer**: InnoDB storage engine mein, table ka data disk par physically ek B+ Tree index ke order mein arrange hota hai jise **Clustered Index** kaha jata hai. Clustered index ke leaf pages mein poori actual row ka complete data store hota hai.
+### Easy
+1. Natural Key aur Surrogate Key ke beech ka difference explain kijiye.
+2. `departments` aur `employees` ke relationship me Parent Table kaun si hai aur Child Table kaun si hai?
+3. Agar aap ek aise employee ko insert karne ki koshish karein jiska `department_id = 999` ho, aur department 999 exist na karta ho, toh kya error aayega?
 
-InnoDB table ki `PRIMARY KEY` ko automatically Clustered Index designate karta hai. Agar koi primary key define nahi ki gayi hai, toh InnoDB table ke pehle non-null `UNIQUE` index ko clustered index banata hai. Agar dono hi maujood nahi hain, toh InnoDB internally ek hidden 6-byte row identifier (`DB_ROW_ID`) generate karta hai aur uspar clustered index banata hai.
+### Medium
+4. Ek table `customer_passports` create karne ke liye DDL statement likhiye jo `customers` ke sath strict 1:1 relationship model kare, ensure karte hue ki har customer ka maximum ek hi passport ho sake.
+5. `employees` table se `fk_emp_department` foreign key constraint ko drop karne ke liye SQL command likhiye.
+6. Junction table `class_roster` ka use karte hue `students` aur `classes` ke beech many-to-many relationship schema design kijiye. Isme composite uniqueness include kijiye.
 
-Sabhi secondary (non-clustered) indexes row ke physical disk pointer ko store nahi karte; balki unke leaf nodes mein matching row ki `PRIMARY KEY` value store hoti hai. Isliye jab aap secondary index se query karte hain, toh engine pehle secondary index traversal karta hai aur fir complete row fetch karne ke liye clustered index par "bookmark lookup" (double lookup) karta hai.
+### Difficult
+7. Explain kijiye ki InnoDB ka clustered index secondary index leaf records ko internally kaise store karta hai, aur 36-character UUID string primary key ke roop me 8-byte `BIGINT` se zyada RAM kyun waste karti hai?
+8. Ek aisa `ALTER TABLE` sequence construct kijiye jo existing nullable foreign key relationship ko strict `NOT NULL` foreign key with `ON DELETE CASCADE` me convert kare, aur pehle ensure kare ki existing orphaned rows clean up ho chuki hon.
 
-### Q2: `ON DELETE CASCADE`, `ON DELETE SET NULL`, aur `ON DELETE RESTRICT` mein kya antar hai?
+---
+
+## 11. Interview Questions (Interview Questions)
+
+### Q1: MySQL InnoDB me Clustered Index kya hota hai, aur ye Primary Key se kaise determine hota hai?
+**Answer**: InnoDB storage engine me table ka data disk par physically ek B+ Tree index ke order me organize hota hai, jise **Clustered Index** kaha jata hai. Clustered index ke leaf pages me actual poori row ka data store hota hai. 
+
+InnoDB table ki `PRIMARY KEY` ko automatically clustered index banata hai. Agar koi primary key declare nahi ki gayi hai, toh InnoDB pehle non-null `UNIQUE` index ko pick karta hai. Agar dono hi nahi hain, toh InnoDB background me ek hidden 6-byte row identifier (`DB_ROW_ID`) generate karke clustered index create karta hai. 
+
+Saare secondary (non-clustered) indexes me rows ke physical disk pointers store nahi hote; balki unke leaf nodes me corresponding row ki `PRIMARY KEY` value store hoti hai. Secondary index search ke dauran pehle secondary index traverse hota hai aur phir full row fetch karne ke liye clustered index me "bookmark lookup" kiya jata hai.
+
+### Q2: `ON DELETE CASCADE`, `ON DELETE SET NULL`, aur `ON DELETE RESTRICT` me kya farq hota hai?
 **Answer**:
-* `ON DELETE RESTRICT` (ya `NO ACTION`): Agar kisi parent row ko koi child row reference kar rahi hai, toh parent row ko delete hone se rok deta hai. Ye foran ek error raise karta hai aur statement ko roll back kar deta hai.
-* `ON DELETE CASCADE`: Parent row ke delete hote hi, us parent row ko reference karne wali sabhi child rows ko usi transaction ke andar automatically aur recursively delete kar deta hai.
-* `ON DELETE SET NULL`: Parent row ke delete hone par, child table ke foreign key column ki value ko `NULL` set kar deta hai (iske liye child column ka nullable hona zaroori hai).
+* `ON DELETE RESTRICT` (ya `NO ACTION`): Agar kisi parent row ko reference karne wali koi bhi child row exist karti hai, toh ye parent row ke deletion ko rok deta hai, turant error raise karta hai aur transaction ko rollback kar deta hai.
+* `ON DELETE CASCADE`: Parent row delete hote hi usi transaction ke andar use reference karne wali saari child rows automatically aur recursively delete ho jaati hain.
+* `ON DELETE SET NULL`: Parent row delete hone par referencing child rows ke foreign key column ko `NULL` set kar diya jata hai (iske liye child foreign key column ka nullable hona zaroori hai).
 
-### Q3: Relational database mein Many-to-Many (N:M) relationship kaise implement ki jaati hai?
-**Answer**: Relational database tables direct foreign keys ka use karke sirf One-to-Many (1:N) links establish kar sakti hain. Many-to-Many relationship implement karne ke liye hume use do One-to-Many relationships mein todna padta hai jiske liye ek teesri table create ki jaati hai jise **Junction Table** (ya Associative/Bridge Table) kehte hain.
+### Q3: Relational database me Many-to-Many (N:M) relationship ko kaise implement kiya jata hai?
+**Answer**: Relational database tables direct foreign keys ka use karke sirf One-to-Many (1:N) links bana sakti hain. Many-to-Many relationship ko implement karne ke liye hume ise do One-to-Many relationships me todna padta hai, jiske liye ek third table banayi jaati hai jise **Junction Table** (ya Associative / Bridge Table) kehte hain. 
 
-Junction table mein do foreign keys hoti hain, jo dono participating parent tables ki primary keys ko reference karti hain. In dono foreign keys ke combination par aamtaur par ek composite `PRIMARY KEY` ya composite `UNIQUE` constraint lagaya jata hai taaki duplicate mappings na banein. Junction table relationship ke specific attributes ko bhi store kar sakti hai (jaise `order_items` table mein `quantity`, `unit_price`, aur `discount`).
+Junction table ke paas do foreign keys hoti hain, jo dono participating parent tables ki primary keys ko point karti hain. Duplicate links ko prevent karne ke liye dono foreign keys ke combination par composite `PRIMARY KEY` ya composite `UNIQUE` constraint lagaya jata hai. Junction table relationship se related specific attributes bhi store kar sakti hai (jaise `orders` aur `products` ke beech `order_items` junction table me `quantity`, `unit_price`, aur `discount` store hota hai).
 
 ---
 
-## 12. Quick Revision (क्विक रिविजन)
+## 12. Quick Revision (Quick Revision)
 
-* **Primary Key** table ki rows ko uniquely identify karti hai aur InnoDB mein physical **Clustered Index** define karti hai.
-* **Foreign Keys** child tables ko parent tables se link karti hain aur **referential integrity** maintain karti hain.
-* Primary key ke liye lambi natural keys (jaise UUID ya email) ki jagah compact **Surrogate Keys** (`INT AUTO_INCREMENT` ya `BIGINT`) ko tarjeeh dein.
-* **1:1 relationship** implement karne ke liye Foreign Key par `UNIQUE` constraint lagaya jata hai.
-* **1:N relationship** standard Foreign Key dwara child table mein implement hoti hai.
-* **N:M relationship** ke liye ek intermediate **Junction Table** ki zaroorat hoti hai jisme do Foreign Keys hoti hain.
-* Hamesha explicit referential actions configure karein: Data protection ke liye `ON DELETE RESTRICT`, owned child records ki automatic safai ke liye `ON DELETE CASCADE`, ya optional links ke liye `ON DELETE SET NULL`.
+* **Primary Key** table ki rows ko uniquely identify karti hai aur InnoDB me physical **clustered index** define karti hai.
+* **Foreign Keys** child tables ko parent tables se link karti hain aur referential integrity maintain karti hain.
+* Primary keys ke liye wide natural keys (UUID ya email) ke bajaye hamesha compact **Surrogate Keys** (`INT AUTO_INCREMENT`) prefer karein.
+* **1:1** relationship implement karne ke liye Foreign Key par `UNIQUE` constraint lagaya jata hai.
+* **1:N** relationship implement karne ke liye standard Foreign Key ko child table me rakha jata hai.
+* **N:M** relationship ke liye do Foreign Keys ke sath ek intermediate **Junction Table** banani padti hai.
+* Referential actions hamesha clearly define karein: `ON DELETE RESTRICT` (data protect karne ke liye), `ON DELETE CASCADE` (dependent child rows automatically clean karne ke liye), ya `ON DELETE SET NULL`.

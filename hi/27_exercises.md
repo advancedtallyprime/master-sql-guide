@@ -1,441 +1,441 @@
-# अध्याय 27 — कॉम्प्रीहेंसिव प्रैक्टिस सिस्टम: 300 प्रोग्रेसिव प्रॉब्लम्स (300 Progressive Problems)
+# Chapter 27 — Comprehensive Practice System: 300 Progressive Problems
 
-इस अभ्यास प्रणाली (practice system) के सभी 300 अभ्यास प्रश्न हमारे मास्टर **`sql_mastery`** डेटाबेस स्कीमा के विरुद्ध निष्पादित करने के लिए डिज़ाइन किए गए हैं।
+Is practice system ke saare 300 exercises master **`sql_mastery`** database schema ke against execute karne ke liye design kiye gaye hain.
 
-इन प्रश्नों के साथ प्रैक्टिस करने के लिए, सुनिश्चित करें कि आपने [`sql_mastery_schema.sql`](file:///c:/antigravity/master_sql_guide/sql_mastery_schema.sql) स्क्रिप्ट चलाकर अपना स्थानीय डेटाबेस इनिशियलाइज़ कर लिया है।
+In questions ke saath practice karne ke liye, ensure karein ki aapne [`sql_mastery_schema.sql`](file:///c:/antigravity/master_sql_guide/sql_mastery_schema.sql) script run karke apna local database initialize kar liya hai.
 
 > [!NOTE]
-> सेल्फ-टेस्टिंग की सुविधा के लिए इस अध्याय से समाधान और क्वेरी व्याख्याएँ जानबूझकर छोड़ दी गई हैं। सत्यापित समाधानों और स्टेप-बाय-स्टेप व्याख्याओं के लिए, [अध्याय 28 — मास्टर आंसर की](file:///c:/antigravity/master_sql_guide/hi/28_answer_key.md) देखें।
+> Self-testing ko facilitate karne ke liye is chapter mein solutions aur query explanations intentionally omit kiye gaye hain. Verified solutions aur step-by-step breakdowns ke liye, [Chapter 28 — The Master Answer Key](file:///c:/antigravity/master_sql_guide/hi/28_answer_key.md) refer karein.
 
 ---
 
-## Section 1: डेटाबेस और टेबल मैनेजमेंट (DDL, Types & Constraints)
+## Section 1: Database & Table Management (DDL, Types & Constraints)
 
-### बिगिनर सवाल (1–10)
-1. सक्रिय `sql_mastery` डेटाबेस के अंदर सभी टेबल्स को प्रदर्शित करने के लिए एक SQL स्टेटमेंट लिखें।
-2. `departments` टेबल की स्कीमा परिभाषा, डेटा प्रकार और नलेबिलिटी का निरीक्षण करने के लिए एक स्टेटमेंट लिखें।
-3. एक एकल पूर्णांक कॉलम `id` के साथ `test_logs` नामक एक सैंडबॉक्स टेबल बनाने के लिए एक कमांड लिखें।
-4. `test_logs` टेबल को केवल तभी ड्रॉप करने के लिए एक स्टेटमेंट लिखें यदि वह मौजूद है।
-5. `code VARCHAR(20)` और `discount_pct DECIMAL(4,2)` (डिफ़ॉल्ट `0.05`) के साथ `coupons` टेबल बनाने के लिए एक क्वेरी लिखें।
-6. `coupons` टेबल में `expiry_date DATE NOT NULL` कॉलम जोड़ने वाला एक `ALTER TABLE` स्टेटमेंट लिखें।
-7. `coupons` टेबल में `code` कॉलम को `VARCHAR(30) NOT NULL` में बदलने के लिए एक `ALTER TABLE` स्टेटमेंट लिखें।
-8. `coupons` टेबल से `expiry_date` कॉलम को हटाने वाला एक `ALTER TABLE` स्टेटमेंट लिखें।
-9. `coupons` टेबल का नाम बदलकर `promotional_codes` करने के लिए एक स्टेटमेंट लिखें।
-10. `promotional_codes` टेबल को सुरक्षित रूप से ड्रॉप करें।
+### Beginner Questions (1–10)
+1. Active `sql_mastery` database ke andar saari tables display karne ke liye ek SQL statement likhein.
+2. `departments` table ki schema definition, datatypes, aur nullability inspect karne ke liye ek statement likhein.
+3. Ek single integer column `id` ke saath `test_logs` naam ki ek sandbox table create karne ke liye ek command likhein.
+4. `test_logs` table ko sirf tabhi drop karne ke liye ek statement likhein agar wo already exist karti ho (`IF EXISTS`).
+5. `code VARCHAR(20)` aur `discount_pct DECIMAL(4,2)` (jiska default `0.05` ho) ke saath `coupons` table create karne ke liye query likhein.
+6. `coupons` table mein `expiry_date DATE NOT NULL` column add karne wala ek `ALTER TABLE` statement likhein.
+7. `coupons` table mein `code` column ko `VARCHAR(30) NOT NULL` mein modify karne wala ek `ALTER TABLE` statement likhein.
+8. `coupons` table se `expiry_date` column ko drop karne wala ek `ALTER TABLE` statement likhein.
+9. `coupons` table ka naam rename karke `promotional_codes` karne ke liye ek statement likhein.
+10. `promotional_codes` table ko cleanly drop karein.
 
-### इंटरमीडिएट सवाल (11–20)
-11. ऑटो-इन्क्रीमेंट प्राइमरी की `team_id`, एक यूनिक `team_name VARCHAR(50)`, और `budget >= 1000.00` सुनिश्चित करने वाला चेक कंस्ट्रेंट के साथ `project_teams` टेबल बनाने का स्टेटमेंट लिखें।
-12. `project_teams` में `fk_team_lead` नामक एक फॉरेन की जोड़ने वाला `ALTER TABLE` स्टेटमेंट लिखें जो `team_lead_id` को `employees(employee_id)` से जोड़े (`ON DELETE SET NULL` के साथ)।
-13. बिना किसी पंक्ति को कॉपी किए `products` टेबल का एक सटीक संरचनात्मक क्लोन (clone) `products_backup` बनाने के लिए एक कमांड लिखें।
-14. `CREATE TABLE ... AS SELECT` का उपयोग करके `employees` से उन सभी पंक्तियों और कॉलम्स को शामिल करते हुए `high_earners` टेबल बनाएं जहाँ `salary > 120000.00` हो।
-15. `departments` टेबल में `department_name` के ठीक बाद स्थित `priority_level ENUM('Low', 'Medium', 'High') DEFAULT 'Medium'` कॉलम जोड़ने वाला `ALTER TABLE` स्टेटमेंट लिखें।
-16. स्कीमा को रीस्टोर करने के लिए `departments` से `priority_level` कॉलम को हटाएँ।
-17. `high_earners` टेबल को ट्रंकेट (truncate) करने के लिए एक स्टेटमेंट लिखें।
-18. `high_earners` और `products_backup` टेबल्स को ड्रॉप करें।
-19. MySQL द्वारा `order_items` टेबल के लिए जनरेट की गई पूरी DDL `CREATE TABLE` स्क्रिप्ट देखने के लिए एक स्टेटमेंट लिखें।
-20. `departments(department_name, location)` पर `uq_dept_loc` नामक कम्पोजिट यूनिक कंस्ट्रेंट जोड़ने वाला `ALTER TABLE` स्टेटमेंट लिखें।
+### Intermediate Questions (11–20)
+11. Auto-increment primary key `team_id`, ek unique `team_name VARCHAR(50)`, aur `budget >= 1000.00` ensure karne wala check constraint ke saath `project_teams` table create karne ka statement likhein.
+12. `project_teams` mein `fk_team_lead` naam ka foreign key add karne wala `ALTER TABLE` statement likhein jo `team_lead_id` ko `employees(employee_id)` se link kare (`ON DELETE SET NULL` ke saath).
+13. Bina kisi row ko copy kiye `products` table ka exact structural clone `products_backup` create karne ke liye ek command likhein.
+14. `CREATE TABLE ... AS SELECT` ka use karke `employees` se un saari rows aur columns ko include karte hue `high_earners` table banayein jahan `salary > 120000.00` ho.
+15. `departments` table mein `department_name` ke turant baad positioned `priority_level ENUM('Low', 'Medium', 'High') DEFAULT 'Medium'` column add karne wala `ALTER TABLE` statement likhein.
+16. Schema restore karne ke liye `departments` se `priority_level` column ko remove karein.
+17. `high_earners` table ko truncate karne ke liye ek statement likhein.
+18. `high_earners` aur `products_backup` tables ko drop karein.
+19. MySQL dwara `order_items` table ke liye generate ki gayi complete DDL `CREATE TABLE` script dekhne ke liye ek statement likhein.
+20. `departments(department_name, location)` par `uq_dept_loc` naam ka composite unique constraint add karne wala `ALTER TABLE` statement likhein.
 
-### एडवांस्ड सवाल (21–25)
-21. `order_items` से प्रति प्रोडक्ट बेची गई कुल इकाइयों को एग्रीगेट करने वाली एक अस्थायी टेबल `temp_sales_summary` बनाने की स्क्रिप्ट लिखें। बताएं कि MySQL इस टेबल को कब हटाता है।
-22. एक `ALTER TABLE` स्टेटमेंट लिखें जो फॉरेन की जांच को अस्थायी रूप से अक्षम (disable) करता है, एक फॉरेन की कंस्ट्रेंट जोड़ता है, और फिर से फॉरेन की जांच को सक्षम करता है।
-23. `employees` में एक चेक कंस्ट्रेंट `salary > 200000` जोड़ने का प्रयास करने वाला एक स्टेटमेंट लिखें। बताएं कि यदि मौजूदा पंक्तियाँ स्थिति का उल्लंघन करती हैं तो MySQL इस DDL को क्यों अस्वीकार करता है।
-24. MySQL 8.0 `ALGORITHM=INPLACE, LOCK=NONE` का उपयोग करके `customers.phone` को `VARCHAR(25)` में संशोधित करने वाला `ALTER TABLE` स्टेटमेंट तैयार करें।
-25. प्रदर्शित करें कि InnoDB टेबल पर सक्रिय `AUTO_INCREMENT` विशेषता वाली प्राइमरी की को कैसे ड्रॉप किया जाता है।
+### Advanced Questions (21–25)
+21. `order_items` se per product sold total units ko aggregate karne wali ek temporary table `temp_sales_summary` create karne ki script likhein. Explain karein ki MySQL is table ko kab purge karta hai.
+22. Ek `ALTER TABLE` statement likhein jo foreign key checks ko temporarily disable karta hai, foreign key constraint add karta hai, aur foreign key checks ko re-enable karta hai.
+23. `employees` table mein check constraint `salary > 200000` add karne ka attempt karne wala ek statement likhein. Explain karein ki agar existing rows is condition ko violate karti hain toh MySQL is DDL ko reject kyun karta hai.
+24. MySQL 8.0 `ALGORITHM=INPLACE, LOCK=NONE` ka use karke `customers.phone` ko `VARCHAR(25)` mein modify karne wala ek `ALTER TABLE` statement construct karein.
+25. Demonstrate karein ki InnoDB table par active `AUTO_INCREMENT` attribute wali primary key ko kaise drop kiya ja sakta hai.
 
-### चैलेंज सवाल (26–30)
-26. **स्कीमा माइग्रेशन चैलेंज**: एक मल्टी-स्टेप माइग्रेशन स्क्रिप्ट लिखें जो किसी भी मौजूदा कस्टमर डेटा को खोए बिना `customers.first_name` और `customers.last_name` को एक एकल `full_name VARCHAR(100)` कॉलम में विभाजित/संयोजित करे, और पुराने कॉलम्स को ड्रॉप करे।
-27. **ज़ीरो-डाउनटाइम कॉलम एडिशन**: एक्सक्लूसिव टेबल लॉक लिए बिना 10 मिलियन पंक्तियों वाली टेबल में डिफ़ॉल्ट मान के साथ एक नॉन-नल कॉलम जोड़ने का SQL पैटर्न लिखें।
-28. **फॉरेन की इंटीग्रिटी ऑडिट**: `sql_mastery` में सभी फॉरेन कीज और उनके संबंधित `ON DELETE` नियमों को सूचीबद्ध करने के लिए MySQL के `information_schema.table_constraints` और `referential_constraints` को क्वेरी करने वाली एक स्क्रिप्ट लिखें।
-29. **स्टोरेज फुटप्रिंट एनालिसिस**: `sql_mastery` में प्रत्येक टेबल के लिए कुल डेटा आकार और इंडेक्स आकार की मेगाबाइट (MB) में गणना करने वाली `information_schema.tables` के विरुद्ध एक क्वेरी लिखें।
-30. **कम्पोजिट की रिस्ट्रक्चरिंग**: मौजूदा कम्पोजिट प्राइमरी की `(order_id, product_id)` वाली टेबल को सरोगेट प्राइमरी की `item_id INT AUTO_INCREMENT` वाली टेबल में बदलें, जबकि कम्पोजिट विशिष्टता को संरक्षित रखें।
-
----
-
-## Section 2: डेटा क्वेरीइंग, फिल्टरिंग और सॉर्टिंग (SELECT, WHERE, ORDER BY, LIMIT)
-
-### बिगिनर सवाल (31–40)
-31. `departments` टेबल से सभी पंक्तियों के लिए सभी कॉलम्स प्राप्त करें।
-32. `customers` टेबल से केवल `first_name`, `last_name`, और `email` प्राप्त करें।
-33. $500.00 से सख्ती से अधिक `unit_price` वाले सभी प्रोडक्ट्स खोजें।
-34. देश `'USA'` में रहने वाले सभी कस्टमर्स खोजें।
-35. `'Delivered'` स्थिति वाले सभी ऑर्डर्स खोजें।
-36. $100.00 और $400.00 (समावेशी) के बीच `unit_price` वाले सभी प्रोडक्ट्स प्राप्त करें।
-37. उन सभी कस्टमर्स को खोजें जिनका कोई रिकॉर्ड किया गया `state` नहीं है (`state IS NULL`)।
-38. `hire_date` आरोही क्रम (सबसे पहले नियुक्त कर्मचारी पहले) में सॉर्ट किए गए सभी एम्प्लॉइज प्राप्त करें।
-39. कंपनी में सबसे अधिक वेतन पाने वाले शीर्ष 3 एम्प्लॉइज प्राप्त करें।
-40. बिना डुप्लीकेट के `customers` टेबल से अद्वितीय (distinct) देशों को पुनः प्राप्त करें।
-
-### इंटरमीडिएट सवाल (41–50)
-41. उन सभी कस्टमर्स को खोजें जिनका `email` पता `'@gmail.com'` पर समाप्त होता है।
-42. `category_id` 1 या 2 में वे सभी प्रोडक्ट्स प्राप्त करें जिनका `stock_quantity` 20 से अधिक है।
-43. `'2023-08-01'` और `'2023-08-15'` के बीच दिए गए वे सभी ऑर्डर्स खोजें जहाँ `total_amount` $300.00 से अधिक है।
-44. उन सभी एम्प्लॉइज को खोजें जिनका वेतन $90,000 से अधिक है और जिनका `manager_id` NOT NULL है।
-45. वर्तमान में सक्रिय (`is_active = TRUE`) 5 सबसे कम महंगे प्रोडक्ट्स प्राप्त करें।
-46. उन सभी कस्टमर्स को खोजें जिनका `first_name` `'M'` या `'S'` से शुरू होता है और जिनका देश `'USA'` नहीं है।
-47. `order_date` अवरोही क्रम में व्यवस्थित `'Processing'` या `'Pending'` स्थिति वाले सभी ऑर्डर्स प्राप्त करें।
-48. UI पेजिनेशन लागू करें: `unit_price` अवरोही क्रम में सॉर्ट की गई `products` टेबल की पंक्तियाँ 4 से 6 प्राप्त करें।
-49. वे सभी प्रोडक्ट्स खोजें जिनके नाम में `'Air'` या `'Pro'` शब्द शामिल है।
-50. सभी कस्टमर्स को इस तरह सॉर्ट करके प्राप्त करें कि `'USA'` के कस्टमर्स पहले दिखाई दें, और अन्य सभी देश नीचे वर्णमाला क्रम में सॉर्ट हों।
-
-### एडवांस्ड सवाल (51–55)
-51. `customers` के विरुद्ध एक क्वेरी लिखें जो `loyalty_points` अवरोही क्रम में सॉर्ट करे, जिसमें `NULL` लॉयल्टी पॉइंट्स वाले किसी भी कस्टमर को सबसे नीचे रखा जाए।
-52. उन सभी ऑर्डर्स को पुनः प्राप्त करने वाली एक क्वेरी लिखें जहाँ `shipping_fee` कुल राशि (`total_amount`) के 2% से अधिक का प्रतिनिधित्व करती है।
-53. एक ऐसी क्वेरी तैयार करें जो `products` टेबल में उन प्रोडक्ट्स को खोजे जिनके नाम में ठीक 15 अक्षर हैं।
-54. कीसेट / कर्सर पेजिनेशन का उपयोग करके, `OFFSET` कीवर्ड का उपयोग किए बिना `order_id = 1005` के बाद के 3 ऑर्डर्स का अगला पेज लाने के लिए एक क्वेरी लिखें।
-55. उन सभी एम्प्लॉइज को पुनः प्राप्त करें जिन्हें विषम संख्या वाले महीने (odd-numbered month) में काम पर रखा गया था।
-
-### चैलेंज सवाल (56–60)
-56. **डिटर्मिनिस्टिक पेजिनेशन चैलेंज**: बताएं कि यदि `order_date` में टाई (समान मान) हैं, तो `ORDER BY order_date LIMIT 5 OFFSET 5` लगातार पेजों पर डुप्लिकेट पंक्तियाँ क्यों लौटा सकता है। सही की गई क्वेरी लिखें।
-57. **कॉम्प्लेक्स पैटर्न मैचिंग**: `customers` के विरुद्ध एक रेगुलर एक्सप्रेशन क्वेरी (`REGEXP`) लिखें जो उन सभी फ़ोन नंबरों को खोजे जो कड़ाई से पैटर्न `555-XXXX` का पालन नहीं करते हैं।
-58. **डायनेमिक थ्रेशोल्ड फिल्टरिंग**: उन प्रोडक्ट्स को पुनः प्राप्त करने वाली एक क्वेरी लिखें जहाँ वर्तमान इन्वेंट्री मूल्य (`stock_quantity * unit_price`) सभी प्रोडक्ट्स के औसत इन्वेंट्री मूल्य से अधिक है।
-59. **मल्टी-कंडीशन सर्च फिल्टर**: एक ऐसी क्वेरी लिखें जो ई-कॉमर्स सर्च बार को मॉडल करती है: दिए गए सर्च कीवर्ड `'Pro'` के लिए, एक साथ `product_name`, `category_name`, और `supplier_name` पर फ़िल्टर करें।
-60. **सेफ रेंज स्कैनिंग**: `order_date` द्वारा `orders` को फ़िल्टर करने वाली एक क्वेरी लिखें जो वर्ष 2023 के पूरे वर्ष के लिए SARGable और इंडेक्स-सीकेबल होने की गारंटी देती है।
+### Challenge Questions (26–30)
+26. **Schema Migration Challenge**: Ek multi-step migration script likhein jo kisi bhi existing customer data ko lose kiye bina `customers.first_name` aur `customers.last_name` ko ek single `full_name VARCHAR(100)` column mein combine kare, aur puraane columns ko drop kare.
+27. **Zero-Downtime Column Addition**: 10 million rows wali table mein bina exclusive table lock liye default value ke saath ek non-null column add karne ka SQL pattern likhein.
+28. **Foreign Key Integrity Audit**: `sql_mastery` database ke andar saari foreign keys aur unke corresponding `ON DELETE` rules ko list karne ke liye MySQL ke `information_schema.table_constraints` aur `referential_constraints` ko query karne wali ek query likhein.
+29. **Storage Footprint Analysis**: `information_schema.tables` ke against ek query likhein jo `sql_mastery` ki har table ke liye total data size aur index size ko Megabytes (MB) mein calculate kare.
+30. **Composite Key Restructuring**: Ek table jisme existing composite primary key `(order_id, product_id)` hai, use ek surrogate primary key `item_id INT AUTO_INCREMENT` wali table mein convert karein jabki composite uniqueness ko preserve rakhein.
 
 ---
 
-## Section 3: बिल्ट-इन SQL फंक्शन्स (String, Date, Math & Flow)
+## Section 2: Data Querying, Filtering & Sorting (SELECT, WHERE, ORDER BY, LIMIT)
 
-### बिगिनर सवाल (61–70)
-61. सभी एम्प्लॉइज के लिए `first_name` और `last_name` को एक एकल कॉलम `full_name` में संयोजित (concatenate) करें।
-62. सभी सप्लायर कंपनी नामों को अपरकेस में बदलें।
-63. प्रत्येक प्रोडक्ट के नाम की कैरेक्टर लंबाई प्रदर्शित करें।
-64. प्रत्येक एम्प्लॉई के वेतन को निकटतम हजार (nearest thousand) तक राउंड करें।
-65. MySQL फंक्शन्स का उपयोग करके वर्तमान दिनांक और समय लौटाएँ।
-66. सभी ऑर्डर्स के `order_date` से कैलेंडर वर्ष निकालें।
-67. गणितीय फंक्शन का उपयोग करके 144 का वर्गमूल खोजें।
-68. `customers` टेबल प्रोजेक्शन में `'USA'` की किसी भी घटना को `'United States'` से बदलें।
-69. प्रत्येक ग्राहक का फ़ोन नंबर प्रदर्शित करें, यदि फ़ोन NULL है तो `IFNULL()` का उपयोग करके `'No Phone Provided'` प्रदर्शित करें।
-70. $-45.50$ का निरपेक्ष मान (absolute value) निकालें।
+### Beginner Questions (31–40)
+31. `departments` table se saari rows ke liye sabhi columns retrieve karein.
+32. `customers` table se sirf `first_name`, `last_name`, aur `email` retrieve karein.
+33. $500.00 se strictly greater `unit_price` wale sabhi products find karein.
+34. Un sabhi customers ko find karein jo `'USA'` country mein rehte hain.
+35. Un sabhi orders ko find karein jinka status `'Delivered'` hai.
+36. $100.00 aur $400.00 (inclusive) ke beech `unit_price` wale sabhi products retrieve karein.
+37. Un sabhi customers ko find karein jinka koi `state` recorded nahi hai (`state IS NULL`).
+38. Sabhi employees ko `hire_date` ke ascending order mein sort karke retrieve karein (earliest hires pehle).
+39. Company mein top 3 highest-earning employees ko retrieve karein.
+40. `customers` table se bina kisi duplicate ke distinct countries retrieve karein.
 
-### इंटरमीडिएट सवाल (71–80)
-71. प्रत्येक ग्राहक की `registered_at` तिथि और आज के बीच बीते दिनों की संख्या की गणना करें।
-72. `orders` में सभी `order_date` मानों को मानव-पठनीय प्रारूप `'Month Day, Year'` (उदा. `'August 01, 2023'`) में फॉर्मेट करें।
-73. प्रत्येक ग्राहक के `country` के पहले 3 अक्षर निकालें।
-74. `customers.email` से यूजरनेम भाग (`@` प्रतीक से पहले का सब कुछ) निकालें।
-75. सभी उत्पादों पर 15% प्रमोशनल छूट की गणना करने वाली एक क्वेरी लिखें, जिसे 2 दशमलव स्थानों तक छोटा (truncated, not rounded) किया गया हो।
-76. `TIMESTAMPDIFF()` का उपयोग करके पूर्ण बीते हुए महीनों में प्रत्येक कर्मचारी के कार्यकाल (tenure) की गणना करें।
-77. प्रत्येक ग्राहक का पूरा पता: `city, state, country` फॉर्मेट करने के लिए `CONCAT_WS()` का उपयोग करें। सुनिश्चित करें कि गायब राज्य दोहरा अल्पविराम (double commas) उत्पन्न न करें।
-78. `DATE_ADD()` का उपयोग करके सभी ऑर्डर तिथियों में 30 दिनों की भुगतान छूट अवधि जोड़ें।
-79. यदि कीमत > $500 है तो प्रत्येक उत्पाद को `'Expensive'`, या अन्यथा `'Affordable'` के रूप में फ़्लैग करने के लिए `IF()` फ़ंक्शन का उपयोग करें।
-80. `MOD()` का उपयोग करके ऑर्डर की कुल राशि को 10 से विभाजित करने पर शेषफल की गणना करें।
+### Intermediate Questions (41–50)
+41. Un sabhi customers ko find karein jinka `email` address `'@gmail.com'` par end hota hai.
+42. `category_id` 1 ya 2 ke un sabhi products ko retrieve karein jinka `stock_quantity` 20 se greater ho.
+43. `'2023-08-01'` aur `'2023-08-15'` ke beech place kiye gaye un sabhi orders ko find karein jahan `total_amount` $300.00 se exceed karta ho.
+44. Un sabhi employees ko find karein jinki `salary` $90,000 se greater hai aur jinka `manager_id` NOT NULL hai.
+45. Currently active (`is_active = TRUE`) products mein se 5 least expensive products retrieve karein.
+46. Un sabhi customers ko find karein jinka `first_name` `'M'` ya `'S'` se start hota hai aur jinki country `'USA'` nahi hai.
+47. Status `'Processing'` ya `'Pending'` wale sabhi orders retrieve karein, ordered by `order_date` descending.
+48. UI pagination implement karein: `unit_price` descending order mein sorted `products` table ki rows 4 se 6 retrieve karein.
+49. Un sabhi products ko find karein jinke product name mein `'Air'` ya `'Pro'` word include hota hai.
+50. Sabhi customers ko is tarah sort karke retrieve karein ki `'USA'` wale customers pehle aayein, aur baaki saare countries alphabetically unke neeche sort hon.
 
-### एडवांस्ड सवाल (81–85)
-81. ग्राहकों को स्तरों में वर्गीकृत करने के लिए एक सर्च किए गए `CASE` एक्सप्रेशन का उपयोग करें: `'Diamond'` (अंक $\ge 700$), `'Platinum'` (अंक $\ge 400$), `'Silver'` (अंक $\ge 100$), और अन्यथा `'Basic'`।
-82. `POWER()` का उपयोग करके SQL में कंपाउंड एनुअल ग्रोथ रेट (CAGR) फॉर्मूला की गणना करें।
-83. एक ऐसी क्वेरी लिखें जो ग्राहक के पहले नामों में सभी स्वरों (vowels) को डायनेमिक रूप से तारांकन (`*`) से बदल दे।
-84. `LAST_DAY()` का उपयोग करके `orders` में प्रत्येक ऑर्डर के लिए महीने का अंतिम दिन खोजने के लिए एक क्वेरी लिखें।
-85. एक ऐसी क्वेरी लिखें जो कर्मचारियों के कुल पेरोल, औसत वेतन, न्यूनतम वेतन और अधिकतम वेतन की गणना करती है, यह सुनिश्चित करते हुए कि NULL मानों को 0 में बदल दिया जाए।
+### Advanced Questions (51–55)
+51. `customers` table ke against ek query likhein jo `loyalty_points` descending order mein sort kare, aur jin customers ke loyalty points `NULL` hain unhe sabse neeche place kare.
+52. Ek query likhein jo un sabhi orders ko retrieve kare jahan `shipping_fee` order ke `total_amount` ka 2% se zyada represent karti ho.
+53. Ek aisi query construct karein jo `products` table mein un products ko search kare jinka name exactly 15 characters ka ho.
+54. Keyset / Cursor Pagination ka use karke, `order_id = 1005` ke baad ke 3 orders ka agla page fetch karne ke liye query likhein bina `OFFSET` keyword ka use kiye.
+55. Un sabhi employees ko retrieve karein jo kisi odd-numbered month mein hire hue the.
 
-### चैलेंज सवाल (86–90)
-86. **वर्किंग डे कैलकुलेशन चैलेंज**: एक SQL एक्सप्रेशन लिखें जो ऑर्डर की `order_date` और आज के बीच व्यावसायिक दिनों (शनिवार और रविवार को छोड़कर) की संख्या की गणना करता है।
-87. **ईमेल अस्पष्टता (Obfuscation) चैलेंज**: गोपनीयता के लिए ग्राहक के ईमेल को मास्क करने वाली एक क्वेरी लिखें, जिसमें केवल पहले 2 अक्षर और डोमेन दिखाई दें (उदा. `emily.watson@gmail.com` को `em*****@gmail.com` में बदलना)।
-88. **सेफ डिवीजन मैट्रिक्स**: एक ऐसी क्वेरी लिखें जो प्रत्येक ग्राहक के लिए ऑर्डर काउंट से `loyalty_points` के अनुपात की गणना करती है, जो `NULLIF` का उपयोग करके शून्य से विभाजन से बचाती है।
-89. **फिस्कल क्वार्टर निर्धारण**: एक एक्सप्रेशन लिखें जो प्रत्येक ऑर्डर तिथि को एक एंटरप्राइज वित्तीय तिमाही में मैप करता है, जहाँ वित्तीय वर्ष 1 नवंबर से शुरू होता है।
-90. **स्ट्रिंग पार्सिंग चैलेंज**: अल्पविराम से अलग की गई स्ट्रिंग `'alpha,beta,gamma'` दी गई है, प्रक्रियात्मक लूप के बिना शुद्ध SQL स्ट्रिंग फ़ंक्शंस का उपयोग करके दूसरा तत्व (`'beta'`) निकालें।
-
----
-
-## Section 4: ग्रुपिंग और एग्रीगेशन (GROUP BY & HAVING)
-
-### बिगिनर सवाल (91–100)
-91. कंपनी में कर्मचारियों की कुल संख्या की गणना करें।
-92. `orders` में सभी ऑर्डर राशियों का कुल योग ज्ञात करें।
-93. सभी उत्पादों का औसत यूनिट मूल्य ज्ञात करें।
-94. गिनें कि `customers` में कितने अद्वितीय देशों का प्रतिनिधित्व है।
-95. `employees` टेबल में अधिकतम वेतन और न्यूनतम वेतन ज्ञात करें।
-96. प्रत्येक `category_id` से संबंधित उत्पादों की संख्या की गणना करें।
-97. प्रत्येक `department_id` के लिए कुल पेरोल व्यय की गणना करें।
-98. प्रत्येक `customer_id` द्वारा दिए गए ऑर्डर्स की संख्या की गणना करें।
-99. `order_items` में बेची गई वस्तुओं की कुल मात्रा की गणना करें।
-100. प्रत्येक `country` में रहने वाले ग्राहकों की संख्या की गणना करें।
-
-### इंटरमीडिएट सवाल (101–110)
-101. वे सभी `department_id` समूह खोजें जहाँ औसत कर्मचारी वेतन $100,000 से अधिक है।
-102. उन सभी ग्राहकों को खोजें जिन्होंने 2 या अधिक ऑर्डर दिए हैं।
-103. `orders` टेबल में प्रत्येक `status` द्वारा उत्पन्न कुल राजस्व की गणना करें।
-104. प्रत्येक `category_id` को सूचीबद्ध करें जिसमें 1 से अधिक सक्रिय उत्पाद हैं।
-105. प्रत्येक विभाग के लिए कर्मचारी के पहले नामों की अल्पविराम से अलग की गई सूची तैयार करने के लिए `GROUP_CONCAT` का उपयोग करें।
-106. उत्पादों को `supplier_id` द्वारा समूहित करें और न्यूनतम मूल्य, अधिकतम मूल्य और मूल्य सीमा (`max - min`) प्रदर्शित करें।
-107. वे सभी ऑर्डर तिथियां खोजें जहां एक ही दिन में 1 से अधिक ऑर्डर दिए गए थे।
-108. `order_items` में प्रति ऑर्डर दी गई औसत छूट की गणना करें, केवल उन ऑर्डरों को प्रदर्शित करने के लिए फ़िल्टर करें जहाँ औसत छूट > 0 है।
-109. ग्राहकों को `country` और `state` के अनुसार समूहित करें, यह गिनते हुए कि प्रत्येक संयोजन में कितने ग्राहक रहते हैं।
-110. प्रत्येक `payment_method` के लिए सफल भुगतानों की कुल राशि ज्ञात करें।
-
-### एडवांस्ड सवाल (111–115)
-111. `WITH ROLLUP` के साथ कर्मचारियों को `department_id` द्वारा समूहित करने वाली एक क्वेरी लिखें, हेडकाउंट और कुल वेतन की गणना करें, जिसमें ग्रैंड टोटल पंक्ति को `'Company Total'` लेबल किया गया हो।
-112. `GROUP BY` में एक अन-एग्रीगेटेड कॉलम का चयन करते समय `ERROR 1055: only_full_group_by` का कारण बताएं। त्रुटि प्रदर्शित करने वाली एक क्वेरी लिखें और उसे ठीक करें।
-113. `GROUP BY`, `ORDER BY`, और `LIMIT 1` का उपयोग करके वह विभाग खोजें जिसका औसत वेतन सबसे अधिक है।
-114. उन सभी ग्राहकों को खोजें जिनका संचयी ऑर्डर खर्च कंपनी-व्यापी औसत ऑर्डर मूल्य से अधिक है।
-115. ऑर्डरों को कैलेंडर माह के अनुसार समूहित करें और महीने की कुल बिक्री, शिपिंग लागत और ऑर्डर संख्या की गणना करें।
-
-### चैलेंज सवाल (116–120)
-116. **मल्टी-डायमेंशनल ROLLUP एनालिसिस**: `WITH ROLLUP` का उपयोग करके उत्पादों को `category_id` और `supplier_id` द्वारा समूहित करें, सबटोटल बनाम ग्रैंड टोटल पंक्तियों की पहचान करने के लिए `GROUPING()` फ़ंक्शन का उपयोग करें।
-117. **कंडीशनल एग्रीगेशन (Pivot)**: एक एकल क्वेरी लिखें जो 5 अलग-अलग स्तंभों में कुल राजस्व प्रदर्शित करने के लिए `orders` टेबल को पिवोट करती है: `SUM(CASE ...)` का उपयोग करके `Pending`, `Processing`, `Shipped`, `Delivered`, और `Cancelled`।
-118. **कस्टमर रिटेंशन मीट्रिक**: ग्राहकों को उनकी पंजीकरण तिथि के वर्ष के अनुसार समूहित करें और गणना करें कि उनमें से कितने ग्राहकों ने 2023 में ऑर्डर दिया है।
-119. **पैरेटो सिद्धांत विश्लेषण (80/20 नियम)**: एक ऐसी क्वेरी लिखें जो शीर्ष 20% ग्राहकों की पहचान करती है जो कुल राजस्व का 80% उत्पन्न करते हैं।
-120. **प्री-कैलकुलेटेड लाइन आइटम्स का एग्रीगेशन**: छूट को ध्यान में रखते हुए `order_items` से प्रत्येक ऑर्डर के लिए कुल शुद्ध राजस्व की गणना करें, और `HAVING` का उपयोग करके उन ऑर्डरों के लिए फ़िल्टर करें जहाँ शुद्ध राजस्व $1,000 से अधिक है।
+### Challenge Questions (56–60)
+56. **Deterministic Pagination Challenge**: Explain karein ki agar `order_date` mein duplicate/tie values hain toh `ORDER BY order_date LIMIT 5 OFFSET 5` consecutive pages par duplicate rows kyun return kar sakta hai. Iska corrected query likhein.
+57. **Complex Pattern Matching**: `customers` ke against ek regular expression query (`REGEXP`) likhein jo un sabhi phone numbers ko find kare jo strictly `555-XXXX` pattern ko adhere nahi karte.
+58. **Dynamic Threshold Filtering**: Ek query likhein jo un products ko retrieve kare jinki current inventory value (`stock_quantity * unit_price`) sabhi products ki average inventory value se exceed karti ho.
+59. **Multi-Condition Search Filter**: Ek query likhein jo e-commerce search bar ko model kare: diye gaye search keyword `'Pro'` ke liye, ek saath `product_name`, `category_name`, aur `supplier_name` across filter karein.
+60. **Safe Range Scanning**: `orders` ko `order_date` ke according filter karne wali query likhein jo pure 2023 year ke liye guaranteed SARGable aur index-seekable ho.
 
 ---
 
-## Section 5: रिलेशनल JOINs और सेट ऑपरेशन्स
+## Section 3: Built-in SQL Functions (String, Date, Math & Flow)
 
-### बिगिनर सवाल (121–130)
-121. प्रत्येक कर्मचारी का नाम और विभाग का नाम प्रदर्शित करने के लिए `employees` और `departments` के बीच एक `INNER JOIN` निष्पादित करें।
-122. बिना किसी कर्मचारी वाले विभागों सहित सभी विभागों को दिखाने के लिए `departments` और `employees` के बीच एक `LEFT JOIN` निष्पादित करें।
-123. ऑर्डर आईडी और ग्राहक नाम दिखाने के लिए `orders` और `customers` को जॉइन करें।
-124. प्रत्येक उत्पाद का शीर्षक और श्रेणी विवरण दिखाने के लिए `products` और `categories` को जॉइन करें।
-125. उत्पाद के नाम और आपूर्तिकर्ता संपर्क ईमेल प्रदर्शित करने के लिए `products` और `suppliers` को जॉइन करें।
-126. `customers` और `suppliers` के सभी अलग-अलग शहरों को संयोजित करने के लिए `UNION` का उपयोग करें।
-127. `customers` और `suppliers` के सभी शहरों को संयोजित करने के लिए `UNION ALL` का उपयोग करें।
-128. प्रत्येक ऑर्डर से संबंधित सभी आइटम आईडी सूचीबद्ध करने के लिए `orders` और `order_items` को जॉइन करें।
-129. ऑर्डर आईडी और भुगतान लेनदेन संदर्भ प्रदर्शित करने के लिए `orders` और `payments` को जॉइन करें।
-130. `categories` और `departments` के बीच एक `CROSS JOIN` निष्पादित करें।
+### Beginner Questions (61–70)
+61. Sabhi employees ke liye `first_name` aur `last_name` ko concatenate karke ek single column `full_name` banayein.
+62. Sabhi supplier company names ko uppercase mein convert karein.
+63. Har product name ki length (characters count) display karein.
+64. Har employee ki salary ko nearest thousand par round karein.
+65. MySQL functions ka use karke current date aur time return karein.
+66. Sabhi orders ki `order_date` se calendar year extract karein.
+67. Ek mathematical function ka use karke 144 ka square root find karein.
+68. `customers` table projection mein `'USA'` ke kisi bhi occurrence ko `'United States'` se replace karein.
+69. `IFNULL()` ka use karke har customer ka phone number display karein, aur agar phone NULL ho toh `'No Phone Provided'` show karein.
+70. $-45.50$ ki absolute value calculate karein.
 
-### इंटरमीडिएट सवाल (131–140)
-131. उन सभी ग्राहकों को खोजने के लिए एक एंटी-जॉइन (Anti-Join) लिखें जिन्होंने कभी कोई ऑर्डर नहीं दिया है।
-132. उन सभी उत्पादों को खोजने के लिए एक एंटी-जॉइन लिखें जिन्हें `order_items` में कभी नहीं खरीदा गया है।
-133. प्रत्येक कर्मचारी का नाम उसके प्रत्यक्ष प्रबंधक के नाम के साथ प्रदर्शित करने के लिए `employees` पर एक `Self JOIN` निष्पादित करें।
-134. ग्राहक एमिली वाटसन द्वारा खरीदे गए सभी उत्पादों को सूचीबद्ध करने के लिए `customers`, `orders`, और `order_items` को जोड़ने वाला 3-टेबल जॉइन लिखें।
-135. `'Japan'` में स्थित आपूर्तिकर्ताओं द्वारा आपूर्ति किए गए `'Electronics'` से संबंधित सभी उत्पादों को सूचीबद्ध करने के लिए `products`, `categories`, और `suppliers` को जोड़ने वाली एक क्वेरी लिखें।
-136. ग्राहक फ़ोन नंबरों और कर्मचारी फ़ोन नंबरों को संयोजित करने के लिए `UNION ALL` का उपयोग करें, प्रत्येक पंक्ति को `'Entity_Type'` कॉलम के साथ टैग करें।
-137. एक ही विभाग में काम करने वाले कर्मचारियों के सभी जोड़ों (pairs) को खोजने के लिए एक `Self JOIN` निष्पादित करें।
-138. ऑर्डर 1001 के अंदर वस्तुओं के कुल खुदरा मूल्य की गणना करने के लिए `orders`, `order_items`, और `products` को जॉइन करें।
-139. वर्तमान में शून्य कर्मचारियों को रोजगार देने वाले सभी विभागों को खोजने के लिए एक क्वेरी लिखें।
-140. `UNION` का उपयोग करके `departments` और `employees` के बीच एक `FULL OUTER JOIN` का अनुकरण (emulate) करें।
+### Intermediate Questions (71–80)
+71. Har customer ki `registered_at` date aur aaj ke beech kitne din bit chuke hain calculate karein.
+72. `orders` mein sabhi `order_date` values ko human-readable format `'Month Day, Year'` (e.g. `'August 01, 2023'`) mein format karein.
+73. Har customer ke `country` ke pehle 3 characters extract karein.
+74. `customers.email` se username portion (`@` symbol se pehle ka sab kuch) extract karein.
+75. Sabhi products par 15% promotional discount calculate karne wali query likhein, jo 2 decimal places tak truncated (rounded nahi) ho.
+76. `TIMESTAMPDIFF()` ka use karke har employee ka tenure complete elapsed months mein calculate karein.
+77. `CONCAT_WS()` ka use karke har customer ka complete address: `city, state, country` format karein. Ensure karein ki missing states double commas produce na karein.
+78. `DATE_ADD()` ka use karke sabhi order dates mein 30-day payment grace period add karein.
+79. `IF()` function ka use karke har product ko flag karein: agar price > $500 ho toh `'Expensive'`, warna `'Affordable'`.
+80. `MOD()` ka use karke order total amounts ko 10 se divide karne par bacha hua remainder calculate karein.
 
-### एडवांस्ड सवाल (141–145)
-141. प्रति ग्राहक प्रति श्रेणी उत्पन्न कुल राजस्व की गणना करने के लिए `customers`, `orders`, `order_items`, `products`, और `categories` को जोड़ने वाला 5-टेबल जॉइन लिखें।
-142. एक नॉन-इक्वि जॉइन (Non-Equi Join) लिखें जो उन सभी उत्पादों को खोजता है जिनका `unit_price` विभाग 1 के कर्मचारियों के औसत वेतन से सख्ती से अधिक है।
-143. `LEFT JOIN` का उपयोग करके एक क्वेरी लिखें जहाँ दाएँ टेबल पर फ़िल्टर को `ON` क्लॉज के अंदर रखा गया है, और बताएं कि परिणाम इसे `WHERE` में रखने से कैसे भिन्न होता है।
-144. रिलेशनल जॉइन्स का उपयोग करके उन सभी ग्राहकों को खोजें जिन्होंने उत्पाद 1 और उत्पाद 3 दोनों खरीदे हैं।
-145. व्यक्तिगत कोष्ठक वाली सबक्वेरीज के साथ `UNION ALL` का उपयोग करके शीर्ष 2 सबसे अधिक वेतन पाने वाले कर्मचारियों और शीर्ष 2 सबसे कम वेतन पाने वाले कर्मचारियों को संयोजित करें।
+### Advanced Questions (81–85)
+81. Searched `CASE` expression ka use karke customers ko tiers mein classify karein: `'Diamond'` (points $\ge 700$), `'Platinum'` (points $\ge 400$), `'Silver'` (points $\ge 100$), aur baaki sabhi ke liye `'Basic'`.
+82. `POWER()` function ka use karke SQL mein Compound Annual Growth Rate (CAGR) formula calculate karein.
+83. Ek aisi query likhein jo customer ke first names mein sabhi vowels ko dynamically asterisks (`*`) se replace kare.
+84. `LAST_DAY()` ka use karke `orders` mein har order ke liye us month ka last day find karne wali query likhein.
+85. Ek aisi query likhein jo employees ke liye total payroll, average salary, minimum salary, aur maximum salary compute kare, aur ensure karein ki NULLs 0 mein convert hon.
 
-### चैलेंज सवाल (146–150)
-146. **फुल आउटर जॉइन एम्यूलेशन**: `customers` और `orders` के बीच एक पूर्ण `FULL OUTER JOIN` बनाएं जो बिना ऑर्डर वाले ग्राहकों और बिना वैध ग्राहकों वाले अनाथ ऑर्डरों को सटीक रूप से लौटाता है।
-147. **सेल्फ जॉइन हायरार्की ट्री**: 3-वे सेल्फ जॉइन का उपयोग करके कर्मचारियों, उनके प्रबंधकों और उनके प्रबंधकों के प्रबंधकों (प्रबंधन पदानुक्रम के 2 स्तर) को प्रदर्शित करने वाली एक क्वेरी लिखें।
-148. **रिलेशनल डिवीजन चैलेंज**: उन सभी ग्राहकों को खोजें जिन्होंने श्रेणी 1 (`Electronics`) में **प्रत्येक एकल उत्पाद** खरीदा है।
-149. **बास्केट एनालिसिस (सह-खरीदे गए उत्पाद)**: एक ही ऑर्डर में अक्सर एक साथ खरीदे जाने वाले उत्पादों के जोड़े की पहचान करने के लिए `order_items` पर एक सेल्फ-जॉइन क्वेरी लिखें।
-150. **समेकित वित्तीय ऑडिट**: पूर्ण ऑर्डर राजस्व, रिफंड कटौती और शिपिंग लागतों को एक कालानुक्रमिक सामान्य खाता बही (general ledger) में विलय करने के लिए `UNION ALL` का उपयोग करने वाली एक यौगिक क्वेरी लिखें।
-
----
-
-## Section 6: नेस्टेड क्वेरीज और कॉमन टेबल एक्सप्रेशन्स (CTEs)
-
-### बिगिनर सवाल (151–160)
-151. कंपनी-व्यापी औसत वेतन से अधिक कमाने वाले सभी कर्मचारियों को खोजने के लिए एक स्केलर सबक्वेरी लिखें।
-152. `'Appliances'` शब्द वाले श्रेणियों से संबंधित सभी उत्पादों को खोजने के लिए `IN` का उपयोग करके एक सबक्वेरी लिखें।
-153. `total_amount` द्वारा सबसे बड़ा ऑर्डर देने वाले ग्राहक को खोजने के लिए एक सबक्वेरी लिखें।
-154. एक सबक्वेरी का उपयोग करके क्वांटम प्रो 15 लैपटॉप (Quantum Pro 15 Laptop) से अधिक कीमत वाले सभी उत्पाद खोजें।
-155. `FROM` क्लॉज में एक डिराइव्ड टेबल का उपयोग करके एक क्वेरी लिखें जो उत्पाद की कीमतों को उपनाम देती है।
-156. टेबल में सबसे पुरानी पंजीकरण तिथि पर पंजीकरण करने वाले सभी ग्राहकों को खोजें।
-157. `'San Francisco'` में रहने वाले ग्राहकों द्वारा दिए गए सभी ऑर्डर्स को खोजने के लिए एक सबक्वेरी का उपयोग करें।
-158. सक्रिय उत्पादों का चयन करने वाला `ActiveProducts` नामक एक बेसिक CTE लिखें, और इससे क्वेरी करें।
-159. एक सबक्वेरी का उपयोग करके उन सभी कर्मचारियों को खोजें जो कर्मचारी डेविड किम (David Kim) के साथ एक ही प्रबंधक साझा करते हैं।
-160. उन उत्पादों को खोजने के लिए सबक्वेरी के साथ `NOT IN` का उपयोग करें जिन्हें कभी ऑर्डर नहीं किया गया है।
-
-### इंटरमीडिएट सवाल (161–170)
-161. एक कोरिलेटेड सबक्वेरी लिखें जो अपने स्वयं के विभाग के औसत वेतन से अधिक कमाने वाले सभी कर्मचारियों को खोजती है।
-162. कम से कम एक सक्रिय उत्पाद की आपूर्ति करने वाले सभी आपूर्तिकर्ताओं को खोजने के लिए `EXISTS` का उपयोग करके एक क्वेरी लिखें।
-163. उन सभी ग्राहकों को खोजने के लिए `NOT EXISTS` का उपयोग करके एक क्वेरी लिखें जिन्होंने कभी कोई ऑर्डर नहीं दिया है।
-164. एक CTE लिखें जो प्रति ग्राहक कुल खर्च की गणना करता है, और $1,000 से अधिक खर्च करने वाले ग्राहकों को खोजने के लिए CTE से क्वेरी करें।
-165. उन उत्पादों को खोजने के लिए `ALL` का उपयोग करके एक क्वेरी लिखें जिनकी कीमत श्रेणी 3 के सभी उत्पादों की कीमत से अधिक है।
-166. उन कर्मचारियों को खोजने के लिए `ANY` का उपयोग करके एक क्वेरी लिखें जिनका वेतन विभाग 4 के किसी भी कर्मचारी के वेतन से अधिक है।
-167. `SELECT` प्रोजेक्शन सूची में एक सबक्वेरी लिखें जो कंपनी के अधिकतम वेतन के साथ प्रत्येक कर्मचारी का वेतन प्रदर्शित करती है।
-168. दो जंजीरदार CTEs के साथ एक मॉड्यूलर क्वेरी लिखें: `CustomerOrders` और `OrderTotals`, प्रति ग्राहक औसत ऑर्डर आकार की गणना करते हुए।
-169. सबक्वेरीज का उपयोग करके उन सभी ग्राहकों को खोजें जिन्होंने अगस्त 2023 और सितंबर 2023 दोनों में ऑर्डर दिया है।
-170. एक कोरिलेटेड सबक्वेरी लिखें जो प्रत्येक ग्राहक के लिए सबसे हालिया ऑर्डर तिथि प्रदर्शित करती है।
-
-### एडवांस्ड सवाल (171–175)
-171. एक रिकर्सिव CTE लिखें जो 1 से 20 तक एक पूर्णांक अनुक्रम उत्पन्न करता है।
-172. एक रिकर्सिव CTE लिखें जो सीईओ से लेकर व्यक्तिगत कर्मचारियों तक पूरे संगठनात्मक प्रबंधन वृक्ष को मॉडल करता है, पदानुक्रम स्तर की गहराई (hierarchy level depth) की गणना करता है।
-173. एक कोरिलेटेड सबक्वेरी लिखें जो प्रत्येक श्रेणी के भीतर शीर्ष 1 उच्चतम कीमत वाला उत्पाद ढूंढती है।
-174. प्रत्येक ग्राहक द्वारा योगदान किए गए कुल कंपनी राजस्व के प्रतिशत की गणना करने वाले CTE का उपयोग करके एक क्वेरी लिखें।
-175. एक गहराई से नेस्टेड सबक्वेरी को एक रैखिक 3-चरणीय कॉमन टेबल एक्सप्रेशन में फिर से लिखें।
-
-### चैलेंज सवाल (176–180)
-176. **रिकर्सिव डेट सीरीज जेनरेटर**: अगस्त 2023 के महीने के लिए सभी कैलेंडर तिथियों को उत्पन्न करने वाला एक रिकर्सिव CTE लिखें, प्रति दिन ऑर्डरों की गिनती के लिए `orders` के खिलाफ `LEFT JOIN` का प्रदर्शन करें (खाली दिनों में 0 दिखाते हुए)।
-177. **BOM (बिल ऑफ मटेरियल्स) ट्रैवर्सल**: एक रिकर्सिव CTE क्वेरी डिज़ाइन करें जो एक पदानुक्रमित असेंबली के लिए कुल घटक निर्माण लागत की गणना करती है।
-178. **कोरिलेटेड सबक्वेरी ऑप्टिमाइज़ेशन**: रनिंग बैलेंस की गणना करने वाली एक धीमी कोरिलेटेड सबक्वेरी लें और इसे एक डिराइव्ड टेबल के साथ एक अनुकूलित जॉइन में फिर से लिखें।
-179. **चक्रीय प्रबंधन संदर्भों का पता लगाना**: एक रिकर्सिव CTE का उपयोग करने वाली एक क्वेरी लिखें जो प्रबंधक पदानुक्रमों को पार करती है और यह पता लगाती है कि क्या कोई कर्मचारी गलती से लूप के माध्यम से खुद को रिपोर्ट करता है।
-180. **संचयी टियर वर्गीकरण**: ग्राहक प्रतिशतक (percentiles) की गणना करने वाला एक CTE लिखें और शीर्ष 10% ग्राहकों को डायनेमिक रूप से `'Key Accounts'` के रूप में टैग करें।
+### Challenge Questions (86–90)
+86. **Working Day Calculation Challenge**: Ek SQL expression likhein jo order ki `order_date` aur aaj ke beech business days (Saturdays aur Sundays ko exclude karke) calculate kare.
+87. **Email Obfuscation Challenge**: Privacy ke liye customer emails ko mask karne wali query likhein, jisme sirf pehle 2 characters aur domain dikhein (e.g., `emily.watson@gmail.com` transform hokar `em*****@gmail.com` ban jaye).
+88. **Safe Division Matrix**: Har customer ke liye `loyalty_points` aur order count ka ratio calculate karne wali query likhein, jo `NULLIF` ka use karke division by zero se protect kare.
+89. **Fiscal Quarter Determination**: Ek aisi expression likhein jo har order date ko enterprise fiscal quarter se map kare, jahan Fiscal Year November 1st ko shuru hota hai.
+90. **String Parsing Challenge**: Diye gaye comma-delimited string `'alpha,beta,gamma'` se bina procedural loops ke pure SQL string functions ka use karke 2nd element (`'beta'`) extract karein.
 
 ---
 
-## Section 7: डेटाबेस डिज़ाइन, नॉर्मलाइजेशन और व्यूज
+## Section 4: Grouping & Aggregation (GROUP BY & HAVING)
 
-### बिगिनर सवाल (181–190)
-181. यदि कोई कॉलम अल्पविराम से अलग किए गए एकाधिक फ़ोन नंबरों को संग्रहीत करता है तो किस सामान्य रूप (normal form) का उल्लंघन होता है?
-182. कम्पोजिट कीज पर आंशिक निर्भरता को समाप्त करने के लिए किस सामान्य रूप की आवश्यकता होती है?
-183. संक्रामक निर्भरता (transitive dependency) को समाप्त करने के लिए किस सामान्य रूप की आवश्यकता होती है?
-184. `v_all_products` नामक एक व्यू बनाएं जो उत्पाद शीर्षक, श्रेणी नाम और कीमतें प्रदर्शित करता है।
-185. $300.00 से कम के उत्पादों के लिए `v_all_products` व्यू को क्वेरी करें।
-186. केवल सक्रिय कर्मचारियों को दिखाने वाला `v_active_employees` नामक एक व्यू बनाएं।
-187. दिखाएं कि MySQL में किसी मौजूदा व्यू की परिभाषा का निरीक्षण कैसे किया जाता है।
-188. `v_all_products` व्यू को ड्रॉप करें।
-189. बताएं कि क्या कोई व्यू टेबल पंक्तियों के लिए भौतिक डिस्क संग्रहण की खपत करता है।
-190. यदि आप अंतर्निहित बेस टेबल कॉलम्स में से किसी एक का नाम बदलते हैं तो किसी व्यू का क्या होता है?
+### Beginner Questions (91–100)
+91. Company mein employees ka total count nikalein.
+92. `orders` table mein sabhi order amounts ka total sum find karein.
+93. Sabhi products ka average unit price find karein.
+94. `customers` table mein kitne unique countries represented hain count karein.
+95. `employees` table mein maximum salary aur minimum salary find karein.
+96. Har `category_id` se belong karne wale products ki sankhya count karein.
+97. Har `department_id` ke liye total payroll expenditure calculate karein.
+98. Har `customer_id` dwara place kiye gaye orders count karein.
+99. `order_items` mein bechi gayi items ki total quantity calculate karein.
+100. Har `country` mein rehne wale customers ki sankhya count karein.
 
-### इंटरमीडिएट सवाल (191–200)
-191. `country = 'Germany'` के लिए फ़िल्टर करने वाला एक अपडेट करने योग्य व्यू `v_german_customers` बनाएं।
-192. `v_german_customers` में `WITH CHECK OPTION` जोड़ें और प्रदर्शित करें कि यह एक इतालवी ग्राहक को सम्मिलित करने से कैसे रोकता है।
-193. एक सुरक्षा व्यू `v_employee_directory` बनाएं जो कर्मचारी के वेतन और व्यक्तिगत फ़ोन नंबरों को मास्क करता है।
-194. एक विश्लेषणात्मक व्यू `v_monthly_sales_summary` बनाएं जो महीने के अनुसार राजस्व, ऑर्डर संख्या और औसत ऑर्डर मूल्य को एकत्रित करता है।
-195. एक असामानुकूलित संबंध `R(OrderID, CustomerName, CustomerAddress, ProductID, ProductName, Quantity)` को 3NF तालिकाओं में सामान्यीकृत करें।
-196. `courses(course_id, course_code, instructor_id, instructor_office)` में कार्यात्मक निर्भरताओं की पहचान करें।
-197. बताएं कि `orders` टेबल में `total_amount` को स्टोर करना एक नियंत्रित डीनॉर्मलाइजेशन निर्णय क्यों है।
-198. एक अपडेट करने योग्य व्यू के माध्यम से एक कर्मचारी के वेतन को अपडेट करना प्रदर्शित करें।
-199. बताएं कि `GROUP BY` युक्त व्यू को सीधे अपडेट क्यों नहीं किया जा सकता है।
-200. ग्राहक ऑर्डर इनवॉइस सारांश तैयार करने के लिए 4 तालिकाओं को जोड़ने वाला एक व्यू बनाएं।
+### Intermediate Questions (101–110)
+101. Wo sabhi `department_id` groups find karein jahan average employee salary $100,000 se exceed karti ho.
+102. Un sabhi customers ko find karein jinhone 2 ya usse zyada orders place kiye hain.
+103. `orders` table mein har `status` dwara generate kiya gaya total revenue calculate karein.
+104. Har us `category_id` ko list karein jisme 1 se zyada active product exist karte hain.
+105. Har department ke liye employee first names ki comma-separated list produce karne ke liye `GROUP_CONCAT` ka use karein.
+106. Products ko `supplier_id` ke according group karein aur minimum price, maximum price, aur price range (`max - min`) display karein.
+107. Wo sabhi order dates find karein jahan ek hi din par 1 se zyada order place kiye gaye the.
+108. `order_items` mein per order diya gaya average discount calculate karein, aur sirf un orders ko display karne ke liye filter karein jahan average discount > 0 ho.
+109. Customers ko `country` aur `state` ke according group karein, aur count karein ki har combination mein kitne customers rehte hain.
+110. Har `payment_method` ke liye successful payments ka total amount find karein.
 
-### एडवांस्ड सवाल (201–205)
-201. एक भौतिक सारांश तालिका और एक निर्धारित ईवेंट का उपयोग करके MySQL में एक मैटेरियलाइज्ड व्यू (Materialized View) का अनुकरण करें।
-202. एक कार रेंटल एजेंसी (ग्राहक, वाहन, रेंटल, रखरखाव लॉग) के लिए एक 3NF स्कीमा डिज़ाइन करें।
-203. एक ठोस स्कीमा उदाहरण के साथ बॉयस-कॉड नॉर्मल फॉर्म (BCNF) की व्याख्या करें जहाँ 3NF संतुष्ट है लेकिन BCNF का उल्लंघन है।
-204. `ALGORITHM = MERGE` का उपयोग करके एक व्यू बनाएं और बताएं कि MySQL बाहरी यूजर क्वेरी के साथ व्यू क्वेरी को कैसे जोड़ता है।
-205. `ALGORITHM = TEMPTABLE` का उपयोग करके एक व्यू बनाएं और `EXPLAIN` का उपयोग करके इसकी निष्पादन योजना का विश्लेषण करें।
+### Advanced Questions (111–115)
+111. Employees ko `department_id` ke according `WITH ROLLUP` ke saath group karne wali query likhein, headcount aur total salary calculate karein, aur ek grand total row ko `'Company Total'` label karein.
+112. `GROUP BY` query mein unaggregated column select karne par aane wale `ERROR 1055: only_full_group_by` ke cause ko explain karein. Is error ko demonstrate karne wali query likhein aur use fix karein.
+113. `GROUP BY`, `ORDER BY`, aur `LIMIT 1` ka use karke wo department find karein jiska average salary sabse high hai.
+114. Un sabhi customers ko find karein jinka cumulative order spend company-wide average order value se exceed karta ho.
+115. Orders ko calendar month ke according group karein aur us month ke total sales, shipping costs, aur order count calculate karein.
 
-### चैलेंज सवाल (206–210)
-206. **ज़ीरो-लॉस नॉर्मलाइजेशन अपघटन**: कार्यात्मक निर्भरता $A \rightarrow B, C$, $C \rightarrow D$, और $D \rightarrow E$ वाले संबंध $R(A, B, C, D, E)$ को 3NF में विघटित करें, दोषरहित जॉइन संपत्ति को साबित करें।
-207. **पंक्ति-स्तरीय किरायेदार अलगाव के साथ सुरक्षा व्यू**: एक सुरक्षा व्यू बनाएं जो उपयोगकर्ताओं को प्रतिबंधित करने के लिए MySQL के `SESSION_USER()` या `CURRENT_USER()` का उपयोग करता है ताकि वे केवल अपने विभाग से संबंधित रिकॉर्ड देख सकें।
-208. **मैटेरियलाइज्ड व्यू रीफ्रेश तंत्र**: एक संग्रहीत प्रक्रिया और ट्रिगर आर्किटेक्चर लिखें जो `order_items` में नई पंक्तियाँ डाले जाने पर एक मैटेरियलाइज्ड व्यू टेबल को वृद्धिशील रूप से बनाए रखता है।
-209. **डीनॉर्मलाइजेशन ट्रेड-ऑफ ऑडिट**: 10 मिलियन लेनदेन के लिए एक सामान्यीकृत 3NF स्कीमा बनाम एक डीनॉर्मलाइज्ड स्टार स्कीमा के बीच सटीक बाइट भंडारण अंतर की गणना करें।
-210. **स्कीमा एंटी-पैटर्न रीफैक्टर**: एक मौजूदा एंटिटी-एट्रिब्यूट-वैल्यू (EAV) स्कीमा एंटी-पैटर्न लें और इसे एक हाइब्रिड रिलेशनल + JSON डॉक्यूमेंट डिज़ाइन में रीफैक्टर करें।
+### Challenge Questions (116–120)
+116. **Multi-Dimensional ROLLUP Analysis**: `WITH ROLLUP` ka use karke `products` ko `category_id` aur `supplier_id` ke according group karein, aur subtotal vs grand total rows ko identify karne ke liye `GROUPING()` function ka use karein.
+117. **Conditional Aggregation (Pivot)**: Ek aisi single query likhein jo `orders` table ko pivot karke `SUM(CASE ...)` ka use karte hue total revenue ko 5 alag-alag columns mein display kare: `Pending`, `Processing`, `Shipped`, `Delivered`, aur `Cancelled`.
+118. **Customer Retention Metric**: Customers ko unki registration date ke year ke according group karein aur calculate karein ki unme se kitne customers ne 2023 mein order place kiya hai.
+119. **Pareto Principle Analysis (80/20 Rule)**: Ek aisi query likhein jo top 20% customers ko identify kare jo total revenue ka 80% generate karte hain.
+120. **Aggregating Pre-Calculated Line Items**: `order_items` se har order ke liye discounts account mein lete hue total net revenue calculate karein, aur `HAVING` ka use karke un orders ko filter karein jahan net revenue $1,000 se exceed karta ho.
 
 ---
 
-## Section 8: इंडेक्स, ट्रांजेक्शन्स और कॉनकरेंसी कंट्रोल
+## Section 5: Relational JOINs & Set Operations
 
-### बिगिनर सवाल (211–220)
-211. `customers(email)` पर `idx_cust_email` नामक एक इंडेक्स बनाने के लिए एक स्टेटमेंट लिखें।
-212. इंडेक्स `idx_cust_email` को ड्रॉप करने के लिए एक स्टेटमेंट लिखें।
-213. `orders` टेबल पर वर्तमान में परिभाषित सभी इंडेक्स दिखाएं।
-214. MySQL में स्पष्ट ट्रांजैक्शन शुरू करने के लिए कौन सा कमांड उपयोग होता है?
-215. कौन सा कमांड सभी लंबित ट्रांजैक्शनल परिवर्तनों को डिस्क पर कमिट करता है?
-216. कौन सा कमांड अनकमिटेड परिवर्तनों को रोलबैक करता है?
-217. MySQL InnoDB में डिफ़ॉल्ट ट्रांजैक्शन आइसोलेशन स्तर क्या है?
-218. क्लस्टर्ड इंडेक्स क्या है, और `customers` में कौन सा कॉलम इसका प्रतिनिधित्व करता है?
-219. बताएं कि संक्षिप्त नाम ACID का क्या अर्थ है।
-220. सेवपॉइंट क्या है, और आप इसे कैसे बनाते हैं?
+### Beginner Questions (121–130)
+121. Har employee ka name aur department name display karne ke liye `employees` aur `departments` ke beech `INNER JOIN` perform karein.
+122. Sabhi departments show karne ke liye `departments` aur `employees` ke beech `LEFT JOIN` perform karein, un departments samet jinme koi employee nahi hai.
+123. Order IDs aur customer names show karne ke liye `orders` aur `customers` ko join karein.
+124. Har product ka title aur category description show karne ke liye `products` aur `categories` ko join karein.
+125. Product names aur supplier contact emails display karne ke liye `products` aur `suppliers` ko join karein.
+126. `customers` aur `suppliers` se saari distinct cities ko combine karne ke liye `UNION` ka use karein.
+127. `customers` aur `suppliers` se saari cities ko combine karne ke liye `UNION ALL` ka use karein.
+128. Har order se belong karne wale sabhi item IDs ko list karne ke liye `orders` aur `order_items` ko join karein.
+129. Order IDs aur payment transaction references display karne ke liye `orders` aur `payments` ko join karein.
+130. `categories` aur `departments` ke beech `CROSS JOIN` perform karein.
 
-### इंटरमीडिएट सवाल (221–230)
-221. `orders(customer_id, order_date)` पर एक कम्पोजिट इंडेक्स बनाएं।
-222. एक ऐसी क्वेरी लिखें जो लेफ्टमोस्ट प्रीफिक्स नियम का पालन करते हुए प्रश्न 221 के कम्पोजिट इंडेक्स का उपयोग करती है।
-223. एक ऐसी क्वेरी लिखें जो लेफ्टमोस्ट प्रीफिक्स नियम का उल्लंघन करने के कारण प्रश्न 221 के कम्पोजिट इंडेक्स का उपयोग करने में विफल रहती है।
-224. एक ट्रांजैक्शन लिखें जो उत्पाद 1 के लिए स्टॉक घटाता है और एक ऑर्डर बनाता है। यदि स्टॉक अपर्याप्त है तो रोलबैक करें।
-225. प्रदर्शित करें कि CLI सत्र में `SET autocommit = 0;` ट्रांजैक्शन दृढ़ता को कैसे बदलता है।
-226. इन्वेंट्री सत्यापन क्वेरी के दौरान उत्पाद रिकॉर्ड को लॉक करने के लिए `SELECT ... FOR UPDATE` का उपयोग करें।
-227. केवल-पढ़ने के लिए सत्यापन के लिए ग्राहक रिकॉर्ड को लॉक करने के लिए `SELECT ... FOR SHARE` का उपयोग करें।
-228. "डर्टी रीड" के रूप में जानी जाने वाली कॉनकरेंसी विसंगति की व्याख्या करें और बताएं कि कौन सा अलगाव स्तर इसकी अनुमति देता है।
-229. बताएं कि "नॉन-रिपीटेबल रीड" क्या है और `REPEATABLE READ` इसे कैसे रोकता है।
-230. बताएं कि "फैंटम रीड" क्या है और InnoDB की नेक्स्ट-की लॉकिंग इसे कैसे रोकती है।
+### Intermediate Questions (131–140)
+131. Un sabhi customers ko find karne ke liye ek Anti-Join likhein jinhone kabhi koi order place nahi kiya.
+132. Un sabhi products ko find karne ke liye ek Anti-Join likhein jo `order_items` mein kabhi purchase nahi kiye gaye.
+133. Har employee ke name ke saath unke direct manager ka name display karne ke liye `employees` par ek `Self JOIN` perform karein.
+134. Customer Emily Watson dwara khareede gaye sabhi products list karne ke liye `customers`, `orders`, aur `order_items` ko connect karne wala ek 3-table join likhein.
+135. `'Japan'` based suppliers dwara supply kiye gaye `'Electronics'` category ke sabhi products list karne ke liye `products`, `categories`, aur `suppliers` ko join karne wali query likhein.
+136. Customer phone numbers aur employee phone numbers ko combine karne ke liye `UNION ALL` ka use karein, aur har row ko ek `'Entity_Type'` column ke saath tag karein.
+137. Same department mein kaam karne wale employees ke sabhi pairs find karne ke liye ek `Self JOIN` perform karein.
+138. Order 1001 ke andar ke items ki total retail value calculate karne ke liye `orders`, `order_items`, aur `products` ko join karein.
+139. Wo sabhi departments find karne ke liye query likhein jinme currently zero staff employed hai.
+140. `UNION` ka use karke `departments` aur `employees` ke beech ek `FULL OUTER JOIN` emulate karein.
 
-### एडवांस्ड सवाल (231–235)
-231. `Extra` कॉलम में `Using index` दिखाते हुए `EXPLAIN` का उपयोग करके `employees` पर एक इंडेक्स-कवरिंग क्वेरी प्रदर्शित करें।
-232. MySQL में दो समवर्ती कनेक्शनों के बीच एक गतिरोध (deadlock) परिदृश्य का अनुकरण करें।
-233. पैरेंट ऑर्डर को रखते हुए ऑर्डर आइटम इन्सर्ट को आंशिक रूप से रोलबैक करने के लिए `SAVEPOINT` का उपयोग करने वाला एक ट्रांजैक्शन लिखें।
-234. बताएं कि InnoDB का मल्टी-वर्जन कॉनकरेंसी कंट्रोल (MVCC) पाठकों को लेखकों को अवरुद्ध करने से बचने की अनुमति कैसे देता है।
-235. MySQL की `performance_schema.data_locks` तालिका का उपयोग करके सक्रिय ट्रांजैक्शन लॉक्स का निरीक्षण करें।
+### Advanced Questions (141–145)
+141. Per customer per category generate hua total revenue calculate karne ke liye `customers`, `orders`, `order_items`, `products`, aur `categories` ko connect karne wala 5-table join likhein.
+142. Ek aisa Non-Equi Join likhein jo un sabhi products ko find kare jinka `unit_price` department 1 ke employees ki average salary se strictly greater ho.
+143. `LEFT JOIN` ka use karke ek aisi query likhein jahan right table ka filter `ON` clause ke andar placed ho, aur explain karein ki ye result `WHERE` clause mein filter place karne se kaise different hota hai.
+144. Relational joins ka use karke un sabhi customers ko find karein jinhone Product 1 AUR Product 3 dono purchase kiye hain.
+145. Individual parenthesized subqueries ke saath `UNION ALL` ka use karke top 2 highest-paid employees aur top 2 lowest-paid employees ko combine karein.
 
-### चैलेंज सवाल (236–240)
-236. **डेडलॉक समाधान रूटीन**: एक एप्लिकेशन-स्तरीय पुनर्ट्राय एल्गोरिदम (स्यूडोकोड या SQL हैंडलर में) लिखें जो MySQL त्रुटि 1213 (Deadlock found) को रोकता है और ट्रांजैक्शन को पुन: प्रयास करता है।
-237. **कवरिंग इंडेक्स ऑप्टिमाइज़ेशन चैलेंज**: इस क्वेरी को सब-मिलीसेकंड गति में त्वरित करने के लिए इष्टतम कम्पोजिट इंडेक्स डिज़ाइन करें:
+### Challenge Questions (146–150)
+146. **Full Outer Join Emulation with Nulls**: `customers` aur `orders` ke beech ek complete `FULL OUTER JOIN` construct karein jo accurately un customers ko return kare jinke paas orders nahi hain AUR bina valid customer wale orders ko bhi return kare (agar orphaned hon).
+147. **Self Join Hierarchy Tree**: 3-way Self Join ka use karke employees, unke managers, aur unke manager ke managers (management hierarchy ke 2 levels) display karne wali query likhein.
+148. **Relational Division Challenge**: Un sabhi customers ko find karein jinhone Category 1 (`Electronics`) ka **har ek product** purchase kiya ho.
+149. **Basket Analysis (Co-Purchased Products)**: `order_items` par ek self-join query likhein jo un product pairs ko identify kare jo same order mein sabse frequently saath khareede jaate hain.
+150. **Consolidated Financial Audit**: `UNION ALL` ka use karke completed order revenue, refund deductions, aur shipping costs ko ek chronological general ledger mein merge karne wali ek compound query likhein.
+
+---
+
+## Section 6: Nested Queries & Common Table Expressions (CTEs)
+
+### Beginner Questions (151–160)
+151. Company-wide average salary se zyada earn karne wale sabhi employees ko find karne ke liye ek scalar subquery likhein.
+152. Un sabhi products ko find karne ke liye `IN` ke saath subquery likhein jo un categories se belong karte hain jinme `'Appliances'` word aata hai.
+153. `total_amount` ke hisaab se single largest order place karne wale customer ko find karne ke liye ek subquery likhein.
+154. Subquery ka use karke Quantum Pro 15 Laptop se higher priced sabhi products find karein.
+155. `FROM` clause mein derived table ka use karke product prices ko alias karne wali query likhein.
+156. Table mein sabse earliest registration date par register hone wale sabhi customers find karein.
+157. `'San Francisco'` mein rehne wale customers dwara place kiye gaye sabhi orders find karne ke liye subquery ka use karein.
+158. Active products ko select karne wali `ActiveProducts` naam ki basic CTE likhein, aur usse query karein.
+159. Subquery ka use karke employee David Kim ke saath same manager share karne wale sabhi employees find karein.
+160. Subquery ke saath `NOT IN` ka use karke un products ko find karein jo kabhi order nahi kiye gaye.
+
+### Intermediate Questions (161–170)
+161. Ek Correlated Subquery likhein jo apne khud ke department ki average salary se zyada earn karne wale sabhi employees ko find kare.
+162. Kam se kam ek active product supply karne wale sabhi suppliers ko find karne ke liye `EXISTS` ka use karke query likhein.
+163. Kabhi koi order place na karne wale sabhi customers ko find karne ke liye `NOT EXISTS` ka use karke query likhein.
+164. Per customer total spending calculate karne wali CTE likhein, aur CTE se query karke un customers ko find karein jinhone $1,000 se zyada spend kiya.
+165. Category 3 ke sabhi products ke price se greater price wale products find karne ke liye `ALL` ka use karke query likhein.
+166. Department 4 ke kisi bhi employee ki salary se greater salary wale employees find karne ke liye `ANY` ka use karke query likhein.
+167. `SELECT` projection list mein ek aisi subquery likhein jo har employee ki salary ke saath company ki maximum salary bhi display kare.
+168. Do chained CTEs: `CustomerOrders` aur `OrderTotals` ke saath ek modular query likhein jo per customer average order size calculate kare.
+169. Subqueries ka use karke un sabhi customers ko find karein jinhone August 2023 aur September 2023 dono mein order place kiya hai.
+170. Ek correlated subquery likhein jo har customer ke liye unki most recent order date display kare.
+
+### Advanced Questions (171–175)
+171. 1 se 20 tak integer sequence generate karne wali ek Recursive CTE likhein.
+172. CEO se lekar individual staff members tak poore organizational management tree ko model karne wali aur hierarchy level depth compute karne wali Recursive CTE likhein.
+173. Ek correlated subquery likhein jo har category ke andar top 1 highest-priced product find kare.
+174. CTE ka use karke ek aisi query likhein jo har customer dwara total company revenue mein contribute ki gayi percentage calculate kare.
+175. Ek deeply nested subquery ko ek linear 3-stage Common Table Expression mein rewrite karein.
+
+### Challenge Questions (176–180)
+176. **Recursive Date Series Generator**: August 2023 month ke sabhi calendar dates generate karne wali Recursive CTE likhein, aur per day orders count karne ke liye `orders` ke against `LEFT JOIN` perform karein (empty days par 0 show karte hue).
+177. **BOM (Bill of Materials) Traversal**: Ek hierarchical assembly ke liye total component manufacturing cost calculate karne wali recursive CTE query design karein.
+178. **Correlated Subquery Optimization**: Running balances calculate karne wali ek slow correlated subquery lein aur use ek derived table ke saath optimized join mein rewrite karein.
+179. **Detecting Circular Management References**: Recursive CTE ka use karke manager hierarchies ko traverse karne wali aur detect karne wali query likhein agar koi employee kisi loop ke through ghalti se khud ko report kar raha ho.
+180. **Cumulative Tier Classification**: Customer percentiles calculate karne wali CTE likhein aur top 10% customers ko dynamically `'Key Accounts'` tag karein.
+
+---
+
+## Section 7: Database Design, Normalization & Views
+
+### Beginner Questions (181–190)
+181. Agar koi column commas se separated multiple phone numbers store karta hai toh kaun sa normal form violate hota hai?
+182. Composite keys par partial dependencies ko eliminate karna kis normal form ki requirement hai?
+183. Transitive dependencies ko eliminate karna kis normal form ki requirement hai?
+184. Product titles, category names, aur prices display karne wala `v_all_products` naam ka view create karein.
+185. $300.00 se kam price wale products ke liye `v_all_products` view ko query karein.
+186. Sirf active employees ko show karne wala `v_active_employees` naam ka view create karein.
+187. MySQL mein kisi existing view ki definition inspect karne ka tareeqa show karein.
+188. View `v_all_products` ko drop karein.
+189. Explain karein ki kya koi view table rows ke liye physical disk storage consume karta hai.
+190. Agar aap kisi underlying base table column ka naam rename kar dete hain toh view ka kya hota hai?
+
+### Intermediate Questions (191–200)
+191. `country = 'Germany'` ke liye filter karne wala updatable view `v_german_customers` create karein.
+192. `v_german_customers` mein `WITH CHECK OPTION` add karein aur demonstrate karein ki ye kisi Italian customer ko insert hone se kaise block karta hai.
+193. Ek security view `v_employee_directory` create karein jo employee salaries aur personal phone numbers ko mask kare.
+194. Ek analytical view `v_monthly_sales_summary` create karein jo month ke according revenue, order count, aur average order value ko aggregate kare.
+195. Ek unnormalized relation `R(OrderID, CustomerName, CustomerAddress, ProductID, ProductName, Quantity)` ko 3NF tables mein normalize karein.
+196. `courses(course_id, course_code, instructor_id, instructor_office)` mein functional dependencies identify karein.
+197. Explain karein ki `orders` table mein `total_amount` store karna ek controlled denormalization decision kyun hai.
+198. Updatable view ke through kisi employee ki salary update karke demonstrate karein.
+199. Explain karein ki `GROUP BY` contain karne wala view directly update kyun nahi kiya ja sakta.
+200. Customer order invoice summary produce karne ke liye 4 tables ko join karne wala ek view create karein.
+
+### Advanced Questions (201–205)
+201. MySQL mein ek physical summary table aur scheduled event ka use karke Materialized View emulate karein.
+202. Ek Car Rental Agency (Customers, Vehicles, Rentals, Maintenance Logs) ke liye 3NF schema design karein.
+203. Ek concrete schema example ke saath Boyce-Codd Normal Form (BCNF) explain karein jahan 3NF satisfy hota hai lekin BCNF violate hota hai.
+204. `ALGORITHM = MERGE` ka use karke ek view create karein aur explain karein ki MySQL view query ko outer user query ke saath kaise combine karta hai.
+205. `ALGORITHM = TEMPTABLE` ka use karke ek view create karein aur `EXPLAIN` ka use karke iska execution plan analyze karein.
+
+### Challenge Questions (206–210)
+206. **Zero-Loss Normalization Decomposition**: Relation $R(A, B, C, D, E)$ jisme functional dependencies $A \rightarrow B, C$, $C \rightarrow D$, aur $D \rightarrow E$ hain, use 3NF mein decompose karein, proving lossless join property.
+207. **Security View with Row-Level Tenant Isolation**: MySQL ke `SESSION_USER()` ya `CURRENT_USER()` ka use karke ek security view create karein jo users ko restrict kare taaki wo sirf apne department ke records view kar sakein.
+208. **Materialized View Refresh Mechanism**: Ek stored procedure aur trigger architecture likhein jo `order_items` mein nayi rows insert hone par materialized view table ko incrementally maintain kare.
+209. **Denormalization Trade-off Audit**: 10 million transactions ke liye ek normalized 3NF schema vs ek denormalized Star Schema ke beech exact byte storage difference calculate karein.
+210. **Schema Anti-Pattern Refactor**: Ek existing Entity-Attribute-Value (EAV) schema anti-pattern lein aur use ek hybrid relational + JSON document design mein refactor karein.
+
+---
+
+## Section 8: Indexes, Transactions & Concurrency Control
+
+### Beginner Questions (211–220)
+211. `customers(email)` par `idx_cust_email` naam ka index create karne ke liye statement likhein.
+212. Index `idx_cust_email` ko drop karne ke liye statement likhein.
+213. `orders` table par currently defined sabhi indexes display karein.
+214. MySQL mein explicit transaction begin karne ke liye kaun si command hoti hai?
+215. Pending transactional changes ko disk par commit karne ke liye kaun si command hoti hai?
+216. Uncommitted changes ko rollback karne ke liye kaun si command hoti hai?
+217. MySQL InnoDB mein default transaction isolation level kya hai?
+218. Clustered Index kya hota hai, aur `customers` table mein kaun sa column ise represent karta hai?
+219. Explain karein ki ACID acronym ka kya matlab hota hai.
+220. Savepoint kya hota hai, aur aap ise kaise create karte hain?
+
+### Intermediate Questions (221–230)
+221. `orders(customer_id, order_date)` par ek composite index create karein.
+222. Question 221 ke composite index ko Leftmost Prefix Rule follow karte hue utilize karne wali query likhein.
+223. Ek aisi query likhein jo Leftmost Prefix Rule violate karne ki wajah se Question 221 ke composite index ko utilize karne mein fail ho jaati hai.
+224. Ek aisa transaction likhein jo Product 1 ke stock ko decrement kare aur order create kare. Agar stock insufficient ho toh rollback karein.
+225. Demonstrate karein ki CLI session mein `SET autocommit = 0;` transaction persistence ko kaise alter karta hai.
+226. Inventory verification query ke dauran product record ko lock karne ke liye `SELECT ... FOR UPDATE` ka use karein.
+227. Read-only validation ke liye customer record ko lock karne ke liye `SELECT ... FOR SHARE` ka use karein.
+228. "Dirty Read" ke naam se jaane jaane wale concurrency anomaly ko explain karein aur batayein ki kaun sa isolation level ise permit karta hai.
+229. Explain karein ki "Non-Repeatable Read" kya hota hai aur `REPEATABLE READ` ise kaise prevent karta hai.
+230. Explain karein ki "Phantom Read" kya hota hai aur InnoDB ka Next-Key Locking ise kaise prevent karta hai.
+
+### Advanced Questions (231–235)
+231. `employees` par ek index-covering query demonstrate karein jisme `EXPLAIN` output ke `Extra` column mein `Using index` show ho.
+232. MySQL mein do concurrent connections ke beech ek deadlock scenario simulate karein.
+233. `SAVEPOINT` ka use karne wala ek transaction likhein jo parent order ko retain rakhte hue order item insert ko partially roll back kare.
+234. Explain karein ki InnoDB ka Multi-Version Concurrency Control (MVCC) readers ko writers ko block karne se kaise bachaata hai.
+235. MySQL ki `performance_schema.data_locks` table ka use karke active transaction locks inspect karein.
+
+### Challenge Questions (236–240)
+236. **Deadlock Resolution Routine**: Application-level retry algorithm (pseudocode ya SQL handler mein) likhein jo MySQL error 1213 (Deadlock found) ko intercept kare aur transaction ko retry kare.
+237. **Covering Index Optimization Challenge**: Is query ko sub-millisecond speeds tak accelerate karne ke liye optimal composite index design karein:
    ```sql
    SELECT customer_id, order_date, total_amount FROM orders WHERE status = 'Delivered' ORDER BY order_date DESC LIMIT 10;
    ```
-238. **इंडेक्स कार्डिनैलिटी विश्लेषण**: एक ऐसी क्वेरी लिखें जो यह निर्धारित करने के लिए `customers` पर सभी इंडेक्स के चयनात्मकता अनुपात की गणना करती है कि किन इंडेक्स को छोड़ दिया जाना चाहिए।
-239. **इंप्लिसिट कमिट डिजास्टर रिकवरी**: एक ऐसा परिदृश्य तैयार करें जो प्रदर्शित करता है कि ट्रांजैक्शन के अंदर `ALTER TABLE` चलाने से पूर्व DML स्टेटमेंट कैसे कमिट होते हैं और एटॉमिसीटी टूट जाती है।
-240. **InnoDB लॉक एस्केलेशन मैकेनिक्स**: बताएं कि InnoDB टेबल-स्तरीय लॉकिंग के बजाय रो-लेवल लॉकिंग का उपयोग क्यों करता है, और रो लॉक्स कब बढ़ सकते हैं या गैप लॉक्स के माध्यम से पूरी सीमाओं को लॉक कर सकते हैं।
+238. **Index Cardinality Analysis**: `customers` par sabhi indexes ka selectivity ratio compute karne wali query likhein taaki decide kiya ja sake ki kaun se indexes drop karne chahiye.
+239. **Implicit Commit Disaster Recovery**: Ek aisa scenario construct karein jo demonstrate kare ki transaction ke andar `ALTER TABLE` run karne se prior DML statements commit ho jaate hain aur atomicity break ho jaati hai.
+240. **InnoDB Lock Escalation Mechanics**: Explain karein ki InnoDB table-level locking ke bajaye row-level locking kyun use karta hai, aur row locks kab escalate hote hain ya Gap Locks ke through entire ranges ko lock karte hain.
 
 ---
 
-## Section 9: प्रोग्रामेबिलिटी और एडवांस्ड एनालिटिक्स (Procedures, Functions, Triggers, Windows)
+## Section 9: Programmability & Advanced Analytics (Procedures, Functions, Triggers, Windows)
 
-### बिगिनर सवाल (241–250)
-241. सभी विभागों का चयन करने वाला एक बेसिक स्टोर्ड प्रोसीजर `sp_list_departments` लिखें।
-242. `sp_list_departments` प्रोसीजर को निष्पादित करने के लिए कमांड लिखें।
-243. MySQL CLI में स्टोर्ड रूटीन बनाते समय `DELIMITER` को क्यों बदला जाना चाहिए?
-244. एक डिटर्मिनिस्टिक फंक्शन `fn_add_numbers(a INT, b INT)` बनाएं जो उनका योग लौटाता है।
-245. `employees` पर एक `BEFORE INSERT` ट्रिगर लिखें जो `email` को लोअरकेस में बाध्य करता है।
-246. वेतन अवरोही क्रम में व्यवस्थित सभी कर्मचारियों को क्रमांकित करने के लिए `ROW_NUMBER()` विंडो फ़ंक्शन का उपयोग करें।
-247. `->>` ऑपरेटर का उपयोग करके `'{"brand": "Sony", "model": "XM4"}'` से एक JSON मान निकालें।
-248. दिखाएं कि `sp_my_proc` नामक स्टोर्ड प्रोसीजर को कैसे ड्रॉप किया जाता है।
-249. किसी प्रोसीजर में `IN` पैरामीटर और `OUT` पैरामीटर के बीच अंतर स्पष्ट करें।
-250. `DELETE` ट्रिगर में कौन सा स्यूडो-रिकॉर्ड (`OLD` या `NEW`) उपलब्ध होता है?
+### Beginner Questions (241–250)
+241. Sabhi departments ko select karne wala ek basic stored procedure `sp_list_departments` likhein.
+242. `sp_list_departments` procedure ko execute karne ke liye command likhein.
+243. MySQL CLI mein stored routines create karte waqt `DELIMITER` ko change karna kyun zaroori hota hai?
+244. Ek deterministic function `fn_add_numbers(a INT, b INT)` create karein jo unka sum return kare.
+245. `employees` par ek `BEFORE INSERT` trigger likhein jo `email` ko lowercase mein force kare.
+246. Salary descending order mein sorted sabhi employees ko number karne ke liye `ROW_NUMBER()` window function ka use karein.
+247. `->>` operator ka use karke `'{"brand": "Sony", "model": "XM4"}'` se JSON value extract karein.
+248. `sp_my_proc` naam ke stored procedure ko drop karne ka tareeqa show karein.
+249. Procedure mein `IN` parameter aur `OUT` parameter ke beech difference explain karein.
+250. `DELETE` trigger mein kaun sa pseudo-record (`OLD` ya `NEW`) available hota hai?
 
-### इंटरमीडिएट सवाल (251–260)
-251. एक `IN p_cust_id INT` लेने वाला और उनके कुल खर्च को एक `OUT p_total DECIMAL(12,2)` के रूप में लौटाने वाला प्रोसीजर `sp_get_customer_spend` लिखें।
-252. शुद्ध मूल्य लौटाने वाला एक स्टोर्ड फंक्शन `fn_discounted_price(price DECIMAL(10,2), pct DECIMAL(4,2))` लिखें।
-253. `orders` पर एक `AFTER DELETE` ट्रिगर लिखें जो हटाए गए `order_id` और `total_amount` को `orders_archive` टेबल में लॉग करता है।
-254. अपनी श्रेणी के भीतर कीमत के आधार पर उत्पादों को रैंक करने के लिए `RANK()` और `DENSE_RANK()` का कंधे से कंधा मिलाकर उपयोग करें।
-255. प्रत्येक कर्मचारी और उनके विभाग में अगले कम वेतन वाले कर्मचारी के बीच वेतन में अंतर की गणना करने के लिए `LAG()` का उपयोग करें।
-256. `orders` में प्रत्येक ग्राहक के लिए बाद की ऑर्डर तिथि प्रदर्शित करने के लिए `LEAD()` का उपयोग करें।
-257. प्रदर्शन रेटिंग के आधार पर कर्मचारी वेतन को अपडेट करने वाले `IF-THEN-ELSE` नियंत्रण प्रवाह के साथ एक प्रक्रिया लिखें।
-258. एक फंक्शन लिखें जो गिनता है कि किसी दिए गए ग्राहक ने कितने ऑर्डर दिए हैं।
-259. एक `AFTER UPDATE` ट्रिगर लिखें जो किसी ऑर्डर की स्थिति `'Delivered'` होने के बाद उसके `total_amount` को संशोधित करने से रोकता है।
-260. एक विंडो फ़ंक्शन का उपयोग करके `order_date` द्वारा क्रमबद्ध ऑर्डर राशियों के संचयी कुल की गणना करें।
+### Intermediate Questions (251–260)
+251. Ek procedure `sp_get_customer_spend` likhein jo `IN p_cust_id INT` le aur unka total spend `OUT p_total DECIMAL(12,2)` ke roop mein return kare.
+252. Net price return karne wala ek stored function `fn_discounted_price(price DECIMAL(10,2), pct DECIMAL(4,2))` likhein.
+253. `orders` par ek `AFTER DELETE` trigger likhein jo deleted `order_id` aur `total_amount` ko `orders_archive` table mein log kare.
+254. Category ke andar price ke hisaab se products ko rank karne ke liye `RANK()` aur `DENSE_RANK()` ko side-by-side use karein.
+255. Har employee aur unke department ke next lower-paid employee ke beech salary difference calculate karne ke liye `LAG()` ka use karein.
+256. `orders` mein har customer ke liye subsequent order date display karne ke liye `LEAD()` ka use karein.
+257. `IF-THEN-ELSE` control flow ke saath ek procedure likhein jo performance ratings ke basis par employee salaries update kare.
+258. Ek function likhein jo count kare ki diye gaye customer ne kitne orders place kiye hain.
+259. Ek `AFTER UPDATE` trigger likhein jo order ka status `'Delivered'` hone ke baad uske `total_amount` ko modify hone se prevent kare.
+260. Window function ka use karke `order_date` ke according sorted order amounts ka running cumulative total calculate karein.
 
-### एडवांस्ड सवाल (261–265)
-261. सभी सक्रिय ग्राहकों के माध्यम से पुनरावृति करने और 50 बोनस अंक प्रदान करने के लिए `CURSOR` और `CONTINUE HANDLER FOR NOT FOUND` का उपयोग करने वाला एक स्टोर्ड प्रोसीजर लिखें।
-262. `ROWS BETWEEN 2 PRECEDING AND CURRENT ROW` का उपयोग करके दैनिक ऑर्डर राजस्व पर 3-दिवसीय चलती औसत (moving average) गणना लिखें।
-263. ग्राहकों को उनके जीवनकाल के खर्च के आधार पर 4 समान चतुर्थक (quartiles) में विभाजित करने के लिए `NTILE(4)` का उपयोग करें।
-264. एक मूल `JSON` कॉलम के साथ एक टेबल का निर्माण करें और एक नेस्टेड स्ट्रिंग विशेषता निकालने वाला एक अनुक्रमित वर्चुअल जनरेटेड कॉलम बनाएं।
-265. एक स्टोर्ड प्रोसीजर के अंदर एक `EXIT HANDLER FOR SQLEXCEPTION` लिखें जो त्रुटि पर खुले ट्रांजैक्शन को स्वचालित रूप से रोलबैक करता है।
+### Advanced Questions (261–265)
+261. `CURSOR` aur `CONTINUE HANDLER FOR NOT FOUND` ka use karne wala stored procedure likhein jo sabhi active customers par iterate kare aur 50 bonus points award kare.
+262. `ROWS BETWEEN 2 PRECEDING AND CURRENT ROW` ka use karke daily order revenue par 3-day moving average calculation likhein.
+263. Customers ko unke lifetime spend ke basis par 4 equal quartiles mein divide karne ke liye `NTILE(4)` ka use karein.
+264. Native `JSON` column ke saath ek table construct karein aur nested string attribute extract karne wala ek indexed virtual generated column build karein.
+265. Stored procedure ke andar `EXIT HANDLER FOR SQLEXCEPTION` likhein jo error aane par open transaction ko automatically rollback kar de.
 
-### चैलेंज सवाल (266–270)
-266. **डायनेमिक पिवट प्रोसीजर**: एक स्टोर्ड प्रोसीजर लिखें जो मनमाने वर्षों में बिक्री डेटा को स्तंभों में पिवोट करने के लिए `GROUP_CONCAT` का उपयोग करके गतिशील रूप से एक SQL स्ट्रिंग बनाता है और इसे `PREPARE` और `EXECUTE` के माध्यम से निष्पादित करता है।
-267. **ईयर-ओवर-ईयर (YoY) ग्रोथ विंडो पाइपलाइन**: विंडो फ़ंक्शंस का उपयोग करके एक एकल SQL क्वेरी लिखें जो मासिक राजस्व, पिछले वर्ष के समान महीने के राजस्व (`LAG 12`), और YoY प्रतिशत वृद्धि दर की गणना करती है।
-268. **स्ट्रिक्ट इनवेरिएंट ट्रिगर गार्ड**: `order_items` पर एक `BEFORE UPDATE` ट्रिगर लिखें जो `orders` में पैरेंट ऑर्डर के `total_amount` की पुनर्गणना करता है और यदि ग्राहक की क्रेडिट सीमा पार हो जाती है तो अपडेट को अस्वीकार कर देता है।
-269. **एडवांस्ड JSON ऐरे एग्रीगेशन**: `products` टेबल को क्वेरी करें और प्रत्येक श्रेणी और उत्पादों की नेस्टेड सरणी युक्त एक एकल पदानुक्रमित JSON दस्तावेज़ तैयार करने के लिए `JSON_ARRAYAGG` और `JSON_OBJECT` का उपयोग करें।
-270. **ऑडिट ट्रिगर विथ डीप डिफिंग**: `employees` पर एक `AFTER UPDATE` ट्रिगर लिखें जो `OLD` और `NEW` के बीच प्रत्येक कॉलम की तुलना करता है और एक सामान्यीकृत `field_changes_audit` तालिका में प्रत्येक संशोधित विशेषता के लिए एक अलग लॉग प्रविष्टि सम्मिलित करता है।
+### Challenge Questions (266–270)
+266. **Dynamic Pivot Procedure**: Ek stored procedure likhein jo arbitrary years across sales data ko columns mein pivot karne ke liye `GROUP_CONCAT` ka use karke dynamically SQL string construct kare aur use `PREPARE` aur `EXECUTE` ke through run kare.
+267. **Year-over-Year (YoY) Growth Window Pipeline**: Window functions ka use karne wali ek single SQL query likhein jo monthly revenue, previous year same-month revenue (`LAG 12`), aur YoY percentage growth rate calculate kare.
+268. **Strict Invariant Trigger Guard**: `order_items` par ek `BEFORE UPDATE` trigger likhein jo `orders` mein parent order ke `total_amount` ko recalculate kare aur agar customer ki credit limit exceed hoti hai toh update ko reject kar de.
+269. **Advanced JSON Array Aggregation**: `products` table ko query karein aur `JSON_ARRAYAGG` aur `JSON_OBJECT` ka use karke ek single hierarchical JSON document produce karein jisme har category aur uske nested array of products shamil hon.
+270. **Audit Trigger with Deep Diffing**: `employees` par ek `AFTER UPDATE` trigger likhein jo `OLD` aur `NEW` ke beech har ek column ko compare kare aur har modified attribute ke liye ek normalized `field_changes_audit` table mein separate log entry insert kare.
 
 ---
 
-## Section 10: परफॉरमेंस ऑप्टिमाइज़ेशन और एंटरप्राइज सिक्योरिटी
+## Section 10: Performance Optimization & Enterprise Security
 
-### बिगिनर सवाल (271–280)
-271. `customers` पर एक क्वेरी के लिए `EXPLAIN` निष्पादन योजना उत्पन्न करने के लिए एक कमांड लिखें।
-272. `EXPLAIN` में कौन सा एक्सेस प्रकार पूर्ण तालिका स्कैन को इंगित करता है?
-273. `EXPLAIN` में कौन सा एक्सेस प्रकार प्राइमरी की का उपयोग करके लुकअप को इंगित करता है?
-274. पासवर्ड `'InternPass2026!'` के साथ `'intern'@'localhost'` नामक एक MySQL यूजर अकाउंट बनाएं।
-275. `'intern'@'localhost'` को `sql_mastery.*` पर केवल-पढ़ने के लिए (`SELECT`) विशेषाधिकार प्रदान करें।
-276. `'intern'@'localhost'` को दिए गए सक्रिय विशेषाधिकारों का निरीक्षण करें।
-277. `'intern'@'localhost'` से `SELECT` विशेषाधिकार रद्द करें।
-278. उपयोगकर्ता `'intern'@'localhost'` को ड्रॉप करें।
-279. क्वेरी ऑप्टिमाइज़ेशन में SARGable शब्द का क्या अर्थ है?
-280. बताएं कि वेब क्वेरीज में स्ट्रिंग संयोजन (concatenation) SQL इंजेक्शन कमजोरियों का कारण क्यों बनता है।
+### Beginner Questions (271–280)
+271. `customers` par query ke liye `EXPLAIN` execution plan generate karne ki command likhein.
+272. `EXPLAIN` mein kaun sa access type full table scan indicate karta hai?
+273. `EXPLAIN` mein kaun sa access type Primary Key lookup indicate karta hai?
+274. Password `'InternPass2026!'` ke saath `'intern'@'localhost'` naam ka MySQL user account create karein.
+275. `'intern'@'localhost'` ko `sql_mastery.*` par read-only (`SELECT`) privileges grant karein.
+276. `'intern'@'localhost'` ko granted active privileges inspect karein.
+277. `'intern'@'localhost'` se `SELECT` privileges revoke karein.
+278. User `'intern'@'localhost'` ko drop karein.
+279. Query optimization mein SARGable term ka kya matlab hota hai?
+280. Explain karein ki web queries mein string concatenation SQL Injection vulnerabilities kyun create karta hai.
 
-### इंटरमीडिएट सवाल (281–290)
-281. इस नॉन-SARGable क्वेरी को SARGable क्वेरी में बदलें:
+### Intermediate Questions (281–290)
+281. Is non-SARGable query ko ek SARGable query mein convert karein:
    ```sql
    SELECT * FROM employees WHERE YEAR(hire_date) = 2021;
    ```
-282. इस नॉन-SARGable क्वेरी को SARGable क्वेरी में बदलें:
+282. Is non-SARGable query ko ek SARGable query mein convert karein:
    ```sql
    SELECT * FROM customers WHERE phone LIKE '555%';
    ```
-283. `customers` और `orders` के बीच जॉइन के वास्तविक निष्पादन समय को मापने के लिए `EXPLAIN ANALYZE` का उपयोग करें।
-284. `'analyst_role'` नामक एक भूमिका बनाएं, इसे `sql_mastery` की सभी तालिकाओं पर `SELECT` प्रदान करें, और भूमिका को एक उपयोगकर्ता को सौंपें।
-285. कॉलम-स्तरीय अनुमतियाँ प्रदान करें जिससे उपयोगकर्ता `customers` से केवल `first_name`, `last_name`, और `city` देख सके।
-286. दिखाएं कि `PREPARE`, `SET`, और `EXECUTE` का उपयोग करके MySQL में पैरामीटराइज्ड क्वेरी को कैसे तैयार और निष्पादित किया जाता है।
-287. बताएं कि `EXPLAIN` योजना के `Extra` कॉलम में `Using temporary` और `Using filesort` का क्या अर्थ है।
-288. `--single-transaction` का उपयोग करके `sql_mastery` का बैकअप लेने के लिए `mysqldump` कमांड लिखें।
-289. किसी `VARCHAR` कॉलम की तुलना किसी पूर्णांक शाब्दिक (`WHERE phone = 5550100`) से करने के प्रदर्शन जोखिम की पहचान करें।
-290. MySQL में स्लो क्वेरी लॉग को सक्षम करें और इसे 1.0 सेकंड से अधिक समय तक चलने वाली क्वेरीज को कैप्चर करने के लिए कॉन्फ़िगर करें।
+283. `customers` aur `orders` ke beech join ka actual execution time measure karne ke liye `EXPLAIN ANALYZE` ka use karein.
+284. `'analyst_role'` naam ka role create karein, use `sql_mastery` ki saari tables par `SELECT` grant karein, aur role ko ek user ko assign karein.
+285. Column-level permissions grant karein jo user ko `customers` se sirf `first_name`, `last_name`, aur `city` view karne allow karein.
+286. MySQL mein `PREPARE`, `SET`, aur `EXECUTE` ka use karke parameterized query prepare aur execute karne ka tareeqa show karein.
+287. Explain karein ki `EXPLAIN` plan ke `Extra` column mein `Using temporary` aur `Using filesort` ka kya matlab hota hai.
+288. `--single-transaction` ka use karke `sql_mastery` backup karne ke liye `mysqldump` command likhein.
+289. `VARCHAR` column ko integer literal se compare karne (`WHERE phone = 5550100`) ke performance risk ko identify karein.
+290. MySQL mein Slow Query Log enable karein aur ise 1.0 second se lambi queries capture karne ke liye configure karein.
 
-### एडवांस्ड सवाल (291–295)
-291. ब्लॉक नेस्टेड लूप (या हैश जॉइन) दिखाने वाले `EXPLAIN` प्लान का विश्लेषण करें और इसे इंडेक्स नेस्टेड लूप जॉइन में बदलने के लिए आवश्यक इंडेक्स का निर्माण करें।
-292. एक मल्टी-कॉलम कवरिंग इंडेक्स डिज़ाइन करें जो `WHERE` फ़िल्टर और `ORDER BY` क्लॉज दोनों युक्त क्वेरी पर फाइल्सॉर्ट को पूरी तरह से समाप्त करता है।
-293. MySQL 8.0 में `caching_sha2_password` और `mysql_native_password` के बीच सुरक्षा अंतर स्पष्ट करें।
-294. `sql_mastery` में उन इंडेक्स की पहचान करने के लिए `sys.schema_unused_indexes` का उपयोग करके एक SQL स्टेटमेंट लिखें जिनका क्वेरीज द्वारा कभी उपयोग नहीं किया गया है।
-295. एक एन्क्रिप्टेड SSL/TLS कनेक्शन (`REQUIRE SSL`) की आवश्यकता के लिए एक यूजर अकाउंट कॉन्फ़िगर करें।
+### Advanced Questions (291–295)
+291. Block Nested Loop (ya Hash Join) show karne wale `EXPLAIN` plan ko analyze karein aur ise Index Nested Loop Join mein convert karne ke liye required index construct karein.
+292. Ek multi-column covering index design karein jo `WHERE` filter aur `ORDER BY` clause dono contain karne wali query par Filesort ko completely eliminate kare.
+293. MySQL 8.0 mein `caching_sha2_password` aur `mysql_native_password` ke beech security differences explain karein.
+294. `sys.schema_unused_indexes` ka use karke ek SQL statement likhein jo `sql_mastery` mein un indexes ko identify kare jo queries dwara kabhi utilize nahi kiye gaye hain.
+295. Encrypted SSL/TLS connection (`REQUIRE SSL`) require karne ke liye user account configure karein.
 
-### चैलेंज सवाल (296–300)
-296. **एग्जीक्यूशन प्लान डिकंस्ट्रक्शन**: 4-टेबल जॉइन क्वेरी पर `EXPLAIN FORMAT=JSON` निष्पादित करें और लागत मेट्रिक्स (`query_cost`, `read_cost`, `eval_cost`) की व्याख्या करें।
-297. **एसक्यूएल इंजेक्शन पेनेट्रेशन परिदृश्य**: प्रदर्शित करें कि जब लॉगिन क्वेरी को इस प्रकार लिखा जाता है तो हमलावर प्रमाणीकरण को कैसे बायपास करता है:
+### Challenge Questions (296–300)
+296. **Execution Plan Deconstruction**: 4-table join query par `EXPLAIN FORMAT=JSON` execute karein aur cost metrics (`query_cost`, `read_cost`, `eval_cost`) ko interpret karein.
+297. **SQL Injection Penetration Scenario**: Demonstrate karein ki attacker authentication ko kaise bypass karta hai jab login query is tarah likhi gayi ho:
    ```sql
    SELECT * FROM users WHERE username = '$user' AND password = '$password';
    ```
-   सटीक इंजेक्शन पेलोड दिखाएं और सुरक्षित पैरामीटराइज्ड तैयार स्टेटमेंट समतुल्य लिखें।
-298. **बफर पूल साइजिंग और हिट अनुपात**: `information_schema` और `performance_schema` के विरुद्ध एक क्वेरी लिखें जो InnoDB बफर पूल रीड हिट अनुपात प्रतिशत की गणना करती है।
-299. **ग्रैन्युलर रो-लेवल एक्सेस आर्किटेक्चर**: MySQL में एक मल्टी-टेनेंट सुरक्षा आर्किटेक्चर डिज़ाइन करें जहाँ कई क्लाइंट कंपनियाँ एक ही डेटाबेस साझा करती हैं, लेकिन डेटाबेस-स्तरीय भूमिकाएँ और व्यू यह सुनिश्चित करते हैं कि टेनेंट A कभी भी टेनेंट B के डेटा को क्वेरी नहीं कर सकता है।
-300. **हाई-परफॉरमेंस क्वेरी रीफैक्टरिंग**: 4 सबक्वेरी, 2 सेल्फ-जॉइन और एक `DISTINCT` क्लॉज वाली एक लीगेसी रिपोर्टिंग क्वेरी लें, और कॉमन टेबल एक्सप्रेशन्स और विंडो फंक्शन्स का उपयोग करके इसे एक अनुकूलित पाइपलाइन में रीफैक्टर करें, जिससे क्वेरी लागत 80% से अधिक कम हो जाए।
+   Exact injection payload show karein aur secure parameterized prepared statement equivalent likhein.
+298. **Buffer Pool Sizing & Hit Ratio**: `information_schema` aur `performance_schema` ke against ek query likhein jo InnoDB Buffer Pool Read Hit Ratio percentage calculate kare.
+299. **Granular Row-Level Access Architecture**: MySQL mein multi-tenant security architecture design karein jahan multiple client companies ek single database share karti hain, lekin database-level roles aur views ensure karein ki Tenant A kabhi bhi Tenant B ka data query na kar sake.
+300. **High-Performance Query Refactoring**: 4 subqueries, 2 self-joins, aur ek `DISTINCT` clause contain karne wali legacy reporting query lein, aur use Common Table Expressions aur Window Functions ka use karke optimized pipeline mein refactor karein, jisse query cost 80% se zyada reduce ho jaye.

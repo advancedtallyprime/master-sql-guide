@@ -1,12 +1,12 @@
-# Chapter 24 — Performance Tuning: MySQL Query Optimization & Execution Plans | परफॉरमेंस ट्यूनिंग: MySQL क्वेरी ऑप्टिमाइज़ेशन और एग्जीक्यूशन प्लान्स
+# Chapter 24 — Performance Tuning: MySQL Query Optimization & Execution Plans
 
 ---
 
-## 1. What is it? (क्वेरी ऑप्टिमाइज़ेशन क्या है?)
+## 1. What is it?
 
-**Query Optimization** डेटाबेस इंजीनियरिंग का वह महत्वपूर्ण विषय है जिसमें SQL क्वेरीज़, इंडेक्स और डेटाबेस कॉन्फ़िगरेशन का विश्लेषण (profiling) और पुनर्गठन (restructuring) किया जाता है, ताकि क्वेरी एग्जीक्यूशन टाइम, डिस्क I/O, CPU की खपत, और टेबल लॉकिंग कंटेन्शन को कम से कम किया जा सके।
+**Query Optimization** ek aisi engineering discipline hai jisme hum SQL queries, indexes, aur database configurations ko diagnose, profile, aur restructure karte hain taaki query execution time, disk I/O, CPU consumption, aur lock contention ko minimize kiya ja sake.
 
-जब कोई SQL स्टेटमेंट MySQL सर्वर डीमन (`mysqld`) पर पहुँचता है, तो वह कई चरणों वाली एग्जीक्यूशन पाइपलाइन से होकर गुजरता है:
+Jab koi SQL statement MySQL server daemon (`mysqld`) ke paas aati hai, toh wo ek multi-stage execution pipeline se guzarti hai:
 
 ```mermaid
 flowchart TD
@@ -17,70 +17,70 @@ flowchart TD
     Exec -->|5. Row Stream| Client
 ```
 
-इस आर्किटेक्चर का दिल है **Cost-Based Optimizer (CBO)**। ऑप्टिमाइज़र कई संभावित एग्जीक्यूशन पाथ्स का मूल्यांकन करता है (जैसे, इंडेक्स A का उपयोग करें, इंडेक्स B का उपयोग करें, या पूरी टेबल स्कैन करें; किस टेबल को पहले जॉइन करें), डेटा डिक्शनरी के टेबल स्टैटिस्टिक्स के आधार पर अनुमानित लागत (cost) की गणना करता है, और सबसे कम लागत वाले एग्जीक्यूशन प्लान का चयन करता है।
+Is poore architecture ka heart **Cost-Based Optimizer (CBO)** hota hai. Optimizer multiple alternative execution paths evaluate karta hai (jaise Index A use karein, Index B use karein, ya poori table scan karein; kis table ko pehle join karein), data dictionary mein stored table statistics ke basis par estimated cost calculate karta hai, aur sabse lowest-cost execution plan select karta hai.
 
 ---
 
-## 2. Diagnostic Tools: EXPLAIN and EXPLAIN ANALYZE (डायग्नोस्टिक टूल्स: EXPLAIN और EXPLAIN ANALYZE)
+## 2. Diagnostic Tools: `EXPLAIN` and `EXPLAIN ANALYZE`
 
-MySQL क्वेरीज़ की प्रोफाइलिंग के लिए दो मुख्य डायग्नोस्टिक टूल्स प्रदान करता है:
-1. **`EXPLAIN`**: क्वेरी को वास्तव में *रन किए बिना* ऑप्टिमाइज़र द्वारा चुने गए स्टैटिक एग्जीक्यूशन प्लान को दिखाता है।
-2. **`EXPLAIN ANALYZE`** (MySQL 8.0.18+): क्वेरी को वास्तव में एग्जीक्यूट करता है, वास्तविक रनटाइम परफ़ॉर्मेंस को मापता है, और ऑप्टिमाइज़र के अनुमानों की तुलना में वास्तविक समय, लूप्स, और रो काउंट्स का विस्तृत ट्री आउटपुट देता है।
+MySQL queries ko profile karne ke liye do primary diagnostic tools provide karta hai:
+1. **`EXPLAIN`**: Query ko actual mein execute kiye *bina*, optimizer dwara choose kiya gaya static execution plan display karta hai.
+2. **`EXPLAIN ANALYZE`** (MySQL 8.0.18+): Query ko execute karta hai, actual runtime performance measure karta hai, aur ek detailed tree structure output deta hai jo optimizer ke estimates ke mukable actual time spent, loops executed, aur row counts show karta hai.
 
-### `EXPLAIN` Access Types को डिकोड करना (सर्वश्रेष्ठ से सबसे खराब तक)
+### Decoding the `EXPLAIN` Access Types (From Best to Worst)
 
-| Access `type` | परफ़ॉर्मेंस ग्रेड | विवरण |
+| Access `type` | Performance Grade | Description |
 | :--- | :--- | :--- |
-| **`system` / `const`** | **सर्वोत्तम (Optimal)** | ठीक 1 पंक्ति मैच होती है (`PRIMARY KEY` या `UNIQUE` इंडेक्स लुकअप)। तुरंत $O(1)$ मेमोरी सीक। |
-| **`eq_ref`** | **उत्कृष्ट (Excellent)** | पिछली टेबल की प्रत्येक पंक्ति के लिए इस टेबल से ठीक 1 पंक्ति पढ़ी जाती है (इंडेक्स्ड प्राइमरी/यूनिक की जॉइन)। |
-| **`ref`** | **बहुत अच्छा (Very Good)** | नॉन-यूनिक इंडेक्स लुकअप (इंडेक्स्ड वैल्यू से मैच होने वाली कई पंक्तियाँ लौटाता है)। |
-| **`range`** | **अच्छा (Good)** | इंडेक्स रेंज स्कैन (`BETWEEN`, `<`, `>`, `IN(...)`, या `LIKE 'prefix%'` के लिए उपयोग किया जाता है)। |
-| **`index`** | **औसत (Mediocre)** | फुल इंडेक्स स्कैन (शुरुआत से अंत तक पूरे इंडेक्स ट्री को स्कैन करता है; टेबल स्कैन से तेज़, लेकिन फिर भी सभी कीज़ पढ़ता है)। |
-| **`ALL`** | **गंभीर चेतावनी (CRITICAL WARNING)** | **फुल टेबल स्कैन (Full Table Scan)**। स्टोरेज इंजन डिस्क से हर एक पेज पढ़ता है। बड़ी टेबल्स पर बहुत बड़ा बॉटलनेक! |
+| **`system` / `const`** | **Optimal** | Exactly 1 row match hoti hai (for example, `PRIMARY KEY` ya `UNIQUE` index lookup). Instant $O(1)$ memory seek. |
+| **`eq_ref`** | **Excellent** | Pichli table se har row combination ke liye is table se exactly 1 row read hoti hai (indexed primary/unique key join). |
+| **`ref`** | **Very Good** | Non-unique index lookup (indexed value se match karne wali multiple rows return karta hai). |
+| **`range`** | **Good** | Index range scan (`BETWEEN`, `<`, `>`, `IN(...)`, ya `LIKE 'prefix%'` ke liye use hota hai). |
+| **`index`** | **Mediocre** | Full Index Scan (poore index tree ko start se end tak scan karta hai; table scan se fast hota hai, lekin saari keys read karta hai). |
+| **`ALL`** | **CRITICAL WARNING** | **Full Table Scan**. Storage engine disk se har single page read karta hai. Large tables par ye severe bottleneck hai! |
 
-### `Extra` कॉलम में खतरनाक चेतावनियाँ (Dangerous Warnings)
-* **`Using filesort`**: MySQL `ORDER BY` क्लॉज़ को पूरा करने के लिए इंडेक्स का उपयोग नहीं कर सका। उसे पंक्तियों को मेमोरी (`sort_buffer_size`) में लोड करना पड़ा और एक स्पष्ट सॉर्टिंग पास चलाना पड़ा।
-* **`Using temporary`**: जटिल `GROUP BY` या `DISTINCT` को प्रोसेस करने के लिए MySQL को डिस्क या मेमोरी में एक आंतरिक अस्थायी टेबल बनानी पड़ी।
-* **`Using index`** (पॉज़िटिव!): क्वेरी एक **Covering Index** क्वेरी है; माँगे गए सभी कॉलम्स क्लस्टर्ड इंडेक्स को छुए बिना केवल सेकेंडरी इंडेक्स से ही मिल गए।
+### Dangerous Warnings in the `Extra` Column
+* **`Using filesort`**: MySQL `ORDER BY` clause ko satisfy karne ke liye index use nahi kar saka. Use candidate rows ko memory (`sort_buffer_size`) mein load karke explicit sorting pass execute karna pada.
+* **`Using temporary`**: MySQL ko complex `GROUP BY` ya `DISTINCT` process karne ke liye disk ya memory mein internal temporary table banani padi.
+* **`Using index`** (Positive!): Query ek **Covering Index** query hai; saare requested columns clustered index ko touch kiye bina secondary index se hi satisfy ho gaye.
 
 ---
 
-## 3. Join Algorithms in MySQL (MySQL में जॉइन एल्गोरिदम्स)
+## 3. Join Algorithms in MySQL
 
-टेबल्स के बीच जॉइन करते समय MySQL तीन मुख्य आंतरिक जॉइन एल्गोरिदम्स का उपयोग करता है:
+Tables ke beech joins execute karte waqt MySQL primarily teen internal join algorithms use karta hai:
 1. **Index Nested-Loop Join (NLJ)**:
-   * तब उपयोग किया जाता है जब इनर टेबल के जॉइन कॉलम पर इंडेक्स मौजूद हो।
-   * आउटर टेबल की प्रत्येक पंक्ति के लिए इंजन इनर टेबल पर एक तेज़ $O(\log N)$ इंडेक्स सीक करता है।
-2. **Block Nested-Loop Join (BNL)** (पुराने MySQL 5.7 में):
-   * तब उपयोग किया जाता था जब जॉइन कॉलम पर कोई इंडेक्स न हो। आउटर पंक्तियों को बफर में लोड करके इनर टेबल को बार-बार स्कैन करता था। हाई CPU खपत।
+   * Tab use hota hai jab inner table ke joined column par index maujood hota hai.
+   * Outer table ki har row ke liye, engine inner table par ek fast $O(\log N)$ index seek perform karta hai.
+2. **Block Nested-Loop Join (BNL)** (Legacy MySQL 5.7):
+   * Tab use hota tha jab join column par koi index nahi hota. Outer rows ke chunks ko buffer mein read karke inner table scan karta tha. CPU cost kaafi high hoti thi.
 3. **Hash Join** (MySQL 8.0.18+):
-   * बिना इंडेक्स वाले जॉइन्स के लिए इसने BNL की जगह ले ली है।
-   * इंजन छोटी टेबल की मेमोरी में एक हैश टेबल बनाता है और बड़ी टेबल की पंक्तियों को $O(N)$ लीनियर टाइम में स्ट्रीम करता है।
+   * Index na hone wale joins ke liye isne BNL ko replace kar diya hai.
+   * Engine smaller table ka memory mein ek in-memory hash table build karta hai aur larger table ki rows ko is hash table ke against $O(N)$ linear time mein stream karta hai.
 
 ---
 
-## 4. SARGability: The Golden Rule of Index Optimization (SARGability: इंडेक्स ऑप्टिमाइज़ेशन का सुनहरा नियम)
+## 4. SARGability: The Golden Rule of Index Optimization
 
-**SARGable** का फुल फॉर्म है **S**earch **Arg**ument **Able**। कोई क्वेरी प्रेडिकेट तब SARGable होता है जब ऑप्टिमाइज़र B+ Tree इंडेक्स सीक का पूरा लाभ उठा सके।
+**SARGable** ka full form **S**earch **Arg**ument **Able** hota hai. Ek query predicate tab SARGable hota hai jab optimizer B+ Tree index seek ko efficiently leverage kar sake.
 
-### Non-SARGable Anti-Patterns बनाम SARGable Rewrites
+### Non-SARGable Anti-Patterns vs SARGable Rewrites
 
-| एंटी-पैटर्न | Non-SARGable (फुल टेबल स्कैन कराता है) | SARGable Rewrite (इंडेक्स सीक का उपयोग करता है) |
+| Anti-Pattern | Non-SARGable (Forces Full Table Scan) | SARGable Rewrite (Uses Index Seek) |
 | :--- | :--- | :--- |
-| **कॉलम पर फ़ंक्शन लगाना** | `WHERE YEAR(order_date) = 2023` | `WHERE order_date >= '2023-01-01' AND order_date < '2024-01-01'` |
-| **स्ट्रिंग फ़ंक्शन लगाना** | `WHERE SUBSTRING(phone, 1, 3) = '555'` | `WHERE phone LIKE '555%'` |
-| **शुरुआत में वाइल्डकार्ड (%)** | `WHERE email LIKE '%@gmail.com'` | रिवर्स इंडेक्स, फ़ुलटेक्स्ट सर्च, या ngram इंडेक्स। |
-| **कॉलम पर गणितीय गणना**| `WHERE salary * 1.10 > 100000` | `WHERE salary > 100000 / 1.10` |
-| **इम्प्लिसिट टाइप कन्वर्ज़न**| `WHERE phone = 5550100` (`phone` is `VARCHAR`) | `WHERE phone = '5550100'` (स्ट्रिंग लिटरल!) |
+| **Functions on Columns** | `WHERE YEAR(order_date) = 2023` | `WHERE order_date >= '2023-01-01' AND order_date < '2024-01-01'` |
+| **String Functions** | `WHERE SUBSTRING(phone, 1, 3) = '555'` | `WHERE phone LIKE '555%'` |
+| **Leading Wildcards** | `WHERE email LIKE '%@gmail.com'` | Reverse index, Fulltext search, ya ngram index. |
+| **Arithmetic on Columns**| `WHERE salary * 1.10 > 100000` | `WHERE salary > 100000 / 1.10` |
+| **Implicit Type Conversion**| `WHERE phone = 5550100` (`phone` is `VARCHAR`) | `WHERE phone = '5550100'` (String literal!) |
 
 > [!WARNING]
-> **Implicit Type Conversion Trap**: यदि कॉलम `phone` को `VARCHAR(20)` के रूप में परिभाषित किया गया है, तो `WHERE phone = 5550100` (बिना कोट्स वाला इंटीजर) लिखने पर MySQL को रनटाइम पर **हर एक पंक्ति** के `phone` कॉलम को फ्लोटिंग-पॉइंट नंबर में बदलना पड़ता है। यह चुपचाप इंडेक्स को निष्क्रिय कर देता है और फुल टेबल स्कैन ट्रिगर करता है!
+> **Implicit Type Conversion Trap**: Agar koi column `phone` `VARCHAR(20)` defined hai, toh `WHERE phone = 5550100` (unquoted integer) likhne par MySQL runtime par integer se compare karne ke liye **har row** ke `phone` column ko floating-point number mein cast karne par majboor ho jata hai. Ye silently `phone` ke index ko disable kar deta hai aur full table scan trigger karta hai!
 
 ---
 
-## 5. Basic Example (बेसिक प्रैक्टिकल उदाहरण)
+## 5. Basic Example
 
-`EXPLAIN` का विश्लेषण और एक Non-SARGable क्वेरी को SARGable में बदलना:
+`EXPLAIN` inspect karte hain aur ek non-SARGable query ko SARGable query mein convert karte hain:
 
 ```sql
 USE sql_mastery;
@@ -98,9 +98,9 @@ WHERE hire_date >= '2020-01-01' AND hire_date < '2021-01-01';
 
 ---
 
-## 6. Real-World Business Example: Optimizing a Slow Production Query (वास्तविक बिज़नेस उदाहरण: स्लो प्रोडक्शन क्वेरी को ऑप्टिमाइज़ करना)
+## 6. Real-World Example: Optimizing a Slow Production Query
 
-परिदृश्य: कस्टमर पोर्टल की एक हाई-ट्रैफ़िक क्वेरी CPU स्पाइक्स का कारण बन रही है। यह अगस्त 2023 में दिए गए सभी 'Delivered' ऑर्डर्स को खोजती है, कस्टमर्स को जोड़ती है, और कुल राशि के अनुसार सॉर्ट करती है।
+Scenario: High-traffic customer portal par ek query CPU spikes cause kar rahi hai. Ye query August 2023 mein place hue sabhi delivered orders ko search karti hai, customers, products aur order items ko join karti hai, aur total amount ke descending order mein sort karti hai.
 
 ```sql
 USE sql_mastery;
@@ -144,9 +144,9 @@ DROP INDEX idx_opt_orders ON orders;
 
 ---
 
-## 7. Step-by-Step Explanation of EXPLAIN ANALYZE Output (EXPLAIN ANALYZE आउटपुट की स्टेप-बाय-स्टेप व्याख्या)
+## 7. Step-by-Step Explanation of `EXPLAIN ANALYZE` Output
 
-`EXPLAIN ANALYZE` के ट्री आउटपुट को समझना:
+`EXPLAIN ANALYZE` ke tree output ko samajhna:
 
 ```
 -> Nested loop inner join  (cost=1.85 rows=3) (actual time=0.042..0.065 rows=3 loops=1)
@@ -154,98 +154,97 @@ DROP INDEX idx_opt_orders ON orders;
     -> Single-row index lookup on c using PRIMARY (customer_id=o.customer_id) (cost=0.35 rows=1) (actual time=0.008..0.009 rows=1 loops=3)
 ```
 
-1. **`actual time=0.021..0.028`**: पहली संख्या (`0.021 ms`) पहली पंक्ति प्राप्त करने का समय है; दूसरी संख्या (`0.028 ms`) सभी पंक्तियों को स्ट्रीम करने का कुल समय है।
-2. **`rows=3`**: उस इटरेटर चरण द्वारा वास्तव में प्राप्त की गई पंक्तियों की संख्या।
-3. **`loops=1`**: इस इटरेटर को कितनी बार कॉल किया गया। `c` पर इनर जॉइन लुकअप के लिए, `loops=3` यह दर्शाता है कि सिंगल-रो प्राइमरी की लुकअप 3 बार (प्रत्येक ऑर्डर के लिए एक बार) किया गया था।
-4. **`Index range scan`**: यह साबित करता है कि इंडेक्स सीक ने सीधे मैचिंग रिकॉर्ड्स को अलग कर लिया, जिससे फुल टेबल स्कैन और `Using filesort` दोनों पूरी तरह समाप्त हो गए।
+1. **`actual time=0.021..0.028`**: Pehla number (`0.021 ms`) pehli row fetch karne ka time hai; doosra number (`0.028 ms`) saari rows stream karne ka time hai.
+2. **`rows=3`**: Us iterator step dwara materialize hui actual number of rows.
+3. **`loops=1`**: Ye iterator kitni baar invoke hua. Inner join lookup `c` ke liye `loops=3` ye batata hai ki single-row primary key lookup 3 baar perform hua (har candidate order ke liye ek baar).
+4. **`Index range scan`**: Ye prove karta hai ki index seek ne matching records ko directly isolate kar diya, jisse full table scan aur `Using filesort` poori tarah eliminate ho gaye.
 
 ---
 
-## 8. Common Mistakes (सामान्य गलतियाँ और Pitfalls)
+## 8. Common Mistakes
 
-1. **हर कॉलम पर आँख बंद करके इंडेक्स बनाना**:
-   * एक टेबल पर 15 सिंगल-कॉलम इंडेक्स बनाना एक भारी एंटी-पैटर्न है। MySQL आम तौर पर एक क्वेरी में **प्रति टेबल केवल एक ही इंडेक्स** का उपयोग कर सकता है। आपकी क्वेरी के `WHERE` और `ORDER BY` पैटर्न से मेल खाता हुआ एक सही कंपोजिट इंडेक्स कई अलग-अलग इंडेक्सों की तुलना में कहीं बेहतर होता है।
-2. **Slow Query Log को अनदेखा करना**:
-   * कौन सी क्वेरीज़ धीमी हैं इसका अंदाज़ा लगाने के बजाय, MySQL के इनबिल्ट **Slow Query Log** को इनेबल करें ताकि एक निश्चित सीमा (जैसे `long_query_time = 1.0` सेकंड) से अधिक समय लेने वाली क्वेरीज़ अपने आप कैप्चर हो जाएँ।
-3. **विशाल InnoDB टेबल्स पर `SELECT COUNT(*)` चलाना**:
-   * MyISAM इंजन में `COUNT(*)` तुरंत रिज़ल्ट देता था क्योंकि MyISAM टेबल हेडर में रो काउंटर रखता था। लेकिन InnoDB में, क्योंकि MVCC अलग-अलग ट्रांजैक्शन्स को अलग-अलग स्नैपशॉट दिखाता है, इसलिए **InnoDB को एक्टिव पंक्तियों को गिनने के लिए इंडेक्स को स्कैन करना ही पड़ता है**। विशाल टेबल्स के लिए `information_schema.tables` से अनुमानित गिनती लें या एक काउंटर टेबल मेंटेन करें।
+1. **Blindly Adding Indexes to Every Column**:
+   * Ek hi table par 15 single-column indexes create kar dena. MySQL aamtaur par ek query mein per table **sirf ek hi index** use kar sakta hai. Aapki query ke `WHERE` aur `ORDER BY` pattern se match karta hua ek well-designed composite index multiple individual indexes se laakh guna behtar hota hai.
+2. **Ignoring the Slow Query Log**:
+   * Kaun si query slow hai ye andaza lagana, bajaye iske ki MySQL ke built-in **Slow Query Log** ko enable kiya jaye jo ek defined threshold (jaise `long_query_time = 1.0`) se zyada samay lene wali queries ko automatically capture karta hai.
+3. **Using `SELECT COUNT(*)` on Giant InnoDB Tables**:
+   * MyISAM engine mein `COUNT(*)` instantaneous hota tha kyunki MyISAM table header mein ek exact row counter store karta tha. InnoDB mein kyunki MVCC alag-alag transactions ko alag-alag snapshots deta hai, isliye **InnoDB ko active rows count karne ke liye clustered ya secondary index scan karna padta hai**. Massive tables ke liye `information_schema.tables` se approximate counts use karein ya ek dedicated counter table maintain karein.
 
 ---
 
-## 9. Best Practices (सर्वोत्तम तरीके और टिप्स)
+## 9. Best Practices
 
-1. **इंडेक्स सेलेक्टिविटी (Index Selectivity) के नियम का पालन करें**:
-   * कंपोजिट इंडेक्स में उस कॉलम को सबसे पहले रखें जिसकी **सेलेक्टिविटी** सबसे अधिक हो (यानी कुल पंक्तियों की तुलना में जिसमें यूनिक वैल्यूज की संख्या सबसे ज़्यादा हो)।
-2. **InnoDB Buffer Pool को ट्यून करें**:
-   * एक डेडिकेटेड MySQL डेटाबेस सर्वर पर, `innodb_buffer_pool_size` को **कुल फिजिकल रैम के 70%–80%** पर कॉन्फ़िगर करें। यह सुनिश्चित करता है कि बार-बार एक्सेस किया जाने वाला डेटा और इंडेक्स पेजेस मेमोरी में कैश्ड रहें और डिस्क I/O न हो।
-3. **प्रोडक्शन में Slow Query Log को चालू करें**:
+1. **Follow the Rule of Index Selectivity**:
+   * Composite index ke shuru mein hamesha sabse high **selectivity** (total rows ke mukable distinct values ka highest ratio) wala column rakhein.
+2. **Tune the InnoDB Buffer Pool**:
+   * Dedicated MySQL database server par `innodb_buffer_pool_size` ko **total physical RAM ke 70%–80%** par configure karein. Ye ensure karta hai ki frequently accessed data aur index pages memory mein cached rahein, jisse disk I/O prevent hota hai.
+3. **Enable the Slow Query Log in Production**:
    ```sql
    SET GLOBAL slow_query_log = 'ON';
    SET GLOBAL long_query_time = 0.5; -- Log queries taking longer than 500ms
    SET GLOBAL log_queries_not_using_indexes = 'ON';
    ```
-4. **बड़े DML मॉडिफिकेशन्स को बैच (Batch) में चलाएँ**:
-   * लाखों रिकॉर्ड्स को अपडेट या डिलीट करते समय, मेमोरी बफ़र्स और रो-लॉक्स को ओवरलोड होने से बचाने के लिए `LIMIT` क्लॉज़ के साथ 5,000 पंक्तियों के बैचों में काम करें।
+4. **Batch Massive DML Modifications**:
+   * Jab millions of records update ya delete karne hon, toh `LIMIT` clause ke sath operations ko 5,000 rows ke chunks mein batch karein taaki memory buffers exhaust na hon aur concurrent traffic lock na ho.
 
 ---
 
-## 10. Practice Questions (अभ्यास के लिए प्रश्न)
+## 10. Practice Questions
 
 ### Easy
-1. `EXPLAIN` रिपोर्ट में कौन सा एक्सेस `type` सबसे खराब परफ़ॉर्मेंस को दर्शाता है?
-2. `EXPLAIN` एग्जीक्यूशन प्लान में `type: const` का क्या अर्थ है?
-3. `WHERE salary * 12 > 120000` को SARGable फ़ॉर्मेट में दोबारा लिखें।
+1. `EXPLAIN` report mein kaun sa access `type` sabse worst performance indicate karta hai?
+2. `EXPLAIN` execution plan mein `type: const` ka kya matlab hota hai?
+3. `WHERE salary * 12 > 120000` ko SARGable format mein rewrite karein.
 
 ### Medium
-4. समझाइए कि `SELECT * FROM customers WHERE email LIKE '%@yahoo.com'` क्वेरी `email` पर बने स्टैंडर्ड B+ Tree इंडेक्स का उपयोग क्यों नहीं कर सकती?
-5. MySQL 8.0 में `EXPLAIN` और `EXPLAIN ANALYZE` में क्या अंतर है?
-6. इस क्वेरी में परफ़ॉर्मेंस दोष की पहचान करें:
+4. Explain karein ki query `SELECT * FROM customers WHERE email LIKE '%@yahoo.com'` `email` par bane standard B+ Tree index ko kyu use nahi kar sakti.
+5. MySQL 8.0 mein `EXPLAIN` aur `EXPLAIN ANALYZE` ke beech kya difference hota hai?
+6. Is query mein performance flaw identify karein:
    ```sql
    SELECT * FROM orders WHERE DATE(order_date) = '2023-08-01';
    ```
-   इसे इस तरह दोबारा लिखें कि `order_date` पर बना इंडेक्स इस्तेमाल हो सके।
+   Ise rewrite karein taaki `order_date` par bana index utilize ho sake.
 
 ### Difficult
-7. MySQL 8.0.18+ में, क्वेरी ऑप्टिमाइज़र **Nested Loop Join** के बजाय **Hash Join** का चयन कब करता है? मेमोरी आवंटन (`join_buffer_size`) हैश जॉइन के डिस्क पर स्पिल होने को कैसे प्रभावित करता है?
-8. निम्नलिखित क्वेरी के लिए एक ऑप्टिमाइज़्ड कवरिंग इंडेक्स परिभाषा लिखें:
+7. MySQL 8.0.18+ mein query optimizer **Nested Loop Join** ke mukable **Hash Join** kab choose karta hai? Memory allocation (`join_buffer_size`) Hash Join ke disk par spill hone ko kaise impact karti hai?
+8. Is query ke liye ek optimized covering index definition likhiye:
    ```sql
    SELECT customer_id, order_date, total_amount 
    FROM orders 
    WHERE customer_id = 10 AND status = 'Delivered' 
    ORDER BY order_date DESC;
    ```
-   अपने कंपोजिट इंडेक्स में कॉलम्स के सटीक क्रम को समझाएँ और बताएँ कि वह क्रम CPU ऑपरेशन्स को कैसे कम करता है।
+   Apne composite index mein columns ka exact order explain karein aur batayein ki ye sequence CPU operations ko kaise minimize karta hai.
 
 ---
 
-## 11. Interview Questions (इंटरव्यू सवाल और जवाब)
+## 11. Interview Questions
 
-### Q1: SQL में SARGable का क्या अर्थ है, और SARGability को नष्ट करने वाले तीन सामान्य एंटी-पैटर्न्स कौन से हैं?
-**उत्तर**: SARGable का अर्थ है *Search Argument Able*। कोई क्वेरी प्रेडिकेट तब SARGable होता है जब डेटाबेस इंजन का क्वेरी ऑप्टिमाइज़र B+ Tree इंडेक्स में सीधे इंडेक्स सीक करके कंडीशन का मूल्यांकन कर सकता है।
-तीन सामान्य Non-SARGable एंटी-पैटर्न्स:
-1. **इंडेक्स्ड कॉलम्स को स्केलर फ़ंक्शन्स में लपेटना**: `WHERE YEAR(order_date) = 2023` फुल टेबल स्कैन कराता है क्योंकि इंजन को हर पंक्ति के लिए फ़ंक्शन चलाना पड़ता है। (रीराइट: `WHERE order_date >= '2023-01-01' AND order_date < '2024-01-01'`)।
-2. **शुरुआत में वाइल्डकार्ड मैचिंग**: `WHERE name LIKE '%Smith'` B+ Tree को प्रीफ़िक्स के आधार पर नेविगेट करने से रोकता है।
-3. **इम्प्लिसिट टाइप कन्वर्ज़न**: `VARCHAR` कॉलम की तुलना अनकोटेड इंटीजर लिटरल से करना (`WHERE phone = 5550100`) MySQL को हर पंक्ति को नंबर में बदलने पर मजबूर करता है, जिससे इंडेक्स बंद हो जाता है।
+### Q1: What does SARGable mean in SQL, and what are three common anti-patterns that destroy SARGability?
+**Answer**: SARGable ka matlab *Search Argument Able* hota hai. Ek query predicate tab SARGable kehlata hai jab database engine ka query optimizer condition ko evaluate karne ke liye direct B+ Tree index structure mein index seek perform kar sake.
+Teen common non-SARGable anti-patterns:
+1. **Wrapping indexed columns in scalar functions**: `WHERE YEAR(order_date) = 2023` full table scan force karta hai kyunki engine ko har stored row ke liye function execute karna padta hai. (Rewrite: `WHERE order_date >= '2023-01-01' AND order_date < '2024-01-01'`).
+2. **Leading wildcard pattern matching**: `WHERE name LIKE '%Smith'` B+ Tree ko prefix ke dwara navigate karne se rok deta hai.
+3. **Implicit type conversion**: Ek `VARCHAR` column ko unquoted integer literal se compare karna (`WHERE phone = 5550100`) MySQL ko har row ke liye column ko numeric value mein convert karne par majboor karta hai, jisse index usage disable ho jati hai.
 
-### Q2: MySQL `EXPLAIN` प्लान में `rows` और `filtered` कॉलम्स की व्याख्या कैसे की जाती है?
-**उत्तर**:
-* **`rows`**: यह ऑप्टिमाइज़र का सांख्यिकीय अनुमान है कि एग्जीक्यूशन प्लान के उस चरण को पूरा करने के लिए स्टोरेज इंजन को डिस्क या कैश से कितनी फिजिकल पंक्तियाँ पढ़नी होंगी।
-* **`filtered`**: यह उन जाँची गई पंक्तियों का अनुमानित प्रतिशत दर्शाता है जो बाकी बची फ़िल्टरिंग शर्तों को पूरा करेंगी और अगले चरण में भेजी जाएँगी।
-यदि `rows` की संख्या बहुत बड़ी हो और `filtered` बहुत कम (जैसे `10.00%`) हो, तो इसका मतलब है कि इंजन भारी मात्रा में डेटा पढ़ रहा है और उसका 90% हिस्सा फेंक रहा है—जो एक गायब या अक्षम इंडेक्स का स्पष्ट संकेत है।
+### Q2: How do you interpret the `rows` and `filtered` columns in a MySQL `EXPLAIN` plan?
+**Answer**:
+* **`rows`**: Optimizer ka statistical estimate hota hai ki execution plan ke us stage ko satisfy karne ke liye storage engine ko disk ya cache se kitni physical rows read karni padengi.
+* **`filtered`**: Un examined rows ka estimated percentage hota hai jo remaining filtering conditions ko satisfy karke agle join ya projection step par pass hongi.
+Agar `rows` ka count bahut high ho aur sath mein `filtered` percentage bahut low ho (jaise `10.00%`), toh iska matlab hai ki engine massive data read kar raha hai jisme se 90% discard ho raha hai—jo ek missing ya inefficient index ki taraf point karta hai.
 
-### Q3: `EXPLAIN` प्लान के `Extra` कॉलम में `Using filesort` और `Using index` में क्या अंतर होता है?
-**उत्तर**:
-* **`Using filesort`**: यह दर्शाता है कि MySQL `ORDER BY` क्लॉज़ के लिए आवश्यक क्रम में पंक्तियों को सीधे इंडेक्स से नहीं पढ़ सका। उसे फ़िल्टर की गई पंक्तियों को मेमोरी बफ़र (`sort_buffer_size`) में लोड करना पड़ा और एक स्पष्ट सॉर्टिंग एल्गोरिदम (quicksort या mergesort) चलाना पड़ा, जो डिस्क पर भी स्पिल हो सकता है।
-* **`Using index`**: यह एक **Covering Index** का संकेत देता है। क्वेरी को सेकेंडरी इंडेक्स के लीफ़ पेजों से ही पूरी तरह संतुष्ट कर लिया गया, और क्लस्टर्ड इंडेक्स या बेस टेबल डेटा पेजों को छूने की ज़रूरत नहीं पड़ी।
+### Q3: What is the difference between `Using filesort` and `Using index` in the `Extra` column of an `EXPLAIN` plan?
+**Answer**:
+* **`Using filesort`**: Ye indicate karta hai ki MySQL `ORDER BY` clause ke required order mein rows ko directly index se read nahi kar saka. Use filtered rows ko memory buffer (`sort_buffer_size`) mein load karna pada aur explicit sorting algorithm (quicksort ya merge sort) execute karni padi, jo kabhi-kabhi temporary disk files par spill ho sakti hai.
+* **`Using index`**: Ye ek **Covering Index** ko signify karta hai. Query secondary index ke leaf pages ko read karke poori tarah satisfy ho gayi, bina clustered index mein koi secondary lookup kiye ya base table data pages ko touch kiye.
 
 ---
 
-## 12. Quick Revision (त्वरित सारांश / क्विक रिविजन)
+## 12. Quick Revision
 
-* स्टैटिक प्लान देखने के लिए **`EXPLAIN`** और वास्तविक समय मापने के लिए **`EXPLAIN ANALYZE`** का उपयोग करें।
-* एक्सेस टाइप **`const`**, **`eq_ref`**, **`ref`**, या **`range`** का लक्ष्य रखें; बड़ी टेबल्स पर **`ALL`** (फुल टेबल स्कैन) को पूरी तरह समाप्त करें।
-* क्वेरीज़ को **SARGable** रखें: इंडेक्स्ड कॉलम्स पर कभी फ़ंक्शन न लगाएँ और टाइप कन्वर्ज़न से बचें।
-* **Covering Index** माँगे गए सभी कॉलम्स को सीधे इंडेक्स से पूरा करता है (`Extra: Using index`)।
-* कंपोजिट इंडेक्स में `ORDER BY` कॉलम्स शामिल करके **`Using filesort`** को हटाएँ।
-* डेडिकेटेड डेटाबेस सर्वर्स पर **`innodb_buffer_pool_size`** को सिस्टम रैम के 70–80% पर सेट करें।
-* आगे के अध्ययन के लिए अगले मॉड्यूल [Chapter 25 — Enterprise Security: Access Control, Roles & SQL Injection Defense](/hi/25_security_and_best_practices) पर बढ़ें।
+* Static execution plan inspect karne ke liye **`EXPLAIN`** aur actual execution time measure karne ke liye **`EXPLAIN ANALYZE`** use karein.
+* Access types **`const`**, **`eq_ref`**, **`ref`**, ya **`range`** ka target rakhein; large tables par **`ALL`** (Full Table Scans) ko eliminate karein.
+* Queries ko **SARGable** rakhein: indexed columns ko functions mein wrap mat karein aur `WHERE` mein implicit type conversion avoid karein.
+* Ek **Covering Index** saari queried columns ko directly index tree se satisfy kar deta hai (`Extra: Using index`).
+* Composite indexes mein `ORDER BY` columns ko incorporate karke **`Using filesort`** eliminate karein.
+* Dedicated database servers par **`innodb_buffer_pool_size`** ko system RAM ke 70–80% par size karein.
