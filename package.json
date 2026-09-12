@@ -5,9 +5,12 @@
   "scripts": {
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "docs:preview": "vitepress preview",
+    "deploy": "npm run docs:build && wrangler deploy",
+    "preview": "npm run docs:build && wrangler dev"
   },
   "devDependencies": {
-    "vitepress": "^1.5.0"
+    "vitepress": "^1.5.0",
+    "wrangler": "^4.131.1"
   }
 }

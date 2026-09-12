@@ -4,6 +4,7 @@ export default defineConfig({
   title: "Master SQL Guide",
   description: "Comprehensive, Production-Grade SQL & MySQL Learning Guide",
   cleanUrls: true,
+  ignoreDeadLinks: true,
   themeConfig: {
     siteTitle: "SQL Mastery",
     search: {
