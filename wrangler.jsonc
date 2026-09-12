@@ -6,6 +6,6 @@
     "enabled": true
   },
   "assets": {
-    "directory": "docs\\.vitepress\\dist"
+    "directory": ".vitepress/dist"
   }
 }
