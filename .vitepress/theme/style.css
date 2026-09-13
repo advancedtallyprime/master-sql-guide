@@ -219,6 +219,13 @@
 /* ==========================================================================
    BASE & TYPOGRAPHY STYLING
    ========================================================================== */
+html, body {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+  width: 100% !important;
+  -webkit-text-size-adjust: 100%;
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -240,32 +247,55 @@ code, pre, kbd {
    HEADER & NAVBAR
    ========================================================================== */
 .VPNav {
-  background-color: var(--vp-nav-bg-color) !important;
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
   border-bottom: 1px solid var(--border) !important;
   transition: background-color 0.2s, border-color 0.2s;
 }
 
+.dark .VPNav {
+  background-color: rgba(22, 22, 24, 0.88) !important;
+}
+
 .VPNavBarTitle {
   align-items: center !important;
+  display: flex !important;
+  min-width: 0 !important;
+}
+
+.VPNavBarTitle a.title {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+  min-width: 0 !important;
+  text-decoration: none !important;
 }
 
 .VPNavBarTitle .logo {
-  height: 28px !important;
-  width: auto !important;
-  margin-right: 10px !important;
-  display: inline-block !important;
-  vertical-align: middle !important;
+  display: none !important;
 }
 
 .VPNavBarTitle .title {
-  font-weight: 700 !important;
-  letter-spacing: -0.02em !important;
-  color: var(--brand-blue) !important;
-  font-size: 15.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+  font-size: 1.05rem !important;
+  line-height: 1.25 !important;
+  background: linear-gradient(135deg, #05507E 0%, #0878B8 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  white-space: nowrap !important;
+  transition: opacity 0.2s ease !important;
+}
+
+.VPNavBarTitle a.title:hover .title {
+  opacity: 0.85 !important;
 }
 
 .dark .VPNavBarTitle .title {
-  color: var(--brand-blue) !important;
+  background: linear-gradient(135deg, #F0F9FF 0%, #4DA8E0 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
 }
 
 .VPNavBarMenuLink {
@@ -527,15 +557,32 @@ code, pre, kbd {
    ========================================================================== */
 .vp-doc table {
   width: 100% !important;
-  display: table !important;
+  max-width: 100% !important;
+  display: block !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
   border-collapse: separate !important;
   border-spacing: 0 !important;
   border: 1px solid var(--border) !important;
   border-radius: var(--radius-sm) !important;
-  overflow: hidden !important;
   margin: 1.5rem 0 !important;
   font-size: 13.5px !important;
   box-shadow: var(--shadow-card);
+}
+
+.vp-doc table::-webkit-scrollbar {
+  height: 6px;
+}
+.vp-doc table::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+.vp-doc table::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+.vp-doc table::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-blue);
 }
 
 .vp-doc th {
@@ -546,6 +593,7 @@ code, pre, kbd {
   padding: 10px 14px !important;
   border-bottom: 1px solid var(--border) !important;
   border-right: 1px solid var(--border) !important;
+  white-space: nowrap !important;
 }
 
 .dark .vp-doc th {
@@ -580,28 +628,63 @@ code, pre, kbd {
   background-color: rgba(255, 255, 255, 0.02) !important;
 }
 
+/* Code Blocks */
+.vp-doc [class*='language-'] {
+  border-radius: 10px !important;
+  border: 1px solid var(--border) !important;
+  margin: 1.25rem 0 !important;
+  position: relative;
+}
+
+.vp-doc [class*='language-'] pre {
+  padding: 16px 18px !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.vp-doc [class*='language-'] pre::-webkit-scrollbar {
+  height: 6px;
+}
+.vp-doc [class*='language-'] pre::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
 /* ==========================================================================
    BUTTONS & CONTROLS
    ========================================================================== */
 .VPButton {
   border-radius: var(--radius-sm) !important;
   font-weight: 600 !important;
-  font-size: 13.5px !important;
-  transition: all 0.2s ease !important;
+  font-size: 14px !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
   letter-spacing: -0.01em !important;
+  min-height: 44px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 22px !important;
+}
+
+.VPButton:active {
+  transform: scale(0.98) !important;
 }
 
 .VPButton.brand {
-  background-color: var(--brand-blue) !important;
+  background: linear-gradient(135deg, #0878B8 0%, #05649A 100%) !important;
   color: #FFFFFF !important;
-}
-
-.dark .VPButton.brand {
-  color: #111111 !important;
+  box-shadow: 0 4px 14px rgba(8, 120, 184, 0.3) !important;
 }
 
 .VPButton.brand:hover {
-  background-color: var(--brand-blue-dark) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(8, 120, 184, 0.42) !important;
+}
+
+.dark .VPButton.brand {
+  background: linear-gradient(135deg, #4DA8E0 0%, #6BBBE8 100%) !important;
+  color: #111111 !important;
+  box-shadow: 0 4px 14px rgba(77, 168, 224, 0.3) !important;
 }
 
 .VPButton.alt {
@@ -614,6 +697,19 @@ code, pre, kbd {
   border-color: var(--brand-blue) !important;
   background-color: var(--brand-blue-light) !important;
   color: var(--brand-blue-dark) !important;
+  transform: translateY(-1px) !important;
+}
+
+.dark .VPButton.alt {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border) !important;
+  color: #E5E7EB !important;
+}
+
+.dark .VPButton.alt:hover {
+  border-color: var(--brand-blue) !important;
+  background-color: rgba(8, 120, 184, 0.18) !important;
+  color: var(--brand-blue) !important;
 }
 
 /* ==========================================================================
@@ -648,9 +744,132 @@ code, pre, kbd {
   margin: 4px 0 !important;
 }
 
+/* ==========================================================================
+   MOBILE RESPONSIVENESS & OVERFLOW HARDENING (320px - 768px)
+   ========================================================================== */
+.VPNavBarHamburger {
+  min-width: 44px !important;
+  min-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.VPNavScreen {
+  background-color: var(--vp-c-bg) !important;
+}
+
+.VPNavScreenMenuLink {
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
 @media (max-width: 768px) {
+  .VPHomeHero {
+    padding-top: 2rem !important;
+    padding-bottom: 2.5rem !important;
+  }
+
+  .VPHomeHero .actions {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 440px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    gap: 12px !important;
+  }
+
+  .VPHomeHero .action {
+    width: 100% !important;
+  }
+
+  .VPHomeHero .action .VPButton {
+    width: 100% !important;
+    min-height: 48px !important;
+    font-size: 14.5px !important;
+  }
+
+  .VPFeatures .items {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
   .VPFooter {
-    padding: 1.5rem 1rem !important;
+    padding: 1.75rem 1rem !important;
+  }
+
+  .vp-doc th, .vp-doc td {
+    padding: 8px 10px !important;
+    font-size: 13px !important;
+  }
+
+  .vp-doc [class*='language-'] pre {
+    padding: 12px 14px !important;
+    font-size: 12.5px !important;
+  }
+
+  .visual-diagram-box {
+    padding: 12px !important;
+  }
+
+  .visual-diagram-box pre {
+    font-size: 11.5px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .vp-doc h1 {
+    font-size: 24px !important;
+    line-height: 1.25 !important;
+  }
+
+  .vp-doc h2 {
+    font-size: 19px !important;
+    line-height: 1.3 !important;
+  }
+
+  .vp-doc h3 {
+    font-size: 16px !important;
+  }
+
+  .VPNavBarTitle .title {
+    font-size: 14px !important;
+    max-width: 58vw !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .VPFeature {
+    padding: 18px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .VPNavBarTitle .title {
+    font-size: 13px !important;
+    max-width: 48vw !important;
+  }
+
+  .VPHomeHero .name {
+    font-size: 24px !important;
+  }
+
+  .VPHomeHero .text {
+    font-size: 17px !important;
+  }
+
+  .VPHomeHero .tagline {
+    font-size: 13.5px !important;
+  }
+
+  .VPButton {
+    font-size: 13px !important;
+    min-height: 44px !important;
   }
 }
 
@@ -745,19 +964,47 @@ code, pre, kbd {
    DIAGRAM & ASCII BOXES
    ========================================================================== */
 .visual-diagram-box {
-  background: var(--bg-body);
+  background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   padding: 18px;
   margin: 1.5rem 0;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   box-shadow: var(--shadow-card);
+  position: relative;
+}
+
+.visual-diagram-box::-webkit-scrollbar {
+  height: 6px;
+}
+.visual-diagram-box::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+.visual-diagram-box::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+.visual-diagram-box::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-blue);
 }
 
 .visual-diagram-box pre {
   margin: 0 !important;
   background: transparent !important;
-  font-size: 12.5px;
-  line-height: 1.45;
+  font-family: var(--vp-font-family-mono) !important;
+  font-size: clamp(10.5px, 2.8vw, 12.5px) !important;
+  line-height: 1.4 !important;
   color: var(--text-primary);
+  white-space: pre;
+}
+
+.dark .visual-diagram-box {
+  background: #161618;
+  border-color: #2E303A;
+}
+
+.dark .visual-diagram-box pre {
+  color: #E5E7EB;
 }
