@@ -1,0 +1,763 @@
+/* ==========================================================================
+   G-TEC JAIN KEERTI EDUCATION — CENTRALIZED GLOBAL DESIGN SYSTEM
+   Professional Indian IT Education Institute + Modern Documentation System
+   ========================================================================== */
+
+:root {
+  /* Brand Color System */
+  --brand-blue: #0878B8;
+  --brand-blue-dark: #05649A;
+  --brand-blue-light: #EAF6FC;
+
+  --brand-orange: #F47A21;
+  --brand-green: #8BC53F;
+  --brand-teal: #00A99D;
+
+  --brand-black: #111111;
+  --brand-white: #FFFFFF;
+
+  --text-primary: #171717;
+  --text-secondary: #5F6368;
+  --text-muted: #80868B;
+
+  --bg-body: #F7F9FB;
+  --bg-card: #FFFFFF;
+  --bg-secondary: #F0F4F8;
+  --border: #DCE7EE;
+  --border-color: #DCE7EE;
+
+  /* Mappings for components */
+  --brand-primary: var(--brand-blue);
+  --brand-primary-dark: var(--brand-blue-dark);
+  --brand-primary-light: var(--brand-blue-light);
+  --bg-primary: var(--bg-card);
+  --bg-alt: var(--bg-body);
+
+  /* Radius System */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+
+  /* Shadows */
+  --shadow-card: 0 2px 8px rgba(8, 120, 184, 0.05);
+  --shadow-card-elevated: 0 8px 24px rgba(8, 120, 184, 0.10);
+
+  /* Category Feature Accents */
+  --accent-exercises: var(--brand-blue);
+  --accent-projects: var(--brand-orange);
+  --accent-interview: var(--brand-teal);
+  --accent-roadmap: var(--brand-green);
+
+  /* VitePress Core Theme Tokens */
+  --vp-c-brand-1: #0878B8;
+  --vp-c-brand-2: #05649A;
+  --vp-c-brand-3: #044F7A;
+  --vp-c-brand-soft: #EAF6FC;
+
+  --vp-c-bg: #FFFFFF;
+  --vp-c-bg-soft: #F7F9FB;
+  --vp-c-bg-alt: #F7F9FB;
+  --vp-c-bg-elv: #FFFFFF;
+
+  --vp-c-border: #DCE7EE;
+  --vp-c-divider: #DCE7EE;
+  --vp-c-gutter: #DCE7EE;
+
+  --vp-c-text-1: #171717;
+  --vp-c-text-2: #5F6368;
+  --vp-c-text-3: #80868B;
+
+  --vp-font-family-base: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --vp-font-family-mono: "JetBrains Mono", "Fira Code", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+  /* Code Blocks */
+  --vp-code-bg: #1E1E1E;
+  --vp-code-color: #05649A;
+  --vp-code-copy-code-bg: #2A2A2A;
+  --vp-code-copy-code-hover-bg: #3A3A3A;
+
+  /* Custom Blocks */
+  --vp-custom-block-tip-border: #0878B8;
+  --vp-custom-block-tip-text: #171717;
+  --vp-custom-block-tip-bg: #EAF6FC;
+  --vp-custom-block-tip-code-bg: #D7EBF8;
+
+  --vp-custom-block-info-border: #00A99D;
+  --vp-custom-block-info-text: #171717;
+  --vp-custom-block-info-bg: #E6F7F6;
+
+  --vp-custom-block-note-border: #5F6368;
+  --vp-custom-block-note-text: #171717;
+  --vp-custom-block-note-bg: #F1F3F4;
+
+  --vp-custom-block-warning-border: #F47A21;
+  --vp-custom-block-warning-text: #171717;
+  --vp-custom-block-warning-bg: #FEF3EB;
+
+  --vp-custom-block-danger-border: #E53935;
+  --vp-custom-block-danger-text: #171717;
+  --vp-custom-block-danger-bg: #FDEDED;
+
+  --vp-sidebar-bg-color: #F7F9FB;
+  --vp-nav-bg-color: #FFFFFF;
+
+  /* Button Tokens */
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-text: #FFFFFF;
+  --vp-button-brand-bg: #0878B8;
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-hover-text: #FFFFFF;
+  --vp-button-brand-hover-bg: #05649A;
+  --vp-button-brand-active-border: transparent;
+  --vp-button-brand-active-text: #FFFFFF;
+  --vp-button-brand-active-bg: #044F7A;
+
+  --vp-button-alt-border: #DCE7EE;
+  --vp-button-alt-text: #0878B8;
+  --vp-button-alt-bg: #FFFFFF;
+  --vp-button-alt-hover-border: #0878B8;
+  --vp-button-alt-hover-text: #05649A;
+  --vp-button-alt-hover-bg: #EAF6FC;
+}
+
+/* ==========================================================================
+   DARK THEME SYSTEM
+   ========================================================================== */
+.dark {
+  --brand-blue: #4DA8E0;
+  --brand-blue-dark: #6BBBE8;
+  --brand-blue-light: rgba(8, 120, 184, 0.18);
+
+  --brand-orange: #F69044;
+  --brand-green: #9ED458;
+  --brand-teal: #22BFB4;
+
+  --text-primary: #E5E7EB;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+
+  --bg-body: #161618;
+  --bg-card: #202127;
+  --bg-secondary: #1F2026;
+  --border: #2E303A;
+  --border-color: #2E303A;
+
+  --brand-primary: var(--brand-blue);
+  --brand-primary-dark: var(--brand-blue-dark);
+  --brand-primary-light: var(--brand-blue-light);
+  --bg-primary: var(--bg-card);
+  --bg-alt: var(--bg-body);
+
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-card-elevated: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  --vp-c-brand-1: #4DA8E0;
+  --vp-c-brand-2: #6BBBE8;
+  --vp-c-brand-3: #82CBF5;
+  --vp-c-brand-soft: rgba(8, 120, 184, 0.18);
+
+  --vp-c-bg: #161618;
+  --vp-c-bg-soft: #202127;
+  --vp-c-bg-alt: #1A1A1D;
+  --vp-c-bg-elv: #24252D;
+
+  --vp-c-border: #2E303A;
+  --vp-c-divider: #2E303A;
+  --vp-c-gutter: #2E303A;
+
+  --vp-c-text-1: #E5E7EB;
+  --vp-c-text-2: #9CA3AF;
+  --vp-c-text-3: #6B7280;
+
+  --vp-code-bg: #121214;
+  --vp-code-color: #6BBBE8;
+  --vp-code-copy-code-bg: #242428;
+  --vp-code-copy-code-hover-bg: #33333A;
+
+  --vp-custom-block-tip-border: #4DA8E0;
+  --vp-custom-block-tip-text: #E5E7EB;
+  --vp-custom-block-tip-bg: rgba(8, 120, 184, 0.16);
+  --vp-custom-block-tip-code-bg: rgba(8, 120, 184, 0.25);
+
+  --vp-custom-block-info-border: #22BFB4;
+  --vp-custom-block-info-text: #E5E7EB;
+  --vp-custom-block-info-bg: rgba(0, 169, 157, 0.16);
+
+  --vp-custom-block-note-border: #6B7280;
+  --vp-custom-block-note-text: #E5E7EB;
+  --vp-custom-block-note-bg: rgba(107, 114, 128, 0.14);
+
+  --vp-custom-block-warning-border: #F69044;
+  --vp-custom-block-warning-text: #E5E7EB;
+  --vp-custom-block-warning-bg: rgba(244, 122, 33, 0.14);
+
+  --vp-custom-block-danger-border: #F87171;
+  --vp-custom-block-danger-text: #E5E7EB;
+  --vp-custom-block-danger-bg: rgba(229, 57, 53, 0.14);
+
+  --vp-sidebar-bg-color: #1A1A1D;
+  --vp-nav-bg-color: #161618;
+
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-text: #111111;
+  --vp-button-brand-bg: #4DA8E0;
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-hover-text: #111111;
+  --vp-button-brand-hover-bg: #6BBBE8;
+  --vp-button-brand-active-border: transparent;
+  --vp-button-brand-active-text: #111111;
+  --vp-button-brand-active-bg: #82CBF5;
+
+  --vp-button-alt-border: #2E303A;
+  --vp-button-alt-text: #E5E7EB;
+  --vp-button-alt-bg: #202127;
+  --vp-button-alt-hover-border: #4DA8E0;
+  --vp-button-alt-hover-text: #4DA8E0;
+  --vp-button-alt-hover-bg: rgba(8, 120, 184, 0.16);
+}
+
+/* ==========================================================================
+   BASE & TYPOGRAPHY STYLING
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--vp-font-family-base);
+  color: var(--text-primary);
+  background-color: var(--bg-body);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code, pre, kbd {
+  font-family: var(--vp-font-family-mono) !important;
+}
+
+/* ==========================================================================
+   HEADER & NAVBAR
+   ========================================================================== */
+.VPNav {
+  background-color: var(--vp-nav-bg-color) !important;
+  border-bottom: 1px solid var(--border) !important;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.VPNavBarTitle {
+  align-items: center !important;
+}
+
+.VPNavBarTitle .logo {
+  height: 28px !important;
+  width: auto !important;
+  margin-right: 10px !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+.VPNavBarTitle .title {
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--brand-blue) !important;
+  font-size: 15.5px !important;
+}
+
+.dark .VPNavBarTitle .title {
+  color: var(--brand-blue) !important;
+}
+
+.VPNavBarMenuLink {
+  font-weight: 500 !important;
+  color: var(--text-secondary) !important;
+  transition: color 0.15s ease !important;
+}
+
+.VPNavBarMenuLink:hover {
+  color: var(--brand-blue-dark) !important;
+}
+
+.VPNavBarMenuLink.active {
+  color: var(--brand-blue) !important;
+  font-weight: 600 !important;
+}
+
+/* ==========================================================================
+   DOCUMENTATION SIDEBAR
+   ========================================================================== */
+.VPSidebar {
+  background-color: var(--vp-sidebar-bg-color) !important;
+  border-right: 1px solid var(--border) !important;
+}
+
+.VPSidebarItem .link {
+  border-radius: var(--radius-sm);
+  padding: 6px 12px !important;
+  margin: 2px 0;
+  transition: all 0.15s ease;
+  font-size: 13.5px !important;
+  line-height: 1.45 !important;
+}
+
+.VPSidebarItem .link:hover {
+  color: var(--brand-blue-dark) !important;
+  background-color: var(--brand-blue-light) !important;
+}
+
+/* "You are here" active state indicator */
+.VPSidebarItem.is-active > .item .link {
+  background-color: var(--brand-blue-light) !important;
+  color: var(--brand-blue) !important;
+  border-left: 3px solid var(--brand-blue) !important;
+  font-weight: 600 !important;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0 !important;
+}
+
+.dark .VPSidebarItem.is-active > .item .link {
+  background-color: rgba(8, 120, 184, 0.22) !important;
+  color: var(--brand-blue) !important;
+}
+
+.VPSidebarItem.level-0 > .item .text {
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: var(--text-secondary) !important;
+}
+
+/* ==========================================================================
+   HOMEPAGE & HERO SECTION
+   ========================================================================== */
+.VPHomeHero {
+  background: linear-gradient(
+    135deg,
+    rgba(8, 120, 184, 0.10) 0%,
+    rgba(139, 197, 63, 0.06) 50%,
+    rgba(244, 122, 33, 0.04) 100%
+  ) !important;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 3.5rem !important;
+}
+
+.VPHomeHero .name {
+  background: linear-gradient(135deg, #0878B8 0%, #05649A 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+}
+
+.dark .VPHomeHero .name {
+  background: linear-gradient(135deg, #4DA8E0 0%, #6BBBE8 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.VPHomeHero .text {
+  color: var(--text-primary) !important;
+  font-weight: 700 !important;
+}
+
+.VPHomeHero .tagline {
+  color: var(--text-secondary) !important;
+  font-size: 17px !important;
+  max-width: 660px !important;
+  line-height: 1.6 !important;
+}
+
+/* Homepage Feature Cards */
+.VPFeature {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-card) !important;
+  padding: 24px !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.VPFeature:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-blue) !important;
+  box-shadow: var(--shadow-card-elevated) !important;
+}
+
+.VPFeature .title {
+  color: var(--text-primary) !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+}
+
+.VPFeature .details {
+  color: var(--text-secondary) !important;
+  font-size: 13.5px !important;
+  line-height: 1.55 !important;
+}
+
+/* ==========================================================================
+   DOCUMENTATION CONTENT AREA
+   ========================================================================== */
+.vp-doc {
+  line-height: 1.7;
+}
+
+.vp-doc h1 {
+  font-size: 32px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em !important;
+  color: var(--text-primary) !important;
+  margin-bottom: 1.25rem !important;
+}
+
+.vp-doc h2 {
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding-bottom: 0.45rem !important;
+  margin-top: 2.5rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.vp-doc h3 {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  margin-top: 1.75rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.vp-doc p {
+  margin: 1rem 0 !important;
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.vp-doc ul, .vp-doc ol {
+  margin: 0.75rem 0 !important;
+  padding-left: 1.5rem !important;
+  color: var(--text-primary);
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+
+.vp-doc li + li {
+  margin-top: 0.35rem;
+}
+
+/* Inline Code */
+:not(pre) > code {
+  font-family: var(--vp-font-family-mono) !important;
+  background-color: var(--brand-blue-light) !important;
+  color: var(--brand-blue-dark) !important;
+  border-radius: 4px !important;
+  padding: 2px 6px !important;
+  font-size: 0.88em !important;
+  border: 1px solid var(--border) !important;
+}
+
+.dark :not(pre) > code {
+  background-color: rgba(8, 120, 184, 0.18) !important;
+  color: #6BBBE8 !important;
+  border: 1px solid rgba(77, 168, 224, 0.25) !important;
+}
+
+/* Code Blocks */
+.vp-doc div[class*='language-'] {
+  border-radius: var(--radius-sm) !important;
+  border: 1px solid var(--border) !important;
+  background-color: var(--vp-code-bg) !important;
+  margin: 1.25rem 0 !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+.vp-doc [class*='language-'] pre {
+  padding: 1rem 1.25rem !important;
+  line-height: 1.5 !important;
+  font-size: 13.5px !important;
+}
+
+/* Custom Callout Blocks */
+.vp-doc .custom-block {
+  border-radius: var(--radius-sm) !important;
+  border-left-width: 4px !important;
+  margin: 1.5rem 0 !important;
+  padding: 14px 18px !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+.vp-doc .custom-block.tip {
+  border-color: var(--brand-blue) !important;
+  background-color: var(--brand-blue-light) !important;
+}
+
+.vp-doc .custom-block.info {
+  border-color: var(--brand-teal) !important;
+  background-color: #E6F7F6 !important;
+}
+
+.vp-doc .custom-block.warning {
+  border-color: var(--brand-orange) !important;
+  background-color: #FEF3EB !important;
+}
+
+.dark .vp-doc .custom-block.warning {
+  background-color: rgba(244, 122, 33, 0.14) !important;
+}
+
+.vp-doc .custom-block.danger {
+  border-color: #E53935 !important;
+  background-color: #FDEDED !important;
+}
+
+.dark .vp-doc .custom-block.danger {
+  background-color: rgba(229, 57, 53, 0.14) !important;
+}
+
+.vp-doc .custom-block .custom-block-title {
+  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  margin-bottom: 6px !important;
+}
+
+/* ==========================================================================
+   TABLES
+   ========================================================================== */
+.vp-doc table {
+  width: 100% !important;
+  display: table !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  overflow: hidden !important;
+  margin: 1.5rem 0 !important;
+  font-size: 13.5px !important;
+  box-shadow: var(--shadow-card);
+}
+
+.vp-doc th {
+  background-color: var(--brand-blue-light) !important;
+  color: var(--brand-blue-dark) !important;
+  font-weight: 700 !important;
+  text-align: left !important;
+  padding: 10px 14px !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-right: 1px solid var(--border) !important;
+}
+
+.dark .vp-doc th {
+  background-color: rgba(8, 120, 184, 0.18) !important;
+  color: #6BBBE8 !important;
+}
+
+.vp-doc th:last-child {
+  border-right: none !important;
+}
+
+.vp-doc td {
+  padding: 9px 14px !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-right: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+.vp-doc td:last-child {
+  border-right: none !important;
+}
+
+.vp-doc tr:last-child td {
+  border-bottom: none !important;
+}
+
+.vp-doc tr:nth-child(even) {
+  background-color: rgba(247, 249, 251, 0.5) !important;
+}
+
+.dark .vp-doc tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* ==========================================================================
+   BUTTONS & CONTROLS
+   ========================================================================== */
+.VPButton {
+  border-radius: var(--radius-sm) !important;
+  font-weight: 600 !important;
+  font-size: 13.5px !important;
+  transition: all 0.2s ease !important;
+  letter-spacing: -0.01em !important;
+}
+
+.VPButton.brand {
+  background-color: var(--brand-blue) !important;
+  color: #FFFFFF !important;
+}
+
+.dark .VPButton.brand {
+  color: #111111 !important;
+}
+
+.VPButton.brand:hover {
+  background-color: var(--brand-blue-dark) !important;
+}
+
+.VPButton.alt {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--brand-blue) !important;
+}
+
+.VPButton.alt:hover {
+  border-color: var(--brand-blue) !important;
+  background-color: var(--brand-blue-light) !important;
+  color: var(--brand-blue-dark) !important;
+}
+
+/* ==========================================================================
+   SEARCH UI
+   ========================================================================== */
+.VPLocalSearchBox {
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-card-elevated) !important;
+  background-color: var(--bg-card) !important;
+}
+
+.VPLocalSearchBox input:focus {
+  border-color: var(--brand-blue) !important;
+  outline: 2px solid var(--brand-blue-light) !important;
+}
+
+/* ==========================================================================
+   GLOBAL FOOTER
+   ========================================================================== */
+.VPFooter {
+  background-color: #111111 !important;
+  border-top: 3px solid var(--brand-blue) !important;
+  padding: 2rem 1.5rem !important;
+  text-align: center !important;
+}
+
+.VPFooter .message, .VPFooter .copyright {
+  color: #9CA3AF !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  margin: 4px 0 !important;
+}
+
+@media (max-width: 768px) {
+  .VPFooter {
+    padding: 1.5rem 1rem !important;
+  }
+}
+
+/* ==========================================================================
+   CATEGORY ACCENT BADGES & CARDS
+   ========================================================================== */
+.badge-beginner {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(139, 197, 63, 0.15);
+  color: var(--brand-green);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(139, 197, 63, 0.3);
+}
+
+.badge-intermediate {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(8, 120, 184, 0.15);
+  color: var(--brand-blue);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(8, 120, 184, 0.3);
+}
+
+.badge-advanced {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(244, 122, 33, 0.15);
+  color: var(--brand-orange);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(244, 122, 33, 0.3);
+}
+
+.badge-challenge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(0, 169, 157, 0.15);
+  color: var(--brand-teal);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 169, 157, 0.3);
+}
+
+/* Reusable card component */
+.gtec-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gtec-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--brand-blue);
+  box-shadow: var(--shadow-card-elevated);
+}
+
+.gtec-card--exercise {
+  border-left: 4px solid var(--accent-exercises);
+}
+
+.gtec-card--project {
+  border-left: 4px solid var(--accent-projects);
+}
+
+.gtec-card--interview {
+  border-left: 4px solid var(--accent-interview);
+}
+
+.gtec-card--roadmap {
+  border-left: 4px solid var(--accent-roadmap);
+}
+
+/* ==========================================================================
+   DIAGRAM & ASCII BOXES
+   ========================================================================== */
+.visual-diagram-box {
+  background: var(--bg-body);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  box-shadow: var(--shadow-card);
+}
+
+.visual-diagram-box pre {
+  margin: 0 !important;
+  background: transparent !important;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
