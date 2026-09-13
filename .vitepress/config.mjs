@@ -195,17 +195,33 @@ export default defineConfig({
       title: "Master SQL Guide",
       description: "Comprehensive, Production-Grade SQL & MySQL Learning Guide",
       themeConfig: {
-        siteTitle: "SQL Mastery",
+        siteTitle: "Keerti SQL Mastery",
         nav: [
           { text: 'Table of Contents', link: '/00_master_table_of_contents' },
           { text: 'Modules', link: '/01_sql_fundamentals' },
-          { text: 'Projects', link: '/26_real_world_projects' },
-          { text: '300 Exercises', link: '/27_exercises' },
-          { text: 'Answer Key', link: '/28_answer_key' },
-          { text: 'Interview Prep', link: '/29_interview_questions' },
-          { text: 'Cheat Sheet', link: '/30_sql_cheat_sheet' },
-          { text: 'Roadmaps', link: '/31_learning_roadmaps' },
-          { text: 'A-Z Reference', link: '/33_az_sql_reference' }
+          {
+            text: 'Practice',
+            items: [
+              { text: '300 Exercises', link: '/27_exercises' },
+              { text: 'Answer Key', link: '/28_answer_key' },
+              { text: '5 Real-World Projects', link: '/26_real_world_projects' }
+            ]
+          },
+          {
+            text: 'Career',
+            items: [
+              { text: '150 Interview Questions', link: '/29_interview_questions' },
+              { text: 'Learning Roadmaps', link: '/31_learning_roadmaps' }
+            ]
+          },
+          {
+            text: 'Reference',
+            items: [
+              { text: 'SQL Cheat Sheet', link: '/30_sql_cheat_sheet' },
+              { text: 'A-Z Lexicon', link: '/33_az_sql_reference' },
+              { text: 'Final Revision', link: '/32_final_revision_guide' }
+            ]
+          }
         ],
         sidebar: englishSidebar
       }
@@ -217,17 +233,33 @@ export default defineConfig({
       title: "Master SQL Guide (Hinglish)",
       description: "Complete SQL & MySQL Course in Simple Roman Hinglish",
       themeConfig: {
-        siteTitle: "SQL Mastery (Hinglish)",
+        siteTitle: "Keerti SQL Mastery (Hinglish)",
         nav: [
           { text: 'Table of Contents', link: '/hi/00_master_table_of_contents' },
           { text: 'Modules', link: '/hi/01_sql_fundamentals' },
-          { text: 'Projects', link: '/hi/26_real_world_projects' },
-          { text: '300 Exercises', link: '/hi/27_exercises' },
-          { text: 'Answer Key', link: '/hi/28_answer_key' },
-          { text: 'Interview Prep', link: '/hi/29_interview_questions' },
-          { text: 'Cheat Sheet', link: '/hi/30_sql_cheat_sheet' },
-          { text: 'Roadmaps', link: '/hi/31_learning_roadmaps' },
-          { text: 'A-Z Reference', link: '/hi/33_az_sql_reference' }
+          {
+            text: 'Practice',
+            items: [
+              { text: '300 Exercises', link: '/hi/27_exercises' },
+              { text: 'Answer Key', link: '/hi/28_answer_key' },
+              { text: '5 Real-World Projects', link: '/hi/26_real_world_projects' }
+            ]
+          },
+          {
+            text: 'Career',
+            items: [
+              { text: '150 Interview Questions', link: '/hi/29_interview_questions' },
+              { text: 'Learning Roadmaps', link: '/hi/31_learning_roadmaps' }
+            ]
+          },
+          {
+            text: 'Reference',
+            items: [
+              { text: 'SQL Cheat Sheet', link: '/hi/30_sql_cheat_sheet' },
+              { text: 'A-Z Lexicon', link: '/hi/33_az_sql_reference' },
+              { text: 'Final Revision', link: '/hi/32_final_revision_guide' }
+            ]
+          }
         ],
         sidebar: hinglishSidebar
       }
@@ -235,8 +267,25 @@ export default defineConfig({
   },
 
   themeConfig: {
+    siteTitle: "Keerti SQL Mastery",
     search: {
       provider: 'local'
+    },
+    outline: {
+      level: [2, 3],
+      label: 'On this page'
+    },
+    docFooter: {
+      prev: '← Previous Module',
+      next: 'Next Module →'
+    },
+    returnToTopLabel: 'Back to top',
+    socialLinks: [
+      { icon: 'github', link: 'https://github.com/advancedtallyprime/master-sql-guide' }
+    ],
+    footer: {
+      message: 'G-TEC Jain Keerti Education — Global Leader in IT Education',
+      copyright: '© 2026 G-TEC Jain Keerti Education. All Rights Reserved.'
     }
   }
 })
