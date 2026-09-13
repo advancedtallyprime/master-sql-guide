@@ -6,8 +6,8 @@
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
-    "deploy": "npm run docs:build && wrangler deploy",
-    "preview": "npm run docs:build && wrangler dev"
+    "deploy": "npm run docs:build && wrangler pages deploy .vitepress/dist --project-name=master-sql-guide --branch=main",
+    "preview": "npm run docs:build && wrangler pages dev .vitepress/dist"
   },
   "devDependencies": {
     "vitepress": "^1.5.0",
