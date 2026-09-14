@@ -18,7 +18,7 @@
 
   --text-primary: #171717;
   --text-secondary: #5F6368;
-  --text-muted: #80868B;
+  --text-muted: #59636E;
 
   --bg-body: #F7F9FB;
   --bg-card: #FFFFFF;
@@ -65,7 +65,7 @@
 
   --vp-c-text-1: #171717;
   --vp-c-text-2: #5F6368;
-  --vp-c-text-3: #80868B;
+  --vp-c-text-3: #59636E;
 
   --vp-font-family-base: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --vp-font-family-mono: "JetBrains Mono", "Fira Code", Consolas, "Liberation Mono", Menlo, Courier, monospace;
@@ -134,7 +134,7 @@
 
   --text-primary: #E5E7EB;
   --text-secondary: #9CA3AF;
-  --text-muted: #6B7280;
+  --text-muted: #9CA3AF;
 
   --bg-body: #161618;
   --bg-card: #202127;
@@ -167,7 +167,7 @@
 
   --vp-c-text-1: #E5E7EB;
   --vp-c-text-2: #9CA3AF;
-  --vp-c-text-3: #6B7280;
+  --vp-c-text-3: #9CA3AF;
 
   --vp-code-bg: #121214;
   --vp-code-color: #6BBBE8;
@@ -247,6 +247,13 @@ code, pre, kbd {
    HEADER & NAVBAR
    ========================================================================== */
 .VPNav {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
+}
+
+.VPNavBar {
   background-color: rgba(255, 255, 255, 0.88) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
@@ -254,7 +261,7 @@ code, pre, kbd {
   transition: background-color 0.2s, border-color 0.2s;
 }
 
-.dark .VPNav {
+.dark .VPNavBar {
   background-color: rgba(22, 22, 24, 0.88) !important;
 }
 
@@ -368,7 +375,14 @@ code, pre, kbd {
     rgba(244, 122, 33, 0.04) 100%
   ) !important;
   border-bottom: 1px solid var(--border);
+  padding-top: calc(var(--vp-nav-height, 64px) + 2rem) !important;
   padding-bottom: 3.5rem !important;
+}
+
+.VPHomeHero .heading {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
 }
 
 .VPHomeHero .name {
@@ -377,6 +391,8 @@ code, pre, kbd {
   -webkit-text-fill-color: transparent !important;
   font-weight: 800 !important;
   letter-spacing: -0.03em !important;
+  font-size: clamp(1.85rem, 5.2vw, 3.5rem) !important;
+  line-height: 1.15 !important;
 }
 
 .dark .VPHomeHero .name {
@@ -388,11 +404,13 @@ code, pre, kbd {
 .VPHomeHero .text {
   color: var(--text-primary) !important;
   font-weight: 700 !important;
+  font-size: clamp(1.25rem, 3.5vw, 2.25rem) !important;
+  line-height: 1.25 !important;
 }
 
 .VPHomeHero .tagline {
   color: var(--text-secondary) !important;
-  font-size: 17px !important;
+  font-size: clamp(0.95rem, 2vw, 1.15rem) !important;
   max-width: 660px !important;
   line-height: 1.6 !important;
 }
@@ -593,7 +611,9 @@ code, pre, kbd {
   padding: 10px 14px !important;
   border-bottom: 1px solid var(--border) !important;
   border-right: 1px solid var(--border) !important;
-  white-space: nowrap !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  min-width: 110px;
 }
 
 .dark .vp-doc th {
@@ -610,6 +630,8 @@ code, pre, kbd {
   border-bottom: 1px solid var(--border) !important;
   border-right: 1px solid var(--border) !important;
   color: var(--text-primary) !important;
+  white-space: normal !important;
+  word-break: break-word !important;
 }
 
 .vp-doc td:last-child {
@@ -634,20 +656,52 @@ code, pre, kbd {
   border: 1px solid var(--border) !important;
   margin: 1.25rem 0 !important;
   position: relative;
+  max-width: 100% !important;
 }
 
 .vp-doc [class*='language-'] pre {
   padding: 16px 18px !important;
   overflow-x: auto !important;
   -webkit-overflow-scrolling: touch !important;
+  font-size: 13.5px !important;
+  line-height: 1.55 !important;
+  max-width: 100% !important;
 }
 
 .vp-doc [class*='language-'] pre::-webkit-scrollbar {
   height: 6px;
 }
-.vp-doc [class*='language-'] pre::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+.vp-doc [class*='language-'] pre::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
+}
+.vp-doc [class*='language-'] pre::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+}
+.vp-doc [class*='language-'] pre::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-blue);
+}
+
+.vp-doc [class*='language-'] > span.lang {
+  color: #A0AEC0 !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.04em !important;
+}
+
+.vp-doc [class*='language-'] button.copy {
+  min-width: 40px !important;
+  min-height: 40px !important;
+  border-radius: 6px !important;
+}
+
+/* Syntax Highlight Contrast Override (WCAG AA 4.5:1) */
+html:not(.dark) .vp-doc [class*='language-'] pre span[style*="#6A737D"] {
+  color: #57606A !important;
+}
+html.dark .vp-doc [class*='language-'] pre span[style*="#6A737D"] {
+  color: #8B949E !important;
 }
 
 /* ==========================================================================
@@ -715,11 +769,26 @@ code, pre, kbd {
 /* ==========================================================================
    SEARCH UI
    ========================================================================== */
+.VPNavBarSearch button,
+.DocSearch-Button {
+  min-height: 44px !important;
+  min-width: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 .VPLocalSearchBox {
   border-radius: var(--radius-md) !important;
   border: 1px solid var(--border) !important;
   box-shadow: var(--shadow-card-elevated) !important;
   background-color: var(--bg-card) !important;
+  max-width: min(600px, calc(100vw - 32px)) !important;
+}
+
+.VPLocalSearchBox input,
+.DocSearch-Input {
+  font-size: 16px !important; /* Prevents iOS auto-zoom */
 }
 
 .VPLocalSearchBox input:focus {
@@ -742,12 +811,93 @@ code, pre, kbd {
   font-size: 13px !important;
   line-height: 1.6 !important;
   margin: 4px 0 !important;
+  word-break: break-word !important;
 }
 
 /* ==========================================================================
-   MOBILE RESPONSIVENESS & OVERFLOW HARDENING (320px - 768px)
+   MOBILE DRAWER & NAVIGATION SCREEN (Full Height & 44px+ Touch Targets)
    ========================================================================== */
-.VPNavBarHamburger {
+.VPNavScreen {
+  position: fixed !important;
+  top: var(--vp-nav-height, 64px) !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: calc(100dvh - var(--vp-nav-height, 64px)) !important;
+  background-color: var(--vp-c-bg) !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  z-index: calc(var(--vp-z-index-nav, 30) - 1) !important;
+  pointer-events: auto !important;
+}
+
+.VPNavScreenMenuLink {
+  min-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 10px 0 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+}
+
+.VPNavScreenMenuGroup .button {
+  min-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  padding: 10px 0 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+}
+
+.VPNavScreenMenuGroupLink {
+  min-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding: 10px 16px !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  color: var(--text-secondary) !important;
+  border-radius: var(--radius-sm) !important;
+  margin: 2px 0 !important;
+  transition: all 0.15s ease !important;
+}
+
+.VPNavScreenMenuGroupLink:hover,
+.VPNavScreenMenuGroupLink:active {
+  background-color: var(--brand-blue-light) !important;
+  color: var(--brand-blue) !important;
+}
+
+.dark .VPNavScreenMenuGroupLink:hover,
+.dark .VPNavScreenMenuGroupLink:active {
+  background-color: rgba(8, 120, 184, 0.22) !important;
+  color: var(--brand-blue) !important;
+}
+
+.VPNavScreenTranslations .button,
+.VPNavScreenTranslations .title {
+  min-height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.VPNavScreenAppearance {
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.VPNavScreenAppearance .VPSwitch {
+  min-height: 32px !important;
+  min-width: 56px !important;
+}
+
+.VPNavScreenSocialLinks .VPSocialLink {
   min-width: 44px !important;
   min-height: 44px !important;
   display: flex !important;
@@ -755,47 +905,67 @@ code, pre, kbd {
   justify-content: center !important;
 }
 
-.VPNavScreen {
-  background-color: var(--vp-c-bg) !important;
+/* ==========================================================================
+   RESPONSIVE TOP NAVBAR BREAKPOINT (< 960px Mobile vs >= 960px Desktop)
+   ========================================================================== */
+@media (max-width: 959px) {
+  .VPNavBarMenu {
+    display: none !important;
+  }
+  .VPNavBarExtra {
+    display: none !important;
+  }
+  .VPNavBarHamburger {
+    display: flex !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .VPNavScreen {
+    display: block !important;
+  }
 }
 
-.VPNavScreenMenuLink {
-  min-height: 48px !important;
-  display: flex !important;
-  align-items: center !important;
-  font-size: 15px !important;
-  font-weight: 600 !important;
+@media (min-width: 960px) {
+  .VPNavBarHamburger {
+    display: none !important;
+  }
+  .VPNavScreen {
+    display: none !important;
+  }
 }
 
+/* ==========================================================================
+   BREAKPOINTS: TABLET & MOBILE RESPONSIVE TWEAKS (< 768px)
+   ========================================================================== */
 @media (max-width: 768px) {
   .VPHomeHero {
-    padding-top: 2rem !important;
+    padding-top: calc(var(--vp-nav-height, 64px) + 1.25rem) !important;
     padding-bottom: 2.5rem !important;
   }
 
-  .VPHomeHero .actions {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    max-width: 440px !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-    gap: 12px !important;
+  .VPFeatures {
+    padding: 2rem 1rem !important;
   }
 
-  .VPHomeHero .action {
-    width: 100% !important;
-  }
-
-  .VPHomeHero .action .VPButton {
-    width: 100% !important;
-    min-height: 48px !important;
-    font-size: 14.5px !important;
+  .VPFeatures .container {
+    padding: 0 !important;
+    max-width: 100% !important;
   }
 
   .VPFeatures .items {
-    grid-template-columns: 1fr !important;
+    display: flex !important;
+    flex-direction: column !important;
     gap: 14px !important;
+    width: 100% !important;
+  }
+
+  .VPFeatures .item {
+    width: 100% !important;
+    padding: 0 !important;
   }
 
   .VPFooter {
@@ -812,12 +982,61 @@ code, pre, kbd {
     font-size: 12.5px !important;
   }
 
+  .vp-doc [class*='language-'] button.copy {
+    top: 6px !important;
+    right: 6px !important;
+    width: 38px !important;
+    height: 38px !important;
+  }
+
   .visual-diagram-box {
     padding: 12px !important;
   }
 
   .visual-diagram-box pre {
     font-size: 11.5px !important;
+  }
+}
+
+/* Hero CTA button stacking: full-width on mobile */
+@media (max-width: 640px) {
+  .VPHomeHero .actions {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 0.5rem !important;
+    gap: 10px !important;
+  }
+
+  .VPHomeHero .action {
+    width: 100% !important;
+  }
+
+  .VPHomeHero .action .VPButton {
+    width: 100% !important;
+    min-height: 48px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Hero CTA button grid: 2-column on tablet */
+@media (min-width: 641px) and (max-width: 959px) {
+  .VPHomeHero .actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+    max-width: 520px !important;
+    margin: 1.5rem auto 0 auto !important;
+  }
+
+  .VPHomeHero .action {
+    width: 100% !important;
+  }
+
+  .VPHomeHero .action .VPButton {
+    width: 100% !important;
+    min-height: 48px !important;
   }
 }
 
@@ -856,15 +1075,15 @@ code, pre, kbd {
   }
 
   .VPHomeHero .name {
-    font-size: 24px !important;
+    font-size: 22px !important;
   }
 
   .VPHomeHero .text {
-    font-size: 17px !important;
+    font-size: 16px !important;
   }
 
   .VPHomeHero .tagline {
-    font-size: 13.5px !important;
+    font-size: 13px !important;
   }
 
   .VPButton {

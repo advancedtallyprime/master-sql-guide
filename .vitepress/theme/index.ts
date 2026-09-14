@@ -10,7 +10,23 @@ export default {
       'doc-footer-before': () => h(DocFooter)
     })
   },
-  enhanceApp({ app }) {
+  enhanceApp({ app, router }) {
     app.component('DocFooter', DocFooter)
+    if (typeof window !== 'undefined') {
+      const setMainRole = () => {
+        const vpContent = document.getElementById('VPContent')
+        if (vpContent && !vpContent.getAttribute('role')) {
+          vpContent.setAttribute('role', 'main')
+        }
+      }
+      if (router) {
+        router.onAfterRouteChanged = () => setTimeout(setMainRole, 50)
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setMainRole)
+      } else {
+        setMainRole()
+      }
+    }
   }
 }
