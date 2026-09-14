@@ -379,10 +379,8 @@ code, pre, kbd {
   padding-bottom: 3.5rem !important;
 }
 
-.VPHomeHero .heading {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 0.5rem !important;
+.VPHome .VPHomeHero .heading {
+  gap: 0.5rem;
 }
 
 .VPHomeHero .name {
@@ -1300,4 +1298,114 @@ html.dark .vp-doc [class*='language-'] pre span[style*="#6A737D"] {
 
 .dark .visual-diagram-box pre {
   color: #E5E7EB;
+}
+
+/* ==========================================================================
+   MOBILE NAV DRAWER & HAMBURGER / CLOSE BUTTON
+   ========================================================================== */
+/* Borderless Close (✕) and Hamburger Button */
+.VPNavBarHamburger {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  transition: background-color 0.2s ease;
+  border-radius: 8px;
+}
+
+.VPNavBarHamburger:hover {
+  background-color: var(--vp-c-bg-mute) !important;
+}
+
+.VPNavBarHamburger:focus:not(:focus-visible) {
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.VPNavBarHamburger:focus-visible {
+  outline: 2px solid var(--brand-blue) !important;
+  outline-offset: 2px;
+}
+
+.VPNavBarHamburger.active {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+.VPNavBarHamburger.active:hover {
+  background-color: var(--vp-c-bg-mute) !important;
+}
+
+.VPNavBarHamburger.active:focus:not(:focus-visible) {
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.VPNavBarHamburger.active:focus-visible {
+  outline: 2px solid var(--brand-blue) !important;
+  outline-offset: 2px;
+}
+
+/* Adaptive Sheet Drawer Layout */
+@media (max-width: 767px) {
+  .VPNavScreen {
+    position: fixed !important;
+    top: calc(var(--vp-nav-height, 64px) + var(--vp-layout-top-height, 0px)) !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: calc(100dvh - var(--vp-nav-height, 64px) - var(--vp-layout-top-height, 0px)) !important;
+    padding: 0 !important;
+    background-color: rgba(15, 23, 42, 0.4) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    cursor: pointer;
+  }
+
+  .dark .VPNavScreen {
+    background-color: rgba(0, 0, 0, 0.6) !important;
+  }
+
+  .VPNavScreen .container {
+    background-color: var(--vp-c-bg) !important;
+    border-bottom: 1px solid var(--border) !important;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15) !important;
+    border-bottom-left-radius: 20px !important;
+    border-bottom-right-radius: 20px !important;
+    padding: 16px 20px 24px 20px !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    box-sizing: border-box !important;
+    cursor: default;
+  }
+
+  .dark .VPNavScreen .container {
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35) !important;
+  }
+
+  .VPNavScreen .menu + .translations,
+  .VPNavScreen .menu + .appearance,
+  .VPNavScreen .translations + .appearance {
+    margin-top: 16px !important;
+  }
+
+  .VPNavScreen .appearance + .social-links,
+  .VPNavScreen .menu + .social-links {
+    margin-top: 16px !important;
+  }
+
+  .VPNavScreenSocialLinks {
+    display: flex;
+    justify-content: center;
+    padding-top: 4px;
+  }
 }

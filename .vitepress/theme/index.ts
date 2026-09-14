@@ -27,6 +27,20 @@ export default {
       } else {
         setMainRole()
       }
+
+      // Close mobile drawer when clicking the dimmed backdrop outside the sheet container
+      document.addEventListener('click', (e) => {
+        const screen = document.getElementById('VPNavScreen')
+        if (screen && screen.contains(e.target as Node)) {
+          const container = screen.querySelector('.container')
+          if (container && !container.contains(e.target as Node)) {
+            const hamburger = document.querySelector('.VPNavBarHamburger.active') as HTMLElement | null
+            if (hamburger) {
+              hamburger.click()
+            }
+          }
+        }
+      })
     }
   }
 }
