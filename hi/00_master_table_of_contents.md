@@ -92,7 +92,7 @@ c:\antigravity\master_sql_guide\hi\
 
 ## Unified Database Schema: `sql_mastery`
 
-Is guide ke sabhi code examples ko practical run karne ke liye [`sql_mastery_schema.sql`](file:///c:/antigravity/master_sql_guide/sql_mastery_schema.sql) script ko apne MySQL environment mein execute karein.
+Is guide ke sabhi code examples ko practical run karne ke liye [`sql_mastery_schema.sql`](/sql_mastery_schema.sql) script ko apne MySQL environment mein execute karein.
 
 ### Entity Relationship Diagram (ERD)
 

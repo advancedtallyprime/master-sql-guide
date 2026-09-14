@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import { withMermaid } from 'vitepress-plugin-mermaid'
 
 const englishSidebar = [
   {
@@ -182,7 +183,8 @@ const hinglishSidebar = [
   }
 ];
 
-export default defineConfig({
+export default withMermaid(
+  defineConfig({
   title: "Master SQL Guide",
   description: "Comprehensive, Production-Grade SQL & MySQL Learning Guide",
   cleanUrls: true,
@@ -303,3 +305,4 @@ export default defineConfig({
     }
   }
 })
+)

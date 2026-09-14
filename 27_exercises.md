@@ -2,10 +2,10 @@
 
 All exercises in this practice system are designed to be executed against the master **`sql_mastery`** database schema.
 
-To practice alongside these questions, ensure you have initialized your local database by running the script [`sql_mastery_schema.sql`](file:///c:/antigravity/master_sql_guide/sql_mastery_schema.sql).
+To practice alongside these questions, ensure you have initialized your local database by running the script [`sql_mastery_schema.sql`](/sql_mastery_schema.sql).
 
 > [!NOTE]
-> Solutions and query explanations are intentionally omitted from this chapter to enable self-testing. For verified solutions and step-by-step breakdowns, refer to [Chapter 28 — The Master Answer Key](file:///c:/antigravity/master_sql_guide/28_answer_key.md).
+> Solutions and query explanations are intentionally omitted from this chapter to enable self-testing. For verified solutions and step-by-step breakdowns, refer to [Chapter 28 — The Master Answer Key](/28_answer_key).
 
 ---
 

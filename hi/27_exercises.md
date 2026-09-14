@@ -2,10 +2,10 @@
 
 Is practice system ke saare 300 exercises master **`sql_mastery`** database schema ke against execute karne ke liye design kiye gaye hain.
 
-In questions ke saath practice karne ke liye, ensure karein ki aapne [`sql_mastery_schema.sql`](file:///c:/antigravity/master_sql_guide/sql_mastery_schema.sql) script run karke apna local database initialize kar liya hai.
+In questions ke saath practice karne ke liye, ensure karein ki aapne [`sql_mastery_schema.sql`](/sql_mastery_schema.sql) script run karke apna local database initialize kar liya hai.
 
 > [!NOTE]
-> Self-testing ko facilitate karne ke liye is chapter mein solutions aur query explanations intentionally omit kiye gaye hain. Verified solutions aur step-by-step breakdowns ke liye, [Chapter 28 — The Master Answer Key](file:///c:/antigravity/master_sql_guide/hi/28_answer_key.md) refer karein.
+> Self-testing ko facilitate karne ke liye is chapter mein solutions aur query explanations intentionally omit kiye gaye hain. Verified solutions aur step-by-step breakdowns ke liye, [Chapter 28 — The Master Answer Key](/hi/28_answer_key) refer karein.
 
 ---
 

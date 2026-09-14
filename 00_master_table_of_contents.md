@@ -93,7 +93,7 @@ c:\antigravity\master_sql_guide\
 
 ## Consistent Database Schema Reference: `sql_mastery`
 
-To practice alongside this guide, execute the script [`sql_mastery_schema.sql`](file:///c:/antigravity/master_sql_guide/sql_mastery_schema.sql).
+To practice alongside this guide, execute the script [`sql_mastery_schema.sql`](/sql_mastery_schema.sql).
 
 ### Entity Relationship Diagram (ERD)
 
@@ -192,4 +192,4 @@ Every technical chapter follows a standardized 12-section blueprint:
 11. **Interview Questions**
 12. **Quick Revision**
 
-Proceed to [01 — SQL Fundamentals](file:///c:/antigravity/master_sql_guide/01_sql_fundamentals.md) to begin the curriculum.
+Proceed to [01 — SQL Fundamentals](/01_sql_fundamentals) to begin the curriculum.

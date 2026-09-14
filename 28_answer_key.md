@@ -1,6 +1,6 @@
 # Chapter 28 — The Master Answer Key: Complete Solutions & Explanations
 
-This chapter provides comprehensive solutions for all 300 practice problems presented in [Chapter 27 — Comprehensive Practice System](file:///c:/antigravity/master_sql_guide/27_exercises.md).
+This chapter provides comprehensive solutions for all 300 practice problems presented in [Chapter 27 — Comprehensive Practice System](/27_exercises).
 
 All solutions have been verified against the **`sql_mastery`** database schema.
 

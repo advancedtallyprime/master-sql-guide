@@ -10,7 +10,10 @@
     "preview": "npm run docs:build && wrangler pages dev .vitepress/dist"
   },
   "devDependencies": {
+    "mermaid": "^11.17.2",
+    "puppeteer-core": "^25.10.0",
     "vitepress": "^1.5.0",
+    "vitepress-plugin-mermaid": "^2.0.17",
     "wrangler": "^4.131.1"
   }
 }
